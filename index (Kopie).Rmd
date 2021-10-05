@@ -5,10 +5,12 @@ date: "last rendered at: `r format(Sys.time(), tz = 'Europe/Berlin')`"
 site: bookdown::bookdown_site
 output:
   bookdown::gitbook:
-    css: [styles.css]
+    css: [styles.css, webppl-editor.css]
     highlight: kate
     fig_caption: TRUE
     split_by: "section"
+    includes:
+      in_header: gitbook_header.html
     config:
       toc:
         collapse: section
@@ -27,7 +29,7 @@ bibliography: [bibliography/book.bib, bibliography/packages.bib]
 biblio-style: apalike
 link-citations: yes
 description: "Introductory text for statistics and data analysis (using R)"
-github-repo: "MarauderPixie/intro-data-analysis"
+github-repo: "michael-franke/intro-data-analysis"
 ---
 
 
