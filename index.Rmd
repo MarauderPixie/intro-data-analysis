@@ -38,7 +38,7 @@ github-repo: "MarauderPixie/intro-data-analysis"
 </div>  
 
 
-This book provides basic reading material for an introduction to data analysis. --yeah!
+This book provides basic reading material for an introduction to data analysis.
 It uses R to handle, plot and analyze data. 
 After covering the use of R for data wrangling and plotting, the book introduces key concepts of data analysis from a Bayesian and a frequentist tradition.
 This text is intended for use as a first introduction to statistics for an audience with some affinity towards programming, but no prior exposition to R.
