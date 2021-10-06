@@ -45,7 +45,7 @@ Very familiar instances of summary statistics are counts and frequencies. While 
 We load the preprocessed data immediately (see Appendix \@ref(app-93-data-sets-BLJM) for details on how this preprocessing was performed).
 
 ```{r}
-data_BLJM_processed <- aida::data_BLJM
+data_BLJM_processed <- read_csv("./data_sets/bio-logic-jazz-metal-data-processed.csv") # aida::data_BLJM
 ```
 
 The preprocessed data lists, for each participant (in column `submission_id`) the binary choice (in column `response`) in a particular condition (in column `condition`).

@@ -536,7 +536,7 @@ Let's go through one case study of data preprocessing and cleaning. We look at t
 The raw data set is part of the `aida` package and can be loaded using:
 
 ```{r}
-data_KoF_raw <- aida::data_KoF_raw
+data_KoF_raw <- read_csv("./data_sets/king-of-france_data_raw.csv") # aida::data_KoF_raw
 ```
 
 We then take a glimpse at the data:

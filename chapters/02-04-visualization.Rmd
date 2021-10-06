@@ -221,7 +221,7 @@ The section finishes with a first full example of a plot that has different laye
 To get started, let's first load the (preprocessed) avocado data set used for plotting:
 
 ```{r}
-avocado_data <- aida::data_avocado
+avocado_data <- read_csv("./data_sets/avocado-processed.csv") # aida::data_avocado
 ```
 
 
@@ -812,7 +812,7 @@ But bar plots may also be good enough if there is not more of immediate relevanc
 We first load the preprocessed data set.
 
 ```{r}
-data_KoF_processed <- aida::data_KoF_preprocessed
+data_KoF_processed <- read_csv("./data_sets/king-of-france_data_processed.csv") # aida::data_KoF_preprocessed
 ```
 
 ```{r}

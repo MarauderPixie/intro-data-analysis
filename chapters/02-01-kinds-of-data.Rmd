@@ -39,7 +39,7 @@ This is a teleological definition in the sense that it refers to a purpose: data
 Let us consider an example of data from a behavioral experiment, namely the [King of France experiment](#app-93-data-sets-king-of-france). It is not important to know about this experiment for now. We just want to have a first glimpse at how data frequently looks like. Using R (in ways that we will discuss in the next chapter), we can show the content of part of the data as follows:
 
 ```{r, echo = F}
-data_KoF_raw <- aida::data_KoF_raw
+data_KoF_raw <- read_csv("./data_sets/king-of-france_data_raw.csv") # aida::data_KoF_raw
 head(data_KoF_raw %>% select(submission_id, trial_number, trial_type, response))
 ```
 
