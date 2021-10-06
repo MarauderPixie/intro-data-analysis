@@ -2,5 +2,5 @@ Package: placeholder
 Type: Book
 Title: Does not matter.
 Version: 0.0.1
-Imports: bookdown, devtools, tidyverse
+Imports: rmarkdown, bookdown, devtools, tidyverse
 Remotes: rstudio/bookdown
