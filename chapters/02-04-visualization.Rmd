@@ -1305,3 +1305,9 @@ avocado_data %>%
 
 Feel free to play around with customizing your previously created plots or plots that you find in this book. Try to make annotations or try out different themes and colors. It will help you understand these kinds of plots a little better.
 </div>
+
+
+
+```{r}
+print(sessionInfo())
+```
