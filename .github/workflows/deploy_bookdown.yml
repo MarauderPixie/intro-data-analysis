@@ -27,6 +27,14 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v1
 
       - uses: r-lib/actions/setup-renv@v1
+      
+      - name: Cache renv
+        uses: actions/cache@v2
+        with:
+          path: ~/.local/share/renv
+          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-renv-
 
       - name: Cache bookdown results
         uses: actions/cache@v2
