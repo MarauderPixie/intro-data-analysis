@@ -185,7 +185,7 @@ In the remainder of this chapter, we will use the [avocado data set](#app-93-dat
 We load the (pre-processed) data into a variable named `avocado_data` (see Appendix \@ref(app-93-data-sets-avocado) for more information on this data set):
 
 ```{r}
-avocado_data <- aida::data_avocado
+avocado_data <- read_csv("../data_sets/avocado.csv") # aida::data_avocado
 ```
 
 We can then take a glimpse:

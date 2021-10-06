@@ -14,7 +14,6 @@ In a manner of speaking, there are two flavors of R. We should distinguish **bas
 knitr::include_graphics("visuals/tidyverse-overview.png")
 ```
 
-<!-- The course will also introduce [Rmarkdown](https://rmarkdown.rstudio.com/articles_intro.html) in Section \@ref(ch-01-01-Rmarkdown). Rmarkdown is a nice way of documenting your data analysis in a reproducible form. Participants will use Rmarkdown to prepare their homework assignments. -->
 
 The official documentation for base R is ["An Introduction to R"](https://colinfay.me/intro-to-r/). The standard reference for using the tidyverse is ["R for Data Science (R4DS)"](https://r4ds.had.co.nz). There are some very useful [cheat sheets](https://rstudio.com/resources/cheatsheets/) which you should definitely check out! There are pointers to further material in Appendix \@ref(app-90-further-material).
 
