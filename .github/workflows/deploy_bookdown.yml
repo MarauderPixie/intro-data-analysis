@@ -21,6 +21,9 @@ jobs:
           use-public-rspm: true
           
       - uses: r-lib/actions/setup-r-dependencies@v1
+      
+      - name: install AIDA
+        run: Rscript -e 'devtools::install_github("michael-franke/aida-package")'
 
       - uses: r-lib/actions/setup-renv@v1
       
