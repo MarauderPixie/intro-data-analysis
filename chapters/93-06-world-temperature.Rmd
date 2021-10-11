@@ -1,0 +1,87 @@
+
+## Annual average world surface temperature {#app-93-data-sets-temperature}
+
+### Nature, origin and rationale of the data
+
+<div style = "float:right; width:10%;">
+<img src="visuals/badge-thermometer.png" alt="badge-thermometer">
+</div>
+
+This data set has been downloaded from [Berkeley Earth](http://berkeleyearth.org/).^[Downloaded on October 6th, 2020.] More information on the origin and composition of this data set can be found [here](http://berkeleyearth.org/data-new/). Specifically, what we will use here is the time series data for "land only" using the annual summary of monthly average temperature. We have added to the data set used here the absolute average temperature. (Berkeley Earth only lists the "annual anomaly", i.e., the deviation from a grand mean.)
+
+Columns of interest are:
+
++ `year`: year of the observation (1750-2019)
++ `anomaly`: deviation from the grand mean of 1750-1980, which equals 8.61 degrees Celsius
++ `uncertainty`: measure of uncertainty associated with the reported `anomaly`
++ `avg_temp`: the annual average world surface temperature
+
+### Loading and preprocessing the data
+
+We load the data into a variable named `data_temperature`:
+
+```{r}
+data_temperature <- aida::data_WorldTemp
+```
+
+And inspect the first rows of data:
+
+```{r}
+head(data_temperature)
+```
+
+### Hypothesis & modeling approach
+
+We care about whether the annual average temperature increased over time. We address this question with a simple linear regression model, in particular the relationship `avg_temp ~ year`. We are interested in whether the slope coefficient of that regression model is credibly/significantly bigger than zero.
+
+Using a simple linear regression here is clearly and blatantly way too simple a modeling approach, but it serves our purposes and the violent simplification should make you think how/why exactly the linear regression model is conceptually inadequate for this data and inference model.
+
+### Plotting
+
+Here is a scatterplot of annual average temperature `avg_temp` against `year`. The straight line is the best linear predictor.
+
+```{r} 
+data_temperature %>%
+  ggplot(aes(x = year, y = avg_temp)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(
+    y = "temperature (degrees Celsius)",
+    title = "Annual average surface land temperature"
+  )
+```
+
+<!-- ### Analysis -->
+
+<!-- **DISCLAIMER: This analysis is under heavy construction at the moment!** -->
+
+<!-- We run a simple linear regression model, for relationship `avg_temp ~ year`: -->
+
+<!-- ```{r echo = FALSE, eval = FALSE} -->
+<!-- fit_avg_temp <- brm( -->
+<!--   formula = avg_temp ~ year,  -->
+<!--   data = data_temperature -->
+<!--   ) -->
+<!-- ``` -->
+
+<!-- Based on the posterior samples, we would conclude that the slope parameter is credibly bigger than zero: -->
+
+<!-- ```{r echo = FALSE, eval = FALSE} -->
+
+<!-- # TODO remove this when aida package works -->
+
+<!-- summarize_sample_vector <- function(samples, name = '') { -->
+<!--     tibble( -->
+<!--         Parameter = name, -->
+<!--         '|95%' = HDInterval::hdi(samples)[1], -->
+<!--         mean  = mean(samples), -->
+<!--         '95%|' = HDInterval::hdi(samples)[2] -->
+<!--     ) -->
+<!-- } -->
+
+<!-- posterior_samples(fit_avg_temp) %>%  -->
+<!--   pull(b_year) %>% summarize_sample_vector() -->
+<!-- ``` -->
+
+<!-- The estimated coefficient for variable `year` implies that we should expect an annual increase of average world temperature of about `posterior_samples(fit_avg_temp) %>% pull(b_year) %>% summarize_sample_vector() %>% pull(mean) %>% round(3)` degrees Celcius. -->
+  
