@@ -52,6 +52,31 @@
 <script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<!--<link rel="stylesheet" href="https://s3-us-west-2.amazonaws.com/cdn.webppl.org/webppl-editor-1.0.9.css">-->
+<link rel="stylesheet" href="https://s3-us-west-2.amazonaws.com/cdn.webppl.org/webppl-viz-0.7.11.css">
+
+<script src="https://s3-us-west-2.amazonaws.com/cdn.webppl.org/webppl-editor-1.0.9.js"></script>
+<script src="https://s3-us-west-2.amazonaws.com/cdn.webppl.org/webppl-viz-0.7.11.js"></script>
+<script src="https://s3-us-west-2.amazonaws.com/cdn.webppl.org/webppl-v0.9.13.js" defer async></script>
+
+<link href="libs/tufte-css-2015.12.29/tufte.css" rel="stylesheet" />
+<link href="libs/tufte-css-2015.12.29/envisioned.css" rel="stylesheet" />
+
+<script type="application/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.collapsibleSolution, .collapsibleProof').forEach(function(collapsible) {
+    const content = collapsible.querySelector('.content')
+    content.style.display = 'none';
+    collapsible.querySelector('.trigger').addEventListener('click', function() {
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+      } else {
+        content.style.display = 'none';
+      }
+    })
+  })
+})
+</script>
 
 
 <style type="text/css">
@@ -124,6 +149,7 @@ code span.wa { color: #bf0303; } /* Warning */
 
 
 <link rel="stylesheet" href="styles.css" type="text/css" />
+<link rel="stylesheet" href="webppl-editor.css" type="text/css" />
 </head>
 
 <body>
@@ -537,7 +563,7 @@ code span.wa { color: #bf0303; } /* Warning */
 <div id="header">
 <h1 class="title">An Introduction to Data Analysis</h1>
 <p class="author"><em>Michael Franke</em></p>
-<p class="date"><em>last rendered at: 2021-10-11 18:15:33</em></p>
+<p class="date"><em>last rendered at: 2021-10-11 18:29:12</em></p>
 </div>
 <div id="section" class="section level1 unnumbered">
 <h1></h1>
