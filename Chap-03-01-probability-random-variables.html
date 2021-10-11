@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>7.4 Random variables | An Introduction to Data Analysis</title>
+  <meta name="description" content="Introductory text for statistics and data analysis (using R)" />
+  <meta name="generator" content="bookdown 0.24.1 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="7.4 Random variables | An Introduction to Data Analysis" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Introductory text for statistics and data analysis (using R)" />
+  <meta name="github-repo" content="MarauderPixie/intro-data-analysis" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="7.4 Random variables | An Introduction to Data Analysis" />
+  
+  <meta name="twitter:description" content="Introductory text for statistics and data analysis (using R)" />
+  
+
+<meta name="author" content="Michael Franke" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="Chap-03-01-probability-conditional.html"/>
+<link rel="next" href="Chap-03-01-probability-R.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span. { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="index.html#section"></a></li>
+<li class="part"><span><b>I Preliminaries</b></span></li>
+<li class="chapter" data-level="1" data-path="general-introduction.html"><a href="general-introduction.html"><i class="fa fa-check"></i><b>1</b> General Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="Chap-01-00-intro-learning-goals.html"><a href="Chap-01-00-intro-learning-goals.html"><i class="fa fa-check"></i><b>1.1</b> Learning goals</a></li>
+<li class="chapter" data-level="1.2" data-path="Chap-01-00-intro-course-structure.html"><a href="Chap-01-00-intro-course-structure.html"><i class="fa fa-check"></i><b>1.2</b> Course structure</a></li>
+<li class="chapter" data-level="1.3" data-path="Chap-01-00-intro-tools.html"><a href="Chap-01-00-intro-tools.html"><i class="fa fa-check"></i><b>1.3</b> Tools used in this course</a></li>
+<li class="chapter" data-level="1.4" data-path="Chap-01-00-intro-topics.html"><a href="Chap-01-00-intro-topics.html"><i class="fa fa-check"></i><b>1.4</b> Topics covered (and not covered) in the course</a></li>
+<li class="chapter" data-level="1.5" data-path="Chap-01-00-intro-data-sets.html"><a href="Chap-01-00-intro-data-sets.html"><i class="fa fa-check"></i><b>1.5</b> Data sets covered</a></li>
+<li class="chapter" data-level="1.6" data-path="Chap-01-00-intro-installation.html"><a href="Chap-01-00-intro-installation.html"><i class="fa fa-check"></i><b>1.6</b> Installation</a></li>
+<li class="chapter" data-level="1.7" data-path="Chap-01-00-intro-schedule.html"><a href="Chap-01-00-intro-schedule.html"><i class="fa fa-check"></i><b>1.7</b> Example schedule (12-week course)</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="Chap-01-01-R.html"><a href="Chap-01-01-R.html"><i class="fa fa-check"></i><b>2</b> Basics of R</a><ul>
+<li class="chapter" data-level="2.1" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html"><i class="fa fa-check"></i><b>2.1</b> First steps</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#functions"><i class="fa fa-check"></i><b>2.1.1</b> Functions</a></li>
+<li class="chapter" data-level="2.1.2" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#variables"><i class="fa fa-check"></i><b>2.1.2</b> Variables</a></li>
+<li class="chapter" data-level="2.1.3" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#literate-coding"><i class="fa fa-check"></i><b>2.1.3</b> Literate coding</a></li>
+<li class="chapter" data-level="2.1.4" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#objects"><i class="fa fa-check"></i><b>2.1.4</b> Objects</a></li>
+<li class="chapter" data-level="2.1.5" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#packages"><i class="fa fa-check"></i><b>2.1.5</b> Packages</a></li>
+<li class="chapter" data-level="2.1.6" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#Chap-01-01-R-help"><i class="fa fa-check"></i><b>2.1.6</b> Getting help</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="ch1-data-types.html"><a href="ch1-data-types.html"><i class="fa fa-check"></i><b>2.2</b> Data types</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="ch1-data-types.html"><a href="ch1-data-types.html#numeric-vectors-matrices"><i class="fa fa-check"></i><b>2.2.1</b> Numeric vectors &amp; matrices</a></li>
+<li class="chapter" data-level="2.2.2" data-path="ch1-data-types.html"><a href="ch1-data-types.html#booleans"><i class="fa fa-check"></i><b>2.2.2</b> Booleans</a></li>
+<li class="chapter" data-level="2.2.3" data-path="ch1-data-types.html"><a href="ch1-data-types.html#special-values"><i class="fa fa-check"></i><b>2.2.3</b> Special values</a></li>
+<li class="chapter" data-level="2.2.4" data-path="ch1-data-types.html"><a href="ch1-data-types.html#characters-strings"><i class="fa fa-check"></i><b>2.2.4</b> Characters (= strings)</a></li>
+<li class="chapter" data-level="2.2.5" data-path="ch1-data-types.html"><a href="ch1-data-types.html#factors"><i class="fa fa-check"></i><b>2.2.5</b> Factors</a></li>
+<li class="chapter" data-level="2.2.6" data-path="ch1-data-types.html"><a href="ch1-data-types.html#lists-data-frames-tibbles"><i class="fa fa-check"></i><b>2.2.6</b> Lists, data frames &amp; tibbles</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="Chap-01-01-functions.html"><a href="Chap-01-01-functions.html"><i class="fa fa-check"></i><b>2.3</b> Functions</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="Chap-01-01-functions.html"><a href="Chap-01-01-functions.html#some-important-built-in-functions"><i class="fa fa-check"></i><b>2.3.1</b> Some important built-in functions</a></li>
+<li class="chapter" data-level="2.3.2" data-path="Chap-01-01-functions.html"><a href="Chap-01-01-functions.html#defining-your-own-functions"><i class="fa fa-check"></i><b>2.3.2</b> Defining your own functions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="ch-01-01-loops-and-maps.html"><a href="ch-01-01-loops-and-maps.html"><i class="fa fa-check"></i><b>2.4</b> Loops and maps</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="ch-01-01-loops-and-maps.html"><a href="ch-01-01-loops-and-maps.html#for-loops"><i class="fa fa-check"></i><b>2.4.1</b> For-loops</a></li>
+<li class="chapter" data-level="2.4.2" data-path="ch-01-01-loops-and-maps.html"><a href="ch-01-01-loops-and-maps.html#functional-iterators"><i class="fa fa-check"></i><b>2.4.2</b> Functional iterators</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="Chap-01-01-piping.html"><a href="Chap-01-01-piping.html"><i class="fa fa-check"></i><b>2.5</b> Piping</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="Chap-01-01-piping.html"><a href="Chap-01-01-piping.html#excursion-more-on-pipes-in-r"><i class="fa fa-check"></i><b>2.5.1</b> Excursion: More on pipes in R</a></li>
+<li class="chapter" data-level="2.5.2" data-path="Chap-01-01-piping.html"><a href="Chap-01-01-piping.html#excursion-multiple-assignments-or-unpacking"><i class="fa fa-check"></i><b>2.5.2</b> Excursion: Multiple assignments, or “unpacking”</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="ch-01-01-Rmarkdown.html"><a href="ch-01-01-Rmarkdown.html"><i class="fa fa-check"></i><b>2.6</b> Rmarkdown</a></li>
+</ul></li>
+<li class="part"><span><b>II Data</b></span></li>
+<li class="chapter" data-level="3" data-path="Chap-02-01-data.html"><a href="Chap-02-01-data.html"><i class="fa fa-check"></i><b>3</b> Data, variables &amp; experimental designs</a><ul>
+<li class="chapter" data-level="3.1" data-path="Chap-02-01-data-what-is-data.html"><a href="Chap-02-01-data-what-is-data.html"><i class="fa fa-check"></i><b>3.1</b> What is data?</a></li>
+<li class="chapter" data-level="3.2" data-path="Chap-02-01-data-kinds-of-data.html"><a href="Chap-02-01-data-kinds-of-data.html"><i class="fa fa-check"></i><b>3.2</b> Different kinds of data</a></li>
+<li class="chapter" data-level="3.3" data-path="Chap-02-01-data-variables.html"><a href="Chap-02-01-data-variables.html"><i class="fa fa-check"></i><b>3.3</b> On the notion of “variables”</a></li>
+<li class="chapter" data-level="3.4" data-path="Chap-02-01-data-exp-design.html"><a href="Chap-02-01-data-exp-design.html"><i class="fa fa-check"></i><b>3.4</b> Basics of experimental design</a><ul>
+<li class="chapter" data-level="3.4.1" data-path="Chap-02-01-data-exp-design.html"><a href="Chap-02-01-data-exp-design.html#what-to-analyze-dependent-variables"><i class="fa fa-check"></i><b>3.4.1</b> What to analyze? – Dependent variables</a></li>
+<li class="chapter" data-level="3.4.2" data-path="Chap-02-01-data-exp-design.html"><a href="Chap-02-01-data-exp-design.html#conditions-trials-items"><i class="fa fa-check"></i><b>3.4.2</b> Conditions, trials, items</a></li>
+<li class="chapter" data-level="3.4.3" data-path="Chap-02-01-data-exp-design.html"><a href="Chap-02-01-data-exp-design.html#sample-size"><i class="fa fa-check"></i><b>3.4.3</b> Sample size</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="data-wrangling.html"><a href="data-wrangling.html"><i class="fa fa-check"></i><b>4</b> Data Wrangling</a><ul>
+<li class="chapter" data-level="4.1" data-path="Chap-02-02-data-IO.html"><a href="Chap-02-02-data-IO.html"><i class="fa fa-check"></i><b>4.1</b> Data in, data out</a></li>
+<li class="chapter" data-level="4.2" data-path="Chap-02-02-data-tidy-data.html"><a href="Chap-02-02-data-tidy-data.html"><i class="fa fa-check"></i><b>4.2</b> Tidy data</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="Chap-02-02-data-tidy-data.html"><a href="Chap-02-02-data-tidy-data.html#running-example"><i class="fa fa-check"></i><b>4.2.1</b> Running example</a></li>
+<li class="chapter" data-level="4.2.2" data-path="Chap-02-02-data-tidy-data.html"><a href="Chap-02-02-data-tidy-data.html#definition-of-tidy-data"><i class="fa fa-check"></i><b>4.2.2</b> Definition of <em>tidy data</em></a></li>
+<li class="chapter" data-level="4.2.3" data-path="Chap-02-02-data-tidy-data.html"><a href="Chap-02-02-data-tidy-data.html#excursion-non-redundant-data"><i class="fa fa-check"></i><b>4.2.3</b> Excursion: non-redundant data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html"><i class="fa fa-check"></i><b>4.3</b> Data manipulation: the basics</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#pivoting"><i class="fa fa-check"></i><b>4.3.1</b> Pivoting</a></li>
+<li class="chapter" data-level="4.3.2" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#subsetting-rows-columns"><i class="fa fa-check"></i><b>4.3.2</b> Subsetting rows &amp; columns</a></li>
+<li class="chapter" data-level="4.3.3" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#Chap-02-02-tidy-selection"><i class="fa fa-check"></i><b>4.3.3</b> Tidy selection of column names</a></li>
+<li class="chapter" data-level="4.3.4" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#adding-changing-and-renaming-columns"><i class="fa fa-check"></i><b>4.3.4</b> Adding, changing and renaming columns</a></li>
+<li class="chapter" data-level="4.3.5" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#splitting-and-uniting-columns"><i class="fa fa-check"></i><b>4.3.5</b> Splitting and uniting columns</a></li>
+<li class="chapter" data-level="4.3.6" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#sorting-a-data-set"><i class="fa fa-check"></i><b>4.3.6</b> Sorting a data set</a></li>
+<li class="chapter" data-level="4.3.7" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#combining-tibbles"><i class="fa fa-check"></i><b>4.3.7</b> Combining tibbles</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="Chap-02-02-data-grouping-nesting.html"><a href="Chap-02-02-data-grouping-nesting.html"><i class="fa fa-check"></i><b>4.4</b> Grouped operations</a></li>
+<li class="chapter" data-level="4.5" data-path="Chap-02-02-data-case-study-KoF.html"><a href="Chap-02-02-data-case-study-KoF.html"><i class="fa fa-check"></i><b>4.5</b> Case study: the King of France</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="Chap-02-02-data-case-study-KoF.html"><a href="Chap-02-02-data-case-study-KoF.html#cleaning-the-data"><i class="fa fa-check"></i><b>4.5.1</b> Cleaning the data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="Chap-02-03-summary-statistics.html"><a href="Chap-02-03-summary-statistics.html"><i class="fa fa-check"></i><b>5</b> Summary statistics</a><ul>
+<li class="chapter" data-level="5.1" data-path="Chap-02-03-summary-statistics-counts.html"><a href="Chap-02-03-summary-statistics-counts.html"><i class="fa fa-check"></i><b>5.1</b> Counts and proportions</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="Chap-02-03-summary-statistics-counts.html"><a href="Chap-02-03-summary-statistics-counts.html#loading-and-inspecting-the-data"><i class="fa fa-check"></i><b>5.1.1</b> Loading and inspecting the data</a></li>
+<li class="chapter" data-level="5.1.2" data-path="Chap-02-03-summary-statistics-counts.html"><a href="Chap-02-03-summary-statistics-counts.html#obtaining-counts-with-n-count-and-tally"><i class="fa fa-check"></i><b>5.1.2</b> Obtaining counts with <code>n</code>, <code>count</code> and <code>tally</code></a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html"><i class="fa fa-check"></i><b>5.2</b> Central tendency and dispersion</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html#the-data-for-the-remainder-of-the-chapter"><i class="fa fa-check"></i><b>5.2.1</b> The data for the remainder of the chapter</a></li>
+<li class="chapter" data-level="5.2.2" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html#measures-of-central-tendency"><i class="fa fa-check"></i><b>5.2.2</b> Measures of central tendency</a></li>
+<li class="chapter" data-level="5.2.3" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html#measures-of-dispersion"><i class="fa fa-check"></i><b>5.2.3</b> Measures of dispersion</a></li>
+<li class="chapter" data-level="5.2.4" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html#excursion-quantifying-confidence-with-bootstrapping"><i class="fa fa-check"></i><b>5.2.4</b> Excursion: Quantifying confidence with bootstrapping</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="Chap-02-03-summary-statistics-2D.html"><a href="Chap-02-03-summary-statistics-2D.html"><i class="fa fa-check"></i><b>5.3</b> Covariance and correlation</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="Chap-02-03-summary-statistics-2D.html"><a href="Chap-02-03-summary-statistics-2D.html#covariance"><i class="fa fa-check"></i><b>5.3.1</b> Covariance</a></li>
+<li class="chapter" data-level="5.3.2" data-path="Chap-02-03-summary-statistics-2D.html"><a href="Chap-02-03-summary-statistics-2D.html#correlation"><i class="fa fa-check"></i><b>5.3.2</b> Correlation</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="Chap-02-02-visualization.html"><a href="Chap-02-02-visualization.html"><i class="fa fa-check"></i><b>6</b> Data Visualization</a><ul>
+<li class="chapter" data-level="6.1" data-path="Chap-02-04-Anscombe-example.html"><a href="Chap-02-04-Anscombe-example.html"><i class="fa fa-check"></i><b>6.1</b> Motivating example: Anscombe’s quartet</a></li>
+<li class="chapter" data-level="6.2" data-path="Chap-02-04-good-visualization.html"><a href="Chap-02-04-good-visualization.html"><i class="fa fa-check"></i><b>6.2</b> Visualization: the good, the bad and the infographic</a></li>
+<li class="chapter" data-level="6.3" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html"><i class="fa fa-check"></i><b>6.3</b> Basics of <code>ggplot</code></a><ul>
+<li class="chapter" data-level="6.3.1" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#incremental-composition-of-a-plot"><i class="fa fa-check"></i><b>6.3.1</b> Incremental composition of a plot</a></li>
+<li class="chapter" data-level="6.3.2" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#elements-in-the-layered-grammar-of-graphs"><i class="fa fa-check"></i><b>6.3.2</b> Elements in the layered grammar of graphs</a></li>
+<li class="chapter" data-level="6.3.3" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#layers-and-groups"><i class="fa fa-check"></i><b>6.3.3</b> Layers and groups</a></li>
+<li class="chapter" data-level="6.3.4" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#grouping"><i class="fa fa-check"></i><b>6.3.4</b> Grouping</a></li>
+<li class="chapter" data-level="6.3.5" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#example-of-a-customized-plot"><i class="fa fa-check"></i><b>6.3.5</b> Example of a customized plot</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html"><i class="fa fa-check"></i><b>6.4</b> A rendezvous with popular geoms</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#scatter-plots-with-geom_point"><i class="fa fa-check"></i><b>6.4.1</b> Scatter plots with <code>geom_point</code></a></li>
+<li class="chapter" data-level="6.4.2" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#smooth"><i class="fa fa-check"></i><b>6.4.2</b> Smooth</a></li>
+<li class="chapter" data-level="6.4.3" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#line"><i class="fa fa-check"></i><b>6.4.3</b> Line</a></li>
+<li class="chapter" data-level="6.4.4" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#bar-plot"><i class="fa fa-check"></i><b>6.4.4</b> Bar plot</a></li>
+<li class="chapter" data-level="6.4.5" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#plotting-distributions-histograms-boxplots-densities-and-violins"><i class="fa fa-check"></i><b>6.4.5</b> Plotting distributions: histograms, boxplots, densities and violins</a></li>
+<li class="chapter" data-level="6.4.6" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#rugs"><i class="fa fa-check"></i><b>6.4.6</b> Rugs</a></li>
+<li class="chapter" data-level="6.4.7" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#annotation"><i class="fa fa-check"></i><b>6.4.7</b> Annotation</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="Chap-02-04-faceting.html"><a href="Chap-02-04-faceting.html"><i class="fa fa-check"></i><b>6.5</b> Faceting</a></li>
+<li class="chapter" data-level="6.6" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html"><i class="fa fa-check"></i><b>6.6</b> Customization etc.</a><ul>
+<li class="chapter" data-level="6.6.1" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#themes"><i class="fa fa-check"></i><b>6.6.1</b> Themes</a></li>
+<li class="chapter" data-level="6.6.2" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#guides"><i class="fa fa-check"></i><b>6.6.2</b> Guides</a></li>
+<li class="chapter" data-level="6.6.3" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#axes-ticks-and-tick-labels"><i class="fa fa-check"></i><b>6.6.3</b> Axes, ticks and tick labels</a></li>
+<li class="chapter" data-level="6.6.4" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#labels"><i class="fa fa-check"></i><b>6.6.4</b> Labels</a></li>
+<li class="chapter" data-level="6.6.5" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#combining-arranging-plots"><i class="fa fa-check"></i><b>6.6.5</b> Combining &amp; arranging plots</a></li>
+<li class="chapter" data-level="6.6.6" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#latex-expressions-in-plot-labels"><i class="fa fa-check"></i><b>6.6.6</b> LaTeX expressions in plot labels</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>III Bayesian Data Analysis</b></span></li>
+<li class="chapter" data-level="7" data-path="Chap-03-01-probability.html"><a href="Chap-03-01-probability.html"><i class="fa fa-check"></i><b>7</b> Basics of Probability Theory</a><ul>
+<li class="chapter" data-level="7.1" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html"><i class="fa fa-check"></i><b>7.1</b> Probability</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html#outcomes-events-observations"><i class="fa fa-check"></i><b>7.1.1</b> Outcomes, events, observations</a></li>
+<li class="chapter" data-level="7.1.2" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html#probability-distributions"><i class="fa fa-check"></i><b>7.1.2</b> Probability distributions</a></li>
+<li class="chapter" data-level="7.1.3" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html#interpretations-of-probability"><i class="fa fa-check"></i><b>7.1.3</b> Interpretations of probability</a></li>
+<li class="chapter" data-level="7.1.4" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html#distributions-as-samples"><i class="fa fa-check"></i><b>7.1.4</b> Distributions as samples</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="Chap-03-01-probability-marginal.html"><a href="Chap-03-01-probability-marginal.html"><i class="fa fa-check"></i><b>7.2</b> Structured events &amp; marginal distributions</a><ul>
+<li class="chapter" data-level="7.2.1" data-path="Chap-03-01-probability-marginal.html"><a href="Chap-03-01-probability-marginal.html#probability-table-for-a-flip-and-draw-scenario"><i class="fa fa-check"></i><b>7.2.1</b> Probability table for a flip-and-draw scenario</a></li>
+<li class="chapter" data-level="7.2.2" data-path="Chap-03-01-probability-marginal.html"><a href="Chap-03-01-probability-marginal.html#structured-events-and-joint-probability-distributions"><i class="fa fa-check"></i><b>7.2.2</b> Structured events and joint-probability distributions</a></li>
+<li class="chapter" data-level="7.2.3" data-path="Chap-03-01-probability-marginal.html"><a href="Chap-03-01-probability-marginal.html#marginalization"><i class="fa fa-check"></i><b>7.2.3</b> Marginalization</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="Chap-03-01-probability-conditional.html"><a href="Chap-03-01-probability-conditional.html"><i class="fa fa-check"></i><b>7.3</b> Conditional probability</a><ul>
+<li class="chapter" data-level="7.3.1" data-path="Chap-03-01-probability-conditional.html"><a href="Chap-03-01-probability-conditional.html#bayes-rule"><i class="fa fa-check"></i><b>7.3.1</b> Bayes rule</a></li>
+<li class="chapter" data-level="7.3.2" data-path="Chap-03-01-probability-conditional.html"><a href="Chap-03-01-probability-conditional.html#Chap-03-01-probability-independence"><i class="fa fa-check"></i><b>7.3.2</b> Stochastic (in-)dependence</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html"><i class="fa fa-check"></i><b>7.4</b> Random variables</a><ul>
+<li class="chapter" data-level="7.4.1" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html#notation-terminology"><i class="fa fa-check"></i><b>7.4.1</b> Notation &amp; terminology</a></li>
+<li class="chapter" data-level="7.4.2" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html#cumulative-distribution-functions-mass-density"><i class="fa fa-check"></i><b>7.4.2</b> Cumulative distribution functions, mass &amp; density</a></li>
+<li class="chapter" data-level="7.4.3" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html#expected-value-variance"><i class="fa fa-check"></i><b>7.4.3</b> Expected value &amp; variance</a></li>
+<li class="chapter" data-level="7.4.4" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html#composite-random-variables"><i class="fa fa-check"></i><b>7.4.4</b> Composite random variables</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="Chap-03-01-probability-R.html"><a href="Chap-03-01-probability-R.html"><i class="fa fa-check"></i><b>7.5</b> Probability distributions in R</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="Chap-03-03-models.html"><a href="Chap-03-03-models.html"><i class="fa fa-check"></i><b>8</b> Statistical models</a><ul>
+<li class="chapter" data-level="8.1" data-path="Chap-03-03-models-general.html"><a href="Chap-03-03-models-general.html"><i class="fa fa-check"></i><b>8.1</b> Statistical models</a></li>
+<li class="chapter" data-level="8.2" data-path="Chap-03-03-models-representation.html"><a href="Chap-03-03-models-representation.html"><i class="fa fa-check"></i><b>8.2</b> Notation &amp; graphical representation</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="Chap-03-03-models-representation.html"><a href="Chap-03-03-models-representation.html#formula-notation"><i class="fa fa-check"></i><b>8.2.1</b> Formula notation</a></li>
+<li class="chapter" data-level="8.2.2" data-path="Chap-03-03-models-representation.html"><a href="Chap-03-03-models-representation.html#graphical-notation"><i class="fa fa-check"></i><b>8.2.2</b> Graphical notation</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="Chap-03-03-models-parameters-priors.html"><a href="Chap-03-03-models-parameters-priors.html"><i class="fa fa-check"></i><b>8.3</b> Parameters, priors, and prior predictions</a><ul>
+<li class="chapter" data-level="8.3.1" data-path="Chap-03-03-models-parameters-priors.html"><a href="Chap-03-03-models-parameters-priors.html#whats-a-model-parameter"><i class="fa fa-check"></i><b>8.3.1</b> What’s a model parameter?</a></li>
+<li class="chapter" data-level="8.3.2" data-path="Chap-03-03-models-parameters-priors.html"><a href="Chap-03-03-models-parameters-priors.html#Chap-03-02-models-priors"><i class="fa fa-check"></i><b>8.3.2</b> Priors over parameters</a></li>
+<li class="chapter" data-level="8.3.3" data-path="Chap-03-03-models-parameters-priors.html"><a href="Chap-03-03-models-parameters-priors.html#Chap-03-03-models-parameters-prior-predictive"><i class="fa fa-check"></i><b>8.3.3</b> Prior predictions</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="ch-03-04-parameter-estimation.html"><a href="ch-03-04-parameter-estimation.html"><i class="fa fa-check"></i><b>9</b> Bayesian parameter estimation</a><ul>
+<li class="chapter" data-level="9.1" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html"><i class="fa fa-check"></i><b>9.1</b> Bayes rule for parameter estimation</a><ul>
+<li class="chapter" data-level="9.1.1" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#definitions-and-terminology"><i class="fa fa-check"></i><b>9.1.1</b> Definitions and terminology</a></li>
+<li class="chapter" data-level="9.1.2" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#the-effects-of-prior-and-likelihood-on-the-posterior"><i class="fa fa-check"></i><b>9.1.2</b> The effects of prior and likelihood on the posterior</a></li>
+<li class="chapter" data-level="9.1.3" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#ch-03-04-parameter-estimation-conjugacy"><i class="fa fa-check"></i><b>9.1.3</b> Computing Bayesian posteriors with conjugate priors</a></li>
+<li class="chapter" data-level="9.1.4" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#excursion-sequential-updating"><i class="fa fa-check"></i><b>9.1.4</b> Excursion: Sequential updating</a></li>
+<li class="chapter" data-level="9.1.5" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#posterior-predictive-distribution"><i class="fa fa-check"></i><b>9.1.5</b> Posterior predictive distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="9.2" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html"><i class="fa fa-check"></i><b>9.2</b> Point-valued and interval-ranged estimates</a><ul>
+<li class="chapter" data-level="9.2.1" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html#point-valued-estimates"><i class="fa fa-check"></i><b>9.2.1</b> Point-valued estimates</a></li>
+<li class="chapter" data-level="9.2.2" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html#interval-ranged-estimates"><i class="fa fa-check"></i><b>9.2.2</b> Interval-ranged estimates</a></li>
+<li class="chapter" data-level="9.2.3" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html#computing-bayesian-estimates"><i class="fa fa-check"></i><b>9.2.3</b> Computing Bayesian estimates</a></li>
+<li class="chapter" data-level="9.2.4" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html#excursion-computing-mles-and-maps-in-r"><i class="fa fa-check"></i><b>9.2.4</b> Excursion: Computing MLEs and MAPs in R</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="Ch-03-03-estimation-algorithms.html"><a href="Ch-03-03-estimation-algorithms.html"><i class="fa fa-check"></i><b>9.3</b> Approximating the posterior</a><ul>
+<li class="chapter" data-level="9.3.1" data-path="Ch-03-03-estimation-algorithms.html"><a href="Ch-03-03-estimation-algorithms.html#ch-03-03-MCMC"><i class="fa fa-check"></i><b>9.3.1</b> Of apples and trees: Markov Chain Monte Carlo sampling</a></li>
+<li class="chapter" data-level="9.3.2" data-path="Ch-03-03-estimation-algorithms.html"><a href="Ch-03-03-estimation-algorithms.html#ch-03-03-estimation-Stan"><i class="fa fa-check"></i><b>9.3.2</b> Excursion: Probabilistic modeling with Stan</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="ch-03-04-parameter-estimation-normal.html"><a href="ch-03-04-parameter-estimation-normal.html"><i class="fa fa-check"></i><b>9.4</b> Estimating the parameters of a Normal distribution</a><ul>
+<li class="chapter" data-level="9.4.1" data-path="ch-03-04-parameter-estimation-normal.html"><a href="ch-03-04-parameter-estimation-normal.html#uninformative-priors"><i class="fa fa-check"></i><b>9.4.1</b> Uninformative priors</a></li>
+<li class="chapter" data-level="9.4.2" data-path="ch-03-04-parameter-estimation-normal.html"><a href="ch-03-04-parameter-estimation-normal.html#conjugate-priors"><i class="fa fa-check"></i><b>9.4.2</b> Conjugate priors</a></li>
+<li class="chapter" data-level="9.4.3" data-path="ch-03-04-parameter-estimation-normal.html"><a href="ch-03-04-parameter-estimation-normal.html#estimating-the-difference-between-group-means"><i class="fa fa-check"></i><b>9.4.3</b> Estimating the difference between group means</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="Chap-03-06-model-comparison.html"><a href="Chap-03-06-model-comparison.html"><i class="fa fa-check"></i><b>10</b> Model Comparison</a><ul>
+<li class="chapter" data-level="10.1" data-path="Chap-03-06-model-comparison-case-study.html"><a href="Chap-03-06-model-comparison-case-study.html"><i class="fa fa-check"></i><b>10.1</b> Case study: recall models</a></li>
+<li class="chapter" data-level="10.2" data-path="Chap-03-06-model-comparison-AIC.html"><a href="Chap-03-06-model-comparison-AIC.html"><i class="fa fa-check"></i><b>10.2</b> Akaike Information Criterion</a></li>
+<li class="chapter" data-level="10.3" data-path="Chap-03-06-model-comparison-BF.html"><a href="Chap-03-06-model-comparison-BF.html"><i class="fa fa-check"></i><b>10.3</b> Bayes factors</a><ul>
+<li class="chapter" data-level="10.3.1" data-path="Chap-03-06-model-comparison-BF.html"><a href="Chap-03-06-model-comparison-BF.html#Chap-03-06-model-comparison-BF-grid"><i class="fa fa-check"></i><b>10.3.1</b> Grid approximation</a></li>
+<li class="chapter" data-level="10.3.2" data-path="Chap-03-06-model-comparison-BF.html"><a href="Chap-03-06-model-comparison-BF.html#Chap-03-06-model-comparison-BF-naiveMC"><i class="fa fa-check"></i><b>10.3.2</b> Naive Monte Carlo</a></li>
+<li class="chapter" data-level="10.3.3" data-path="Chap-03-06-model-comparison-BF.html"><a href="Chap-03-06-model-comparison-BF.html#Chap-03-06-model-comparison-BF-bridge"><i class="fa fa-check"></i><b>10.3.3</b> Excursion: Bridge sampling</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="ch-03-07-hypothesis-testing-Bayes.html"><a href="ch-03-07-hypothesis-testing-Bayes.html"><i class="fa fa-check"></i><b>11</b> Bayesian hypothesis testing</a><ul>
+<li class="chapter" data-level="11.1" data-path="ch-03-07-hypothesis-testing-Bayes-hypotheses.html"><a href="ch-03-07-hypothesis-testing-Bayes-hypotheses.html"><i class="fa fa-check"></i><b>11.1</b> Statistical hypotheses</a></li>
+<li class="chapter" data-level="11.2" data-path="data-and-models-for-this-chapter.html"><a href="data-and-models-for-this-chapter.html"><i class="fa fa-check"></i><b>11.2</b> Data and models for this chapter</a><ul>
+<li class="chapter" data-level="11.2.1" data-path="data-and-models-for-this-chapter.html"><a href="data-and-models-for-this-chapter.html#section-1"><i class="fa fa-check"></i><b>11.2.1</b> 24/7</a></li>
+<li class="chapter" data-level="11.2.2" data-path="data-and-models-for-this-chapter.html"><a href="data-and-models-for-this-chapter.html#simon-task"><i class="fa fa-check"></i><b>11.2.2</b> Simon task</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="ch-03-05-Bayes-testing-estimation.html"><a href="ch-03-05-Bayes-testing-estimation.html"><i class="fa fa-check"></i><b>11.3</b> Testing via posterior estimation</a><ul>
+<li class="chapter" data-level="11.3.1" data-path="ch-03-05-Bayes-testing-estimation.html"><a href="ch-03-05-Bayes-testing-estimation.html#example-247"><i class="fa fa-check"></i><b>11.3.1</b> Example: 24/7</a></li>
+<li class="chapter" data-level="11.3.2" data-path="ch-03-05-Bayes-testing-estimation.html"><a href="ch-03-05-Bayes-testing-estimation.html#example-simon-task"><i class="fa fa-check"></i><b>11.3.2</b> Example: Simon Task</a></li>
+</ul></li>
+<li class="chapter" data-level="11.4" data-path="ch-03-05-Bayesian-testing-comparison.html"><a href="ch-03-05-Bayesian-testing-comparison.html"><i class="fa fa-check"></i><b>11.4</b> Testing via model comparison</a><ul>
+<li class="chapter" data-level="11.4.1" data-path="ch-03-05-Bayesian-testing-comparison.html"><a href="ch-03-05-Bayesian-testing-comparison.html#ch-03-07-hypothesis-testing-Bayes-Savage-Dickey"><i class="fa fa-check"></i><b>11.4.1</b> The Savage-Dickey method</a></li>
+<li class="chapter" data-level="11.4.2" data-path="ch-03-05-Bayesian-testing-comparison.html"><a href="ch-03-05-Bayesian-testing-comparison.html#ch-03-07-hypothesis-testing-Bayes-encompassing-models"><i class="fa fa-check"></i><b>11.4.2</b> Encompassing models</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">An Introduction to Data Analysis</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="Chap-03-01-probability-random-variables" class="section level2">
+<h2><span class="header-section-number">7.4</span> Random variables</h2>
+<p>So far, we have defined a probability distribution as a function that assigns a probability to each subset of the space <span class="math inline">\(\Omega\)</span> of elementary outcomes.
+We saw that rational beliefs should conform to certain axioms, reflecting a “logic of rational beliefs”.
+But in data analysis, we are often interested in a space of numeric outcomes.
+You probably know stuff like the “normal distribution” which is a distribution that assigns a probability to each real number.
+In keeping with our previous definition of probability as targeting a measurable set <span class="math inline">\(\Omega\)</span>, we introduce what we could sloppily call “probability distributions over numbers” using the concept of random variables.
+Caveat: random variables are very useful concepts and offer highly versatile notation, but both concept and notation can be elusive in the beginning.</p>
+<p>Formally, a <strong>random variable</strong> is a function <span class="math inline">\(X \ \colon \ \Omega \rightarrow \mathbb{R}\)</span> that assigns to each elementary outcome a numerical value.
+It is reasonable to think of this number as a <strong>summary statistic</strong>: a number that captures one aspect of relevance of what is actually a much more complex chunk of reality.</p>
+
+<div class="infobox">
+<strong>Example.</strong> For a single coin flip, we have <span class="math inline">\(\Omega_{\text{coin flip}} = \left \{ \text{heads}, \text{tails} \right \}\)</span>. A usual way of mapping this onto numerical outcomes is to define <span class="math inline">\(X_{\text{coin flip}} \ \colon \ \text{heads} \mapsto 1; \text{tails} \mapsto 0\)</span>. Less trivially, consider flipping a coin two times. Elementary outcomes should be individuated by the outcome of the first flip and the outcome of the second flip, so that we get:
+<span class="math display">\[
+    \Omega_{\text{two flips}} = \left \{ \langle \text{heads}, \text{heads} \rangle, \langle \text{heads}, \text{tails} \rangle,
+    \langle \text{tails}, \text{heads} \rangle, \langle \text{tails}, \text{tails} \rangle \right \}
+\]</span>
+Consider the random variable <span class="math inline">\(X_{\text{two flips}}\)</span> that counts the total number of heads. Crucially, <span class="math inline">\(X_{\text{two flips}}(\langle \text{heads}, \text{tails} \rangle) = 1 = X_{\text{two flips}}(\langle \text{tails}, \text{heads} \rangle)\)</span>. We assign the same numerical value to different elementary outcomes since the order is not relevant if we are only interested in a count of the number of heads.
+</div>
+
+<div id="notation-terminology" class="section level3">
+<h3><span class="header-section-number">7.4.1</span> Notation &amp; terminology</h3>
+<p>Traditionally, random variables are represented by capital letters, like <span class="math inline">\(X\)</span>. The numeric values they take on are written as small letters, like <span class="math inline">\(x\)</span>.</p>
+<p>We write <span class="math inline">\(P(X = x)\)</span> as a shorthand for the probability <span class="math inline">\(P(\left \{ \omega \in \Omega \mid X(\omega) = x \right \})\)</span>, that an event <span class="math inline">\(\omega\)</span> occurs which is mapped onto <span class="math inline">\(x\)</span> by the random variable <span class="math inline">\(X\)</span>. For example, if our coin is fair, then <span class="math inline">\(P(X_{\text{two flips}} = x) = 0.5\)</span> for <span class="math inline">\(x=1\)</span> and <span class="math inline">\(0.25\)</span> for <span class="math inline">\(x \in \{0,2\}\)</span>. Similarly, we can also write <span class="math inline">\(P(X \le x)\)</span> for the probability of observing any event that <span class="math inline">\(X\)</span> maps to a number not bigger than <span class="math inline">\(x\)</span>.</p>
+<p>If the range of <span class="math inline">\(X\)</span> is countable (not necessarily finite), we say that <span class="math inline">\(X\)</span> is <strong>discrete</strong>. For ease of exposition, we may say that if the range of <span class="math inline">\(X\)</span> is an interval of real numbers, <span class="math inline">\(X\)</span> is called <strong>continuous</strong>.</p>
+</div>
+<div id="cumulative-distribution-functions-mass-density" class="section level3">
+<h3><span class="header-section-number">7.4.2</span> Cumulative distribution functions, mass &amp; density</h3>
+<p>For a discrete random variable <span class="math inline">\(X\)</span>, the <strong>cumulative distribution function</strong> <span class="math inline">\(F_X\)</span> associated with <span class="math inline">\(X\)</span> is defined as:
+<span class="math display">\[
+  F_X(x) = P(X \le x) = \sum_{x&#39; \in \left \{ \text{Rng}(X) \mid x&#39; \le x \right \}} P(X = x)
+\]</span>
+The <strong>probability mass function</strong> <span class="math inline">\(f_x\)</span> associated with <span class="math inline">\(X\)</span> is defined as:
+<span class="math display">\[
+  f_X(x) = P(X = x)
+\]</span></p>
+<div class="infobox">
+<p><strong>Example.</strong> Suppose we flip a coin with a bias of <span class="math inline">\(\theta\)</span> towards heads <span class="math inline">\(n\)</span> times. What is the probability that we will see heads <span class="math inline">\(k\)</span> times? If we map the outcome of heads to 1 and tails to 0, this probability is given by the <a href="#app-91-distributions-binomial">Binomial distribution</a>, as follows:
+<span class="math display">\[
+    \text{Binom}(K = k ; n, \theta) = \binom{n}{k} \,  \theta^{k} \, (1-\theta)^{n-k}
+\]</span>
+Here <span class="math inline">\(\binom{n}{k} = \frac{n!}{k!(n-k)!}\)</span> is the binomial coefficient, which gives the number of possibilities of drawing an unordered subset with <span class="math inline">\(k\)</span> elements from a set with a total of <span class="math inline">\(n\)</span> elements. Figure <a href="Chap-03-01-probability-random-variables.html#fig:ch-03-BinomialDistribution-Mass">7.3</a> gives examples of the Binomial distribution, concretely its probability mass functions, for two values of the coin’s bias, <span class="math inline">\(\theta = 0.25\)</span> or <span class="math inline">\(\theta = 0.5\)</span>, when flipping the coin <span class="math inline">\(n=24\)</span> times. Figure <a href="Chap-03-01-probability-random-variables.html#fig:ch-03-BinomialDistribution-Cumulative">7.4</a> gives the corresponding cumulative distributions.
+<!-- add some more explanation --></p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ch-03-BinomialDistribution-Mass"></span>
+<img src="I2DA_files/figure-html/ch-03-BinomialDistribution-Mass-1.png" alt="Examples of the Binomial distribution. The $y$-axis gives the probability of seeing $k$ heads when flipping a coin $n=24$ times with a bias of either $\theta = 0.25$ or $\theta = 0.5$." width="672" />
+<p class="caption">
+Figure 7.3: Examples of the Binomial distribution. The <span class="math inline">\(y\)</span>-axis gives the probability of seeing <span class="math inline">\(k\)</span> heads when flipping a coin <span class="math inline">\(n=24\)</span> times with a bias of either <span class="math inline">\(\theta = 0.25\)</span> or <span class="math inline">\(\theta = 0.5\)</span>.
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ch-03-BinomialDistribution-Cumulative"></span>
+<img src="I2DA_files/figure-html/ch-03-BinomialDistribution-Cumulative-1.png" alt="Examples of the cumulative distribution of the Binomial distribution. The $y$-axis gives the probability of seeing $k$ or fewer outcomes of heads when flipping a coin $n=24$ times with a bias of either $\theta = 0.25$ or $\theta = 0.5$." width="672" />
+<p class="caption">
+Figure 7.4: Examples of the cumulative distribution of the Binomial distribution. The <span class="math inline">\(y\)</span>-axis gives the probability of seeing <span class="math inline">\(k\)</span> or fewer outcomes of heads when flipping a coin <span class="math inline">\(n=24\)</span> times with a bias of either <span class="math inline">\(\theta = 0.25\)</span> or <span class="math inline">\(\theta = 0.5\)</span>.
+</p>
+</div>
+</div>
+<p>For a continuous random variable <span class="math inline">\(X\)</span>, the probability <span class="math inline">\(P(X = x)\)</span> will usually be zero: it is virtually impossible that we will see precisely the value <span class="math inline">\(x\)</span> realized in a random event that can realize uncountably many numerical values of <span class="math inline">\(X\)</span>. However, <span class="math inline">\(P(X \le x)\)</span> does usually take non-zero values and so we define the cumulative distribution function <span class="math inline">\(F_X\)</span> associated with <span class="math inline">\(X\)</span> as:
+<span class="math display">\[
+  F_X(x) = P(X \le x)
+\]</span>
+Instead of a probability <strong>mass</strong> function, we derive a <strong>probability density function</strong> from the cumulative function as:
+<span class="math display">\[
+  f_X(x) = F&#39;(x)
+\]</span>
+A probability density function can take values greater than one, unlike a probability mass
+function.</p>
+<div class="infobox">
+<p><strong>Example.</strong> The <a href="#app-91-distributions-normal">Gaussian (Normal) distribution</a> characterizes many natural distributions of measurements which are symmetrically spread around a central tendency. It is defined as:
+<span class="math display">\[
+    \mathcal{N}(X = x ; \mu, \sigma) = \frac{1}{\sqrt{2 \sigma^2 \pi}} \exp \left ( -
+      \frac{(x-\mu)^2}{2 \sigma^2} \right)
+\]</span>
+where parameter <span class="math inline">\(\mu\)</span> is the <em>mean</em>, the central tendency, and parameter <span class="math inline">\(\sigma\)</span> is the <em>standard deviation</em>. Figure <a href="Chap-03-01-probability-random-variables.html#fig:ch-03-NormalDistribution-Density">7.5</a> gives examples of the probability density function of two normal distributions. Figure <a href="Chap-03-01-probability-random-variables.html#fig:ch-03-NormalDistribution-Cumulative">7.6</a> gives the corresponding cumulative distribution functions.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ch-03-NormalDistribution-Density"></span>
+<img src="I2DA_files/figure-html/ch-03-NormalDistribution-Density-1.png" alt="Examples of the Normal distribution. In both cases $\mu = 0$, once with $\sigma = 1$ and once with $\sigma = 4$." width="672" />
+<p class="caption">
+Figure 7.5: Examples of the Normal distribution. In both cases <span class="math inline">\(\mu = 0\)</span>, once with <span class="math inline">\(\sigma = 1\)</span> and once with <span class="math inline">\(\sigma = 4\)</span>.
+</p>
+</div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ch-03-NormalDistribution-Cumulative"></span>
+<img src="I2DA_files/figure-html/ch-03-NormalDistribution-Cumulative-1.png" alt="Examples of the cumulative normal distribution corresponding to the previous probability density functions." width="672" />
+<p class="caption">
+Figure 7.6: Examples of the cumulative normal distribution corresponding to the previous probability density functions.
+</p>
+</div>
+</div>
+</div>
+<div id="expected-value-variance" class="section level3">
+<h3><span class="header-section-number">7.4.3</span> Expected value &amp; variance</h3>
+<p>The <strong>expected value</strong> of a random variable <span class="math inline">\(X\)</span> is a measure of central tendency. It tells us, like the name suggests, which average value of <span class="math inline">\(X\)</span> we can expect when repeatedly sampling from <span class="math inline">\(X\)</span>. If <span class="math inline">\(X\)</span> is discrete, the expected value is:
+<span class="math display">\[
+  \mathbb{E}_X = \sum_{x} x \times f_X(x)
+\]</span>
+If <span class="math inline">\(X\)</span> is continuous, it is:
+<span class="math display">\[
+  \mathbb{E}_X = \int x \times f_X(x) \ \text{d}x
+\]</span>
+The expected value is also frequently called the <strong>mean</strong>.</p>
+<p>The <strong>variance</strong> of a random variable <span class="math inline">\(X\)</span> is a measure of how much likely values of <span class="math inline">\(X\)</span> are spread or clustered around the expected value. If <span class="math inline">\(X\)</span> is discrete, the variance is:
+<span class="math display">\[
+  \text{Var}(X) = \sum_x (\mathbb{E}_X - x)^2 \times f_X(x) = \mathbb{E}_{X^2} -\mathbb{E}_X^2
+\]</span>
+If <span class="math inline">\(X\)</span> is continuous, it is:
+<span class="math display">\[
+  \text{Var}(X) = \int (\mathbb{E}_X - x)^2 \times f_X(x) \ \text{d}x = \mathbb{E}_{X^2} -\mathbb{E}_X^2
+\]</span></p>
+<div class="infobox">
+<p><strong>Example.</strong> If we flip a coin with bias <span class="math inline">\(\theta = 0.25\)</span> a total of <span class="math inline">\(n=24\)</span> times, we expect on average to see <span class="math inline">\(n \times\theta = 24 \times 0.25 = 6\)</span> outcomes showing heads.<a href="#fn42" class="footnote-ref" id="fnref42"><sup>42</sup></a> The variance of a binomially distributed variable is <span class="math inline">\(n \times\theta \times(1-\theta) = 24 \times 0.25 \times 0.75 = \frac{24 \times 3}{16} = \frac{18}{4} = 4.5\)</span>.</p>
+<p>The expected value of a normal distribution is just its mean <span class="math inline">\(\mu\)</span> and its variance is <span class="math inline">\(\sigma^2\)</span>.</p>
+</div>
+<div class="exercises">
+<p><strong>Exercise 7.5</strong></p>
+<ol style="list-style-type: decimal">
+<li>Compute the expected value and variance of a fair die.</li>
+</ol>
+<div class="collapsibleSolution">
+<button class="trigger">
+Solution
+</button>
+<div class="content">
+<div class="sourceCode" id="cb424"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb424-1"><a href="Chap-03-01-probability-random-variables.html#cb424-1"></a>expected_value &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">*</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">6</span>) <span class="op">+</span><span class="st"> </span><span class="dv">2</span><span class="op">*</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">6</span>) <span class="op">+</span><span class="st"> </span><span class="dv">3</span><span class="op">*</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">6</span>) <span class="op">+</span><span class="st"> </span><span class="dv">4</span><span class="op">*</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">6</span>) <span class="op">+</span><span class="st"> </span><span class="dv">5</span><span class="op">*</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">6</span>) <span class="op">+</span><span class="st"> </span><span class="dv">6</span><span class="op">*</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">6</span>)</span>
+<span id="cb424-2"><a href="Chap-03-01-probability-random-variables.html#cb424-2"></a>variance &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">^</span><span class="dv">2</span><span class="op">*</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">6</span>) <span class="op">+</span><span class="st"> </span><span class="dv">2</span><span class="op">^</span><span class="dv">2</span><span class="op">*</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">6</span>) <span class="op">+</span><span class="st"> </span><span class="dv">3</span><span class="op">^</span><span class="dv">2</span><span class="op">*</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">6</span>) <span class="op">+</span><span class="st"> </span><span class="dv">4</span><span class="op">^</span><span class="dv">2</span><span class="op">*</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">6</span>) <span class="op">+</span><span class="st"> </span><span class="dv">5</span><span class="op">^</span><span class="dv">2</span><span class="op">*</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">6</span>) <span class="op">+</span><span class="st"> </span><span class="dv">6</span><span class="op">^</span><span class="dv">2</span><span class="op">*</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">6</span>) <span class="op">-</span><span class="st"> </span>expected_value<span class="op">^</span><span class="dv">2</span></span>
+<span id="cb424-3"><a href="Chap-03-01-probability-random-variables.html#cb424-3"></a></span>
+<span id="cb424-4"><a href="Chap-03-01-probability-random-variables.html#cb424-4"></a><span class="kw">print</span>(expected_value)</span></code></pre></div>
+<pre><code>## [1] 3.5</code></pre>
+<div class="sourceCode" id="cb426"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb426-1"><a href="Chap-03-01-probability-random-variables.html#cb426-1"></a>variance</span></code></pre></div>
+<pre><code>## [1] 2.916667</code></pre>
+</div>
+</div>
+<ol start="2" style="list-style-type: decimal">
+<li>Below, you see several normal distributions with differing means <span class="math inline">\(\mu\)</span> and standard deviations <span class="math inline">\(\sigma\)</span>. The red, unnumbered distribution is the so-called standard normal distribution; it has a mean of 0 and a standard deviation of 1. Compare each distribution below (1-4) to the standard normal distribution and think about how the parameters of the standard normal were changed. Also, think about which distribution (1-4) has the smallest/largest mean and the smallest/largest standard deviation.</li>
+</ol>
+<p><img src="I2DA_files/figure-html/unnamed-chunk-275-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="collapsibleSolution">
+<button class="trigger">
+Solution
+</button>
+<div class="content">
+<p>Distribution 1 (<span class="math inline">\(\mu\)</span> = 5, <span class="math inline">\(\sigma\)</span> = 1): larger mean, same standard deviation <br />
+Distribution 2 (<span class="math inline">\(\mu\)</span> = 0, <span class="math inline">\(\sigma\)</span> = 3): same mean, larger standard deviation <br />
+Distribution 3 (<span class="math inline">\(\mu\)</span> = 6, <span class="math inline">\(\sigma\)</span> = 2): larger mean, larger standard deviation <br />
+Distribution 4 (<span class="math inline">\(\mu\)</span> = -6, <span class="math inline">\(\sigma\)</span> = 0.5): smaller mean, smaller standard deviation</p>
+</div>
+</div>
+</div>
+</div>
+<div id="composite-random-variables" class="section level3">
+<h3><span class="header-section-number">7.4.4</span> Composite random variables</h3>
+<p>Composite random variables are random variables generated by mathematical operations conjoining other random variables. For example, if <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are random variables, then we can define a new derived random variable <span class="math inline">\(Z\)</span> using notation like:</p>
+<p><span class="math display">\[Z = X + Y\]</span></p>
+<p>This notation looks innocuous but is conceptually tricky yet ultimately very powerful. On the face of it, we are doing as if we are using <code>+</code> to add two functions. But a sampling-based perspective makes this quite intuitive. We can think of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> as large samples, representing the probability distributions in question. Then we build a sample by just adding elements in <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>. (If samples are of different size, just add a random element of <span class="math inline">\(Y\)</span> to each <span class="math inline">\(X\)</span>.)</p>
+<p>Consider the following concrete example. <span class="math inline">\(X\)</span> is the probability distribution of rolling a fair dice with six sides. <span class="math inline">\(Y\)</span> is the probability distribution of flipping a biased coin that lands heads (represented as number 1) with probability 0.75. The derived probability distribution <span class="math inline">\(Z = X + Y\)</span> can be approximately represented by samples derived as follows:</p>
+<div class="sourceCode" id="cb428"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb428-1"><a href="Chap-03-01-probability-random-variables.html#cb428-1"></a>n_samples &lt;-<span class="st"> </span><span class="fl">1e6</span></span>
+<span id="cb428-2"><a href="Chap-03-01-probability-random-variables.html#cb428-2"></a><span class="co"># `n_samples` rolls of a fair dice</span></span>
+<span id="cb428-3"><a href="Chap-03-01-probability-random-variables.html#cb428-3"></a>samples_x &lt;-<span class="st"> </span><span class="kw">sample</span>(</span>
+<span id="cb428-4"><a href="Chap-03-01-probability-random-variables.html#cb428-4"></a>  <span class="dv">1</span><span class="op">:</span><span class="dv">6</span>,</span>
+<span id="cb428-5"><a href="Chap-03-01-probability-random-variables.html#cb428-5"></a>  <span class="dt">size =</span> n_samples,</span>
+<span id="cb428-6"><a href="Chap-03-01-probability-random-variables.html#cb428-6"></a>  <span class="dt">replace =</span> T</span>
+<span id="cb428-7"><a href="Chap-03-01-probability-random-variables.html#cb428-7"></a>)</span>
+<span id="cb428-8"><a href="Chap-03-01-probability-random-variables.html#cb428-8"></a></span>
+<span id="cb428-9"><a href="Chap-03-01-probability-random-variables.html#cb428-9"></a><span class="co"># `n_samples` flips of a biased coin</span></span>
+<span id="cb428-10"><a href="Chap-03-01-probability-random-variables.html#cb428-10"></a>samples_y &lt;-<span class="st"> </span><span class="kw">sample</span>(</span>
+<span id="cb428-11"><a href="Chap-03-01-probability-random-variables.html#cb428-11"></a>  <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb428-12"><a href="Chap-03-01-probability-random-variables.html#cb428-12"></a>  <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.75</span>),</span>
+<span id="cb428-13"><a href="Chap-03-01-probability-random-variables.html#cb428-13"></a>  <span class="dt">size =</span> n_samples,</span>
+<span id="cb428-14"><a href="Chap-03-01-probability-random-variables.html#cb428-14"></a>  <span class="dt">replace =</span> T</span>
+<span id="cb428-15"><a href="Chap-03-01-probability-random-variables.html#cb428-15"></a>)</span>
+<span id="cb428-16"><a href="Chap-03-01-probability-random-variables.html#cb428-16"></a></span>
+<span id="cb428-17"><a href="Chap-03-01-probability-random-variables.html#cb428-17"></a>samples_z &lt;-<span class="st"> </span>samples_x <span class="op">+</span><span class="st"> </span>samples_y</span>
+<span id="cb428-18"><a href="Chap-03-01-probability-random-variables.html#cb428-18"></a></span>
+<span id="cb428-19"><a href="Chap-03-01-probability-random-variables.html#cb428-19"></a><span class="kw">tibble</span>(<span class="dt">outcome =</span> samples_z) <span class="op">%&gt;%</span></span>
+<span id="cb428-20"><a href="Chap-03-01-probability-random-variables.html#cb428-20"></a><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">count</span>(outcome) <span class="op">%&gt;%</span></span>
+<span id="cb428-21"><a href="Chap-03-01-probability-random-variables.html#cb428-21"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">n =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n)) <span class="op">%&gt;%</span></span>
+<span id="cb428-22"><a href="Chap-03-01-probability-random-variables.html#cb428-22"></a><span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> outcome, <span class="dt">y =</span> n)) <span class="op">+</span></span>
+<span id="cb428-23"><a href="Chap-03-01-probability-random-variables.html#cb428-23"></a><span class="st">  </span><span class="kw">geom_col</span>() <span class="op">+</span></span>
+<span id="cb428-24"><a href="Chap-03-01-probability-random-variables.html#cb428-24"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">y =</span> <span class="st">&quot;proportion&quot;</span>)</span></code></pre></div>
+<p><img src="I2DA_files/figure-html/unnamed-chunk-276-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="42">
+<li id="fn42"><p>This is not immediately obvious from our definition, but it is intuitive and you can derive it.<a href="Chap-03-01-probability-random-variables.html#fnref42" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="Chap-03-01-probability-conditional.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="Chap-03-01-probability-R.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": false,
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
