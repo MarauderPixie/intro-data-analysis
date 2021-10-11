@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>12.1 Ordinary least squares regression | An Introduction to Data Analysis</title>
+  <meta name="description" content="Introductory text for statistics and data analysis (using R)" />
+  <meta name="generator" content="bookdown 0.24.1 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="12.1 Ordinary least squares regression | An Introduction to Data Analysis" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Introductory text for statistics and data analysis (using R)" />
+  <meta name="github-repo" content="MarauderPixie/intro-data-analysis" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="12.1 Ordinary least squares regression | An Introduction to Data Analysis" />
+  
+  <meta name="twitter:description" content="Introductory text for statistics and data analysis (using R)" />
+  
+
+<meta name="author" content="Michael Franke" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="Chap-04-01-simple-linear-regression.html"/>
+<link rel="next" href="Chap-04-01-linear-regression-MLE.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span. { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="index.html#section"></a></li>
+<li class="part"><span><b>I Preliminaries</b></span></li>
+<li class="chapter" data-level="1" data-path="general-introduction.html"><a href="general-introduction.html"><i class="fa fa-check"></i><b>1</b> General Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="Chap-01-00-intro-learning-goals.html"><a href="Chap-01-00-intro-learning-goals.html"><i class="fa fa-check"></i><b>1.1</b> Learning goals</a></li>
+<li class="chapter" data-level="1.2" data-path="Chap-01-00-intro-course-structure.html"><a href="Chap-01-00-intro-course-structure.html"><i class="fa fa-check"></i><b>1.2</b> Course structure</a></li>
+<li class="chapter" data-level="1.3" data-path="Chap-01-00-intro-tools.html"><a href="Chap-01-00-intro-tools.html"><i class="fa fa-check"></i><b>1.3</b> Tools used in this course</a></li>
+<li class="chapter" data-level="1.4" data-path="Chap-01-00-intro-topics.html"><a href="Chap-01-00-intro-topics.html"><i class="fa fa-check"></i><b>1.4</b> Topics covered (and not covered) in the course</a></li>
+<li class="chapter" data-level="1.5" data-path="Chap-01-00-intro-data-sets.html"><a href="Chap-01-00-intro-data-sets.html"><i class="fa fa-check"></i><b>1.5</b> Data sets covered</a></li>
+<li class="chapter" data-level="1.6" data-path="Chap-01-00-intro-installation.html"><a href="Chap-01-00-intro-installation.html"><i class="fa fa-check"></i><b>1.6</b> Installation</a></li>
+<li class="chapter" data-level="1.7" data-path="Chap-01-00-intro-schedule.html"><a href="Chap-01-00-intro-schedule.html"><i class="fa fa-check"></i><b>1.7</b> Example schedule (12-week course)</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="Chap-01-01-R.html"><a href="Chap-01-01-R.html"><i class="fa fa-check"></i><b>2</b> Basics of R</a><ul>
+<li class="chapter" data-level="2.1" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html"><i class="fa fa-check"></i><b>2.1</b> First steps</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#functions"><i class="fa fa-check"></i><b>2.1.1</b> Functions</a></li>
+<li class="chapter" data-level="2.1.2" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#variables"><i class="fa fa-check"></i><b>2.1.2</b> Variables</a></li>
+<li class="chapter" data-level="2.1.3" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#literate-coding"><i class="fa fa-check"></i><b>2.1.3</b> Literate coding</a></li>
+<li class="chapter" data-level="2.1.4" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#objects"><i class="fa fa-check"></i><b>2.1.4</b> Objects</a></li>
+<li class="chapter" data-level="2.1.5" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#packages"><i class="fa fa-check"></i><b>2.1.5</b> Packages</a></li>
+<li class="chapter" data-level="2.1.6" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#Chap-01-01-R-help"><i class="fa fa-check"></i><b>2.1.6</b> Getting help</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="ch1-data-types.html"><a href="ch1-data-types.html"><i class="fa fa-check"></i><b>2.2</b> Data types</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="ch1-data-types.html"><a href="ch1-data-types.html#numeric-vectors-matrices"><i class="fa fa-check"></i><b>2.2.1</b> Numeric vectors &amp; matrices</a></li>
+<li class="chapter" data-level="2.2.2" data-path="ch1-data-types.html"><a href="ch1-data-types.html#booleans"><i class="fa fa-check"></i><b>2.2.2</b> Booleans</a></li>
+<li class="chapter" data-level="2.2.3" data-path="ch1-data-types.html"><a href="ch1-data-types.html#special-values"><i class="fa fa-check"></i><b>2.2.3</b> Special values</a></li>
+<li class="chapter" data-level="2.2.4" data-path="ch1-data-types.html"><a href="ch1-data-types.html#characters-strings"><i class="fa fa-check"></i><b>2.2.4</b> Characters (= strings)</a></li>
+<li class="chapter" data-level="2.2.5" data-path="ch1-data-types.html"><a href="ch1-data-types.html#factors"><i class="fa fa-check"></i><b>2.2.5</b> Factors</a></li>
+<li class="chapter" data-level="2.2.6" data-path="ch1-data-types.html"><a href="ch1-data-types.html#lists-data-frames-tibbles"><i class="fa fa-check"></i><b>2.2.6</b> Lists, data frames &amp; tibbles</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="Chap-01-01-functions.html"><a href="Chap-01-01-functions.html"><i class="fa fa-check"></i><b>2.3</b> Functions</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="Chap-01-01-functions.html"><a href="Chap-01-01-functions.html#some-important-built-in-functions"><i class="fa fa-check"></i><b>2.3.1</b> Some important built-in functions</a></li>
+<li class="chapter" data-level="2.3.2" data-path="Chap-01-01-functions.html"><a href="Chap-01-01-functions.html#defining-your-own-functions"><i class="fa fa-check"></i><b>2.3.2</b> Defining your own functions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="ch-01-01-loops-and-maps.html"><a href="ch-01-01-loops-and-maps.html"><i class="fa fa-check"></i><b>2.4</b> Loops and maps</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="ch-01-01-loops-and-maps.html"><a href="ch-01-01-loops-and-maps.html#for-loops"><i class="fa fa-check"></i><b>2.4.1</b> For-loops</a></li>
+<li class="chapter" data-level="2.4.2" data-path="ch-01-01-loops-and-maps.html"><a href="ch-01-01-loops-and-maps.html#functional-iterators"><i class="fa fa-check"></i><b>2.4.2</b> Functional iterators</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="Chap-01-01-piping.html"><a href="Chap-01-01-piping.html"><i class="fa fa-check"></i><b>2.5</b> Piping</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="Chap-01-01-piping.html"><a href="Chap-01-01-piping.html#excursion-more-on-pipes-in-r"><i class="fa fa-check"></i><b>2.5.1</b> Excursion: More on pipes in R</a></li>
+<li class="chapter" data-level="2.5.2" data-path="Chap-01-01-piping.html"><a href="Chap-01-01-piping.html#excursion-multiple-assignments-or-unpacking"><i class="fa fa-check"></i><b>2.5.2</b> Excursion: Multiple assignments, or “unpacking”</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="ch-01-01-Rmarkdown.html"><a href="ch-01-01-Rmarkdown.html"><i class="fa fa-check"></i><b>2.6</b> Rmarkdown</a></li>
+</ul></li>
+<li class="part"><span><b>II Data</b></span></li>
+<li class="chapter" data-level="3" data-path="Chap-02-01-data.html"><a href="Chap-02-01-data.html"><i class="fa fa-check"></i><b>3</b> Data, variables &amp; experimental designs</a><ul>
+<li class="chapter" data-level="3.1" data-path="Chap-02-01-data-what-is-data.html"><a href="Chap-02-01-data-what-is-data.html"><i class="fa fa-check"></i><b>3.1</b> What is data?</a></li>
+<li class="chapter" data-level="3.2" data-path="Chap-02-01-data-kinds-of-data.html"><a href="Chap-02-01-data-kinds-of-data.html"><i class="fa fa-check"></i><b>3.2</b> Different kinds of data</a></li>
+<li class="chapter" data-level="3.3" data-path="Chap-02-01-data-variables.html"><a href="Chap-02-01-data-variables.html"><i class="fa fa-check"></i><b>3.3</b> On the notion of “variables”</a></li>
+<li class="chapter" data-level="3.4" data-path="Chap-02-01-data-exp-design.html"><a href="Chap-02-01-data-exp-design.html"><i class="fa fa-check"></i><b>3.4</b> Basics of experimental design</a><ul>
+<li class="chapter" data-level="3.4.1" data-path="Chap-02-01-data-exp-design.html"><a href="Chap-02-01-data-exp-design.html#what-to-analyze-dependent-variables"><i class="fa fa-check"></i><b>3.4.1</b> What to analyze? – Dependent variables</a></li>
+<li class="chapter" data-level="3.4.2" data-path="Chap-02-01-data-exp-design.html"><a href="Chap-02-01-data-exp-design.html#conditions-trials-items"><i class="fa fa-check"></i><b>3.4.2</b> Conditions, trials, items</a></li>
+<li class="chapter" data-level="3.4.3" data-path="Chap-02-01-data-exp-design.html"><a href="Chap-02-01-data-exp-design.html#sample-size"><i class="fa fa-check"></i><b>3.4.3</b> Sample size</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="data-wrangling.html"><a href="data-wrangling.html"><i class="fa fa-check"></i><b>4</b> Data Wrangling</a><ul>
+<li class="chapter" data-level="4.1" data-path="Chap-02-02-data-IO.html"><a href="Chap-02-02-data-IO.html"><i class="fa fa-check"></i><b>4.1</b> Data in, data out</a></li>
+<li class="chapter" data-level="4.2" data-path="Chap-02-02-data-tidy-data.html"><a href="Chap-02-02-data-tidy-data.html"><i class="fa fa-check"></i><b>4.2</b> Tidy data</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="Chap-02-02-data-tidy-data.html"><a href="Chap-02-02-data-tidy-data.html#running-example"><i class="fa fa-check"></i><b>4.2.1</b> Running example</a></li>
+<li class="chapter" data-level="4.2.2" data-path="Chap-02-02-data-tidy-data.html"><a href="Chap-02-02-data-tidy-data.html#definition-of-tidy-data"><i class="fa fa-check"></i><b>4.2.2</b> Definition of <em>tidy data</em></a></li>
+<li class="chapter" data-level="4.2.3" data-path="Chap-02-02-data-tidy-data.html"><a href="Chap-02-02-data-tidy-data.html#excursion-non-redundant-data"><i class="fa fa-check"></i><b>4.2.3</b> Excursion: non-redundant data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html"><i class="fa fa-check"></i><b>4.3</b> Data manipulation: the basics</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#pivoting"><i class="fa fa-check"></i><b>4.3.1</b> Pivoting</a></li>
+<li class="chapter" data-level="4.3.2" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#subsetting-rows-columns"><i class="fa fa-check"></i><b>4.3.2</b> Subsetting rows &amp; columns</a></li>
+<li class="chapter" data-level="4.3.3" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#Chap-02-02-tidy-selection"><i class="fa fa-check"></i><b>4.3.3</b> Tidy selection of column names</a></li>
+<li class="chapter" data-level="4.3.4" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#adding-changing-and-renaming-columns"><i class="fa fa-check"></i><b>4.3.4</b> Adding, changing and renaming columns</a></li>
+<li class="chapter" data-level="4.3.5" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#splitting-and-uniting-columns"><i class="fa fa-check"></i><b>4.3.5</b> Splitting and uniting columns</a></li>
+<li class="chapter" data-level="4.3.6" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#sorting-a-data-set"><i class="fa fa-check"></i><b>4.3.6</b> Sorting a data set</a></li>
+<li class="chapter" data-level="4.3.7" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#combining-tibbles"><i class="fa fa-check"></i><b>4.3.7</b> Combining tibbles</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="Chap-02-02-data-grouping-nesting.html"><a href="Chap-02-02-data-grouping-nesting.html"><i class="fa fa-check"></i><b>4.4</b> Grouped operations</a></li>
+<li class="chapter" data-level="4.5" data-path="Chap-02-02-data-case-study-KoF.html"><a href="Chap-02-02-data-case-study-KoF.html"><i class="fa fa-check"></i><b>4.5</b> Case study: the King of France</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="Chap-02-02-data-case-study-KoF.html"><a href="Chap-02-02-data-case-study-KoF.html#cleaning-the-data"><i class="fa fa-check"></i><b>4.5.1</b> Cleaning the data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="Chap-02-03-summary-statistics.html"><a href="Chap-02-03-summary-statistics.html"><i class="fa fa-check"></i><b>5</b> Summary statistics</a><ul>
+<li class="chapter" data-level="5.1" data-path="Chap-02-03-summary-statistics-counts.html"><a href="Chap-02-03-summary-statistics-counts.html"><i class="fa fa-check"></i><b>5.1</b> Counts and proportions</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="Chap-02-03-summary-statistics-counts.html"><a href="Chap-02-03-summary-statistics-counts.html#loading-and-inspecting-the-data"><i class="fa fa-check"></i><b>5.1.1</b> Loading and inspecting the data</a></li>
+<li class="chapter" data-level="5.1.2" data-path="Chap-02-03-summary-statistics-counts.html"><a href="Chap-02-03-summary-statistics-counts.html#obtaining-counts-with-n-count-and-tally"><i class="fa fa-check"></i><b>5.1.2</b> Obtaining counts with <code>n</code>, <code>count</code> and <code>tally</code></a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html"><i class="fa fa-check"></i><b>5.2</b> Central tendency and dispersion</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html#the-data-for-the-remainder-of-the-chapter"><i class="fa fa-check"></i><b>5.2.1</b> The data for the remainder of the chapter</a></li>
+<li class="chapter" data-level="5.2.2" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html#measures-of-central-tendency"><i class="fa fa-check"></i><b>5.2.2</b> Measures of central tendency</a></li>
+<li class="chapter" data-level="5.2.3" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html#measures-of-dispersion"><i class="fa fa-check"></i><b>5.2.3</b> Measures of dispersion</a></li>
+<li class="chapter" data-level="5.2.4" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html#excursion-quantifying-confidence-with-bootstrapping"><i class="fa fa-check"></i><b>5.2.4</b> Excursion: Quantifying confidence with bootstrapping</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="Chap-02-03-summary-statistics-2D.html"><a href="Chap-02-03-summary-statistics-2D.html"><i class="fa fa-check"></i><b>5.3</b> Covariance and correlation</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="Chap-02-03-summary-statistics-2D.html"><a href="Chap-02-03-summary-statistics-2D.html#covariance"><i class="fa fa-check"></i><b>5.3.1</b> Covariance</a></li>
+<li class="chapter" data-level="5.3.2" data-path="Chap-02-03-summary-statistics-2D.html"><a href="Chap-02-03-summary-statistics-2D.html#correlation"><i class="fa fa-check"></i><b>5.3.2</b> Correlation</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="Chap-02-02-visualization.html"><a href="Chap-02-02-visualization.html"><i class="fa fa-check"></i><b>6</b> Data Visualization</a><ul>
+<li class="chapter" data-level="6.1" data-path="Chap-02-04-Anscombe-example.html"><a href="Chap-02-04-Anscombe-example.html"><i class="fa fa-check"></i><b>6.1</b> Motivating example: Anscombe’s quartet</a></li>
+<li class="chapter" data-level="6.2" data-path="Chap-02-04-good-visualization.html"><a href="Chap-02-04-good-visualization.html"><i class="fa fa-check"></i><b>6.2</b> Visualization: the good, the bad and the infographic</a></li>
+<li class="chapter" data-level="6.3" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html"><i class="fa fa-check"></i><b>6.3</b> Basics of <code>ggplot</code></a><ul>
+<li class="chapter" data-level="6.3.1" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#incremental-composition-of-a-plot"><i class="fa fa-check"></i><b>6.3.1</b> Incremental composition of a plot</a></li>
+<li class="chapter" data-level="6.3.2" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#elements-in-the-layered-grammar-of-graphs"><i class="fa fa-check"></i><b>6.3.2</b> Elements in the layered grammar of graphs</a></li>
+<li class="chapter" data-level="6.3.3" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#layers-and-groups"><i class="fa fa-check"></i><b>6.3.3</b> Layers and groups</a></li>
+<li class="chapter" data-level="6.3.4" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#grouping"><i class="fa fa-check"></i><b>6.3.4</b> Grouping</a></li>
+<li class="chapter" data-level="6.3.5" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#example-of-a-customized-plot"><i class="fa fa-check"></i><b>6.3.5</b> Example of a customized plot</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html"><i class="fa fa-check"></i><b>6.4</b> A rendezvous with popular geoms</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#scatter-plots-with-geom_point"><i class="fa fa-check"></i><b>6.4.1</b> Scatter plots with <code>geom_point</code></a></li>
+<li class="chapter" data-level="6.4.2" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#smooth"><i class="fa fa-check"></i><b>6.4.2</b> Smooth</a></li>
+<li class="chapter" data-level="6.4.3" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#line"><i class="fa fa-check"></i><b>6.4.3</b> Line</a></li>
+<li class="chapter" data-level="6.4.4" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#bar-plot"><i class="fa fa-check"></i><b>6.4.4</b> Bar plot</a></li>
+<li class="chapter" data-level="6.4.5" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#plotting-distributions-histograms-boxplots-densities-and-violins"><i class="fa fa-check"></i><b>6.4.5</b> Plotting distributions: histograms, boxplots, densities and violins</a></li>
+<li class="chapter" data-level="6.4.6" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#rugs"><i class="fa fa-check"></i><b>6.4.6</b> Rugs</a></li>
+<li class="chapter" data-level="6.4.7" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#annotation"><i class="fa fa-check"></i><b>6.4.7</b> Annotation</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="Chap-02-04-faceting.html"><a href="Chap-02-04-faceting.html"><i class="fa fa-check"></i><b>6.5</b> Faceting</a></li>
+<li class="chapter" data-level="6.6" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html"><i class="fa fa-check"></i><b>6.6</b> Customization etc.</a><ul>
+<li class="chapter" data-level="6.6.1" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#themes"><i class="fa fa-check"></i><b>6.6.1</b> Themes</a></li>
+<li class="chapter" data-level="6.6.2" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#guides"><i class="fa fa-check"></i><b>6.6.2</b> Guides</a></li>
+<li class="chapter" data-level="6.6.3" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#axes-ticks-and-tick-labels"><i class="fa fa-check"></i><b>6.6.3</b> Axes, ticks and tick labels</a></li>
+<li class="chapter" data-level="6.6.4" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#labels"><i class="fa fa-check"></i><b>6.6.4</b> Labels</a></li>
+<li class="chapter" data-level="6.6.5" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#combining-arranging-plots"><i class="fa fa-check"></i><b>6.6.5</b> Combining &amp; arranging plots</a></li>
+<li class="chapter" data-level="6.6.6" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#latex-expressions-in-plot-labels"><i class="fa fa-check"></i><b>6.6.6</b> LaTeX expressions in plot labels</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>III Bayesian Data Analysis</b></span></li>
+<li class="chapter" data-level="7" data-path="Chap-03-01-probability.html"><a href="Chap-03-01-probability.html"><i class="fa fa-check"></i><b>7</b> Basics of Probability Theory</a><ul>
+<li class="chapter" data-level="7.1" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html"><i class="fa fa-check"></i><b>7.1</b> Probability</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html#outcomes-events-observations"><i class="fa fa-check"></i><b>7.1.1</b> Outcomes, events, observations</a></li>
+<li class="chapter" data-level="7.1.2" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html#probability-distributions"><i class="fa fa-check"></i><b>7.1.2</b> Probability distributions</a></li>
+<li class="chapter" data-level="7.1.3" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html#interpretations-of-probability"><i class="fa fa-check"></i><b>7.1.3</b> Interpretations of probability</a></li>
+<li class="chapter" data-level="7.1.4" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html#distributions-as-samples"><i class="fa fa-check"></i><b>7.1.4</b> Distributions as samples</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="Chap-03-01-probability-marginal.html"><a href="Chap-03-01-probability-marginal.html"><i class="fa fa-check"></i><b>7.2</b> Structured events &amp; marginal distributions</a><ul>
+<li class="chapter" data-level="7.2.1" data-path="Chap-03-01-probability-marginal.html"><a href="Chap-03-01-probability-marginal.html#probability-table-for-a-flip-and-draw-scenario"><i class="fa fa-check"></i><b>7.2.1</b> Probability table for a flip-and-draw scenario</a></li>
+<li class="chapter" data-level="7.2.2" data-path="Chap-03-01-probability-marginal.html"><a href="Chap-03-01-probability-marginal.html#structured-events-and-joint-probability-distributions"><i class="fa fa-check"></i><b>7.2.2</b> Structured events and joint-probability distributions</a></li>
+<li class="chapter" data-level="7.2.3" data-path="Chap-03-01-probability-marginal.html"><a href="Chap-03-01-probability-marginal.html#marginalization"><i class="fa fa-check"></i><b>7.2.3</b> Marginalization</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="Chap-03-01-probability-conditional.html"><a href="Chap-03-01-probability-conditional.html"><i class="fa fa-check"></i><b>7.3</b> Conditional probability</a><ul>
+<li class="chapter" data-level="7.3.1" data-path="Chap-03-01-probability-conditional.html"><a href="Chap-03-01-probability-conditional.html#bayes-rule"><i class="fa fa-check"></i><b>7.3.1</b> Bayes rule</a></li>
+<li class="chapter" data-level="7.3.2" data-path="Chap-03-01-probability-conditional.html"><a href="Chap-03-01-probability-conditional.html#Chap-03-01-probability-independence"><i class="fa fa-check"></i><b>7.3.2</b> Stochastic (in-)dependence</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html"><i class="fa fa-check"></i><b>7.4</b> Random variables</a><ul>
+<li class="chapter" data-level="7.4.1" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html#notation-terminology"><i class="fa fa-check"></i><b>7.4.1</b> Notation &amp; terminology</a></li>
+<li class="chapter" data-level="7.4.2" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html#cumulative-distribution-functions-mass-density"><i class="fa fa-check"></i><b>7.4.2</b> Cumulative distribution functions, mass &amp; density</a></li>
+<li class="chapter" data-level="7.4.3" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html#expected-value-variance"><i class="fa fa-check"></i><b>7.4.3</b> Expected value &amp; variance</a></li>
+<li class="chapter" data-level="7.4.4" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html#composite-random-variables"><i class="fa fa-check"></i><b>7.4.4</b> Composite random variables</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="Chap-03-01-probability-R.html"><a href="Chap-03-01-probability-R.html"><i class="fa fa-check"></i><b>7.5</b> Probability distributions in R</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="Chap-03-03-models.html"><a href="Chap-03-03-models.html"><i class="fa fa-check"></i><b>8</b> Statistical models</a><ul>
+<li class="chapter" data-level="8.1" data-path="Chap-03-03-models-general.html"><a href="Chap-03-03-models-general.html"><i class="fa fa-check"></i><b>8.1</b> Statistical models</a></li>
+<li class="chapter" data-level="8.2" data-path="Chap-03-03-models-representation.html"><a href="Chap-03-03-models-representation.html"><i class="fa fa-check"></i><b>8.2</b> Notation &amp; graphical representation</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="Chap-03-03-models-representation.html"><a href="Chap-03-03-models-representation.html#formula-notation"><i class="fa fa-check"></i><b>8.2.1</b> Formula notation</a></li>
+<li class="chapter" data-level="8.2.2" data-path="Chap-03-03-models-representation.html"><a href="Chap-03-03-models-representation.html#graphical-notation"><i class="fa fa-check"></i><b>8.2.2</b> Graphical notation</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="Chap-03-03-models-parameters-priors.html"><a href="Chap-03-03-models-parameters-priors.html"><i class="fa fa-check"></i><b>8.3</b> Parameters, priors, and prior predictions</a><ul>
+<li class="chapter" data-level="8.3.1" data-path="Chap-03-03-models-parameters-priors.html"><a href="Chap-03-03-models-parameters-priors.html#whats-a-model-parameter"><i class="fa fa-check"></i><b>8.3.1</b> What’s a model parameter?</a></li>
+<li class="chapter" data-level="8.3.2" data-path="Chap-03-03-models-parameters-priors.html"><a href="Chap-03-03-models-parameters-priors.html#Chap-03-02-models-priors"><i class="fa fa-check"></i><b>8.3.2</b> Priors over parameters</a></li>
+<li class="chapter" data-level="8.3.3" data-path="Chap-03-03-models-parameters-priors.html"><a href="Chap-03-03-models-parameters-priors.html#Chap-03-03-models-parameters-prior-predictive"><i class="fa fa-check"></i><b>8.3.3</b> Prior predictions</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="ch-03-04-parameter-estimation.html"><a href="ch-03-04-parameter-estimation.html"><i class="fa fa-check"></i><b>9</b> Bayesian parameter estimation</a><ul>
+<li class="chapter" data-level="9.1" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html"><i class="fa fa-check"></i><b>9.1</b> Bayes rule for parameter estimation</a><ul>
+<li class="chapter" data-level="9.1.1" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#definitions-and-terminology"><i class="fa fa-check"></i><b>9.1.1</b> Definitions and terminology</a></li>
+<li class="chapter" data-level="9.1.2" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#the-effects-of-prior-and-likelihood-on-the-posterior"><i class="fa fa-check"></i><b>9.1.2</b> The effects of prior and likelihood on the posterior</a></li>
+<li class="chapter" data-level="9.1.3" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#ch-03-04-parameter-estimation-conjugacy"><i class="fa fa-check"></i><b>9.1.3</b> Computing Bayesian posteriors with conjugate priors</a></li>
+<li class="chapter" data-level="9.1.4" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#excursion-sequential-updating"><i class="fa fa-check"></i><b>9.1.4</b> Excursion: Sequential updating</a></li>
+<li class="chapter" data-level="9.1.5" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#posterior-predictive-distribution"><i class="fa fa-check"></i><b>9.1.5</b> Posterior predictive distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="9.2" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html"><i class="fa fa-check"></i><b>9.2</b> Point-valued and interval-ranged estimates</a><ul>
+<li class="chapter" data-level="9.2.1" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html#point-valued-estimates"><i class="fa fa-check"></i><b>9.2.1</b> Point-valued estimates</a></li>
+<li class="chapter" data-level="9.2.2" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html#interval-ranged-estimates"><i class="fa fa-check"></i><b>9.2.2</b> Interval-ranged estimates</a></li>
+<li class="chapter" data-level="9.2.3" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html#computing-bayesian-estimates"><i class="fa fa-check"></i><b>9.2.3</b> Computing Bayesian estimates</a></li>
+<li class="chapter" data-level="9.2.4" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html#excursion-computing-mles-and-maps-in-r"><i class="fa fa-check"></i><b>9.2.4</b> Excursion: Computing MLEs and MAPs in R</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="Ch-03-03-estimation-algorithms.html"><a href="Ch-03-03-estimation-algorithms.html"><i class="fa fa-check"></i><b>9.3</b> Approximating the posterior</a><ul>
+<li class="chapter" data-level="9.3.1" data-path="Ch-03-03-estimation-algorithms.html"><a href="Ch-03-03-estimation-algorithms.html#ch-03-03-MCMC"><i class="fa fa-check"></i><b>9.3.1</b> Of apples and trees: Markov Chain Monte Carlo sampling</a></li>
+<li class="chapter" data-level="9.3.2" data-path="Ch-03-03-estimation-algorithms.html"><a href="Ch-03-03-estimation-algorithms.html#ch-03-03-estimation-Stan"><i class="fa fa-check"></i><b>9.3.2</b> Excursion: Probabilistic modeling with Stan</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="ch-03-04-parameter-estimation-normal.html"><a href="ch-03-04-parameter-estimation-normal.html"><i class="fa fa-check"></i><b>9.4</b> Estimating the parameters of a Normal distribution</a><ul>
+<li class="chapter" data-level="9.4.1" data-path="ch-03-04-parameter-estimation-normal.html"><a href="ch-03-04-parameter-estimation-normal.html#uninformative-priors"><i class="fa fa-check"></i><b>9.4.1</b> Uninformative priors</a></li>
+<li class="chapter" data-level="9.4.2" data-path="ch-03-04-parameter-estimation-normal.html"><a href="ch-03-04-parameter-estimation-normal.html#conjugate-priors"><i class="fa fa-check"></i><b>9.4.2</b> Conjugate priors</a></li>
+<li class="chapter" data-level="9.4.3" data-path="ch-03-04-parameter-estimation-normal.html"><a href="ch-03-04-parameter-estimation-normal.html#estimating-the-difference-between-group-means"><i class="fa fa-check"></i><b>9.4.3</b> Estimating the difference between group means</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="Chap-03-06-model-comparison.html"><a href="Chap-03-06-model-comparison.html"><i class="fa fa-check"></i><b>10</b> Model Comparison</a><ul>
+<li class="chapter" data-level="10.1" data-path="Chap-03-06-model-comparison-case-study.html"><a href="Chap-03-06-model-comparison-case-study.html"><i class="fa fa-check"></i><b>10.1</b> Case study: recall models</a></li>
+<li class="chapter" data-level="10.2" data-path="Chap-03-06-model-comparison-AIC.html"><a href="Chap-03-06-model-comparison-AIC.html"><i class="fa fa-check"></i><b>10.2</b> Akaike Information Criterion</a></li>
+<li class="chapter" data-level="10.3" data-path="Chap-03-06-model-comparison-BF.html"><a href="Chap-03-06-model-comparison-BF.html"><i class="fa fa-check"></i><b>10.3</b> Bayes factors</a><ul>
+<li class="chapter" data-level="10.3.1" data-path="Chap-03-06-model-comparison-BF.html"><a href="Chap-03-06-model-comparison-BF.html#Chap-03-06-model-comparison-BF-grid"><i class="fa fa-check"></i><b>10.3.1</b> Grid approximation</a></li>
+<li class="chapter" data-level="10.3.2" data-path="Chap-03-06-model-comparison-BF.html"><a href="Chap-03-06-model-comparison-BF.html#Chap-03-06-model-comparison-BF-naiveMC"><i class="fa fa-check"></i><b>10.3.2</b> Naive Monte Carlo</a></li>
+<li class="chapter" data-level="10.3.3" data-path="Chap-03-06-model-comparison-BF.html"><a href="Chap-03-06-model-comparison-BF.html#Chap-03-06-model-comparison-BF-bridge"><i class="fa fa-check"></i><b>10.3.3</b> Excursion: Bridge sampling</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="ch-03-07-hypothesis-testing-Bayes.html"><a href="ch-03-07-hypothesis-testing-Bayes.html"><i class="fa fa-check"></i><b>11</b> Bayesian hypothesis testing</a><ul>
+<li class="chapter" data-level="11.1" data-path="ch-03-07-hypothesis-testing-Bayes-hypotheses.html"><a href="ch-03-07-hypothesis-testing-Bayes-hypotheses.html"><i class="fa fa-check"></i><b>11.1</b> Statistical hypotheses</a></li>
+<li class="chapter" data-level="11.2" data-path="data-and-models-for-this-chapter.html"><a href="data-and-models-for-this-chapter.html"><i class="fa fa-check"></i><b>11.2</b> Data and models for this chapter</a><ul>
+<li class="chapter" data-level="11.2.1" data-path="data-and-models-for-this-chapter.html"><a href="data-and-models-for-this-chapter.html#section-1"><i class="fa fa-check"></i><b>11.2.1</b> 24/7</a></li>
+<li class="chapter" data-level="11.2.2" data-path="data-and-models-for-this-chapter.html"><a href="data-and-models-for-this-chapter.html#simon-task"><i class="fa fa-check"></i><b>11.2.2</b> Simon task</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="ch-03-05-Bayes-testing-estimation.html"><a href="ch-03-05-Bayes-testing-estimation.html"><i class="fa fa-check"></i><b>11.3</b> Testing via posterior estimation</a><ul>
+<li class="chapter" data-level="11.3.1" data-path="ch-03-05-Bayes-testing-estimation.html"><a href="ch-03-05-Bayes-testing-estimation.html#example-247"><i class="fa fa-check"></i><b>11.3.1</b> Example: 24/7</a></li>
+<li class="chapter" data-level="11.3.2" data-path="ch-03-05-Bayes-testing-estimation.html"><a href="ch-03-05-Bayes-testing-estimation.html#example-simon-task"><i class="fa fa-check"></i><b>11.3.2</b> Example: Simon Task</a></li>
+</ul></li>
+<li class="chapter" data-level="11.4" data-path="ch-03-05-Bayesian-testing-comparison.html"><a href="ch-03-05-Bayesian-testing-comparison.html"><i class="fa fa-check"></i><b>11.4</b> Testing via model comparison</a><ul>
+<li class="chapter" data-level="11.4.1" data-path="ch-03-05-Bayesian-testing-comparison.html"><a href="ch-03-05-Bayesian-testing-comparison.html#ch-03-07-hypothesis-testing-Bayes-Savage-Dickey"><i class="fa fa-check"></i><b>11.4.1</b> The Savage-Dickey method</a></li>
+<li class="chapter" data-level="11.4.2" data-path="ch-03-05-Bayesian-testing-comparison.html"><a href="ch-03-05-Bayesian-testing-comparison.html#ch-03-07-hypothesis-testing-Bayes-encompassing-models"><i class="fa fa-check"></i><b>11.4.2</b> Encompassing models</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>IV Applied (generalized) linear modeling</b></span></li>
+<li class="chapter" data-level="12" data-path="Chap-04-01-simple-linear-regression.html"><a href="Chap-04-01-simple-linear-regression.html"><i class="fa fa-check"></i><b>12</b> Linear regression</a><ul>
+<li class="chapter" data-level="12.1" data-path="ordinary-least-squares-regression.html"><a href="ordinary-least-squares-regression.html"><i class="fa fa-check"></i><b>12.1</b> Ordinary least squares regression</a><ul>
+<li class="chapter" data-level="12.1.1" data-path="ordinary-least-squares-regression.html"><a href="ordinary-least-squares-regression.html#prediction-without-any-further-information"><i class="fa fa-check"></i><b>12.1.1</b> Prediction without any further information</a></li>
+<li class="chapter" data-level="12.1.2" data-path="ordinary-least-squares-regression.html"><a href="ordinary-least-squares-regression.html#prediction-with-knowledge-of-unemployment-rate"><i class="fa fa-check"></i><b>12.1.2</b> Prediction with knowledge of unemployment rate</a></li>
+<li class="chapter" data-level="12.1.3" data-path="ordinary-least-squares-regression.html"><a href="ordinary-least-squares-regression.html#linear-regression-general-problem-formulation"><i class="fa fa-check"></i><b>12.1.3</b> Linear regression: general problem formulation</a></li>
+<li class="chapter" data-level="12.1.4" data-path="ordinary-least-squares-regression.html"><a href="ordinary-least-squares-regression.html#finding-the-ols-solution"><i class="fa fa-check"></i><b>12.1.4</b> Finding the OLS-solution</a></li>
+</ul></li>
+<li class="chapter" data-level="12.2" data-path="Chap-04-01-linear-regression-MLE.html"><a href="Chap-04-01-linear-regression-MLE.html"><i class="fa fa-check"></i><b>12.2</b> A maximum-likelihood approach</a><ul>
+<li class="chapter" data-level="12.2.1" data-path="Chap-04-01-linear-regression-MLE.html"><a href="Chap-04-01-linear-regression-MLE.html#a-likelihood-based-model"><i class="fa fa-check"></i><b>12.2.1</b> A likelihood-based model</a></li>
+<li class="chapter" data-level="12.2.2" data-path="Chap-04-01-linear-regression-MLE.html"><a href="Chap-04-01-linear-regression-MLE.html#finding-the-mle-solution-with-optim"><i class="fa fa-check"></i><b>12.2.2</b> Finding the MLE-solution with <code>optim</code></a></li>
+<li class="chapter" data-level="12.2.3" data-path="Chap-04-01-linear-regression-MLE.html"><a href="Chap-04-01-linear-regression-MLE.html#finding-the-mle-solution-with-glm"><i class="fa fa-check"></i><b>12.2.3</b> Finding the MLE-solution with <code>glm</code></a></li>
+<li class="chapter" data-level="12.2.4" data-path="Chap-04-01-linear-regression-MLE.html"><a href="Chap-04-01-linear-regression-MLE.html#finding-the-mle-solution-with-math"><i class="fa fa-check"></i><b>12.2.4</b> Finding the MLE-solution with math</a></li>
+</ul></li>
+<li class="chapter" data-level="12.3" data-path="a-bayesian-approach.html"><a href="a-bayesian-approach.html"><i class="fa fa-check"></i><b>12.3</b> A Bayesian approach</a></li>
+<li class="chapter" data-level="12.4" data-path="comparison-of-approaches.html"><a href="comparison-of-approaches.html"><i class="fa fa-check"></i><b>12.4</b> Comparison of approaches</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="Chap-04-02-Bayes-regression-practice.html"><a href="Chap-04-02-Bayes-regression-practice.html"><i class="fa fa-check"></i><b>13</b> Bayesian regression in practice</a><ul>
+<li class="chapter" data-level="13.1" data-path="simple-linear-regression-with-brms.html"><a href="simple-linear-regression-with-brms.html"><i class="fa fa-check"></i><b>13.1</b> Simple linear regression with <code>brms</code></a></li>
+<li class="chapter" data-level="13.2" data-path="extracting-posterior-samples.html"><a href="extracting-posterior-samples.html"><i class="fa fa-check"></i><b>13.2</b> Extracting posterior samples</a></li>
+<li class="chapter" data-level="13.3" data-path="excursion-inspecting-the-underlying-stan-code.html"><a href="excursion-inspecting-the-underlying-stan-code.html"><i class="fa fa-check"></i><b>13.3</b> [Excursion:] Inspecting the underlying Stan code</a></li>
+<li class="chapter" data-level="13.4" data-path="setting-priors.html"><a href="setting-priors.html"><i class="fa fa-check"></i><b>13.4</b> Setting priors</a></li>
+<li class="chapter" data-level="13.5" data-path="posterior-predictions.html"><a href="posterior-predictions.html"><i class="fa fa-check"></i><b>13.5</b> Posterior predictions</a></li>
+<li class="chapter" data-level="13.6" data-path="testing-hypotheses.html"><a href="testing-hypotheses.html"><i class="fa fa-check"></i><b>13.6</b> Testing hypotheses</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="Chap-04-03-predictors.html"><a href="Chap-04-03-predictors.html"><i class="fa fa-check"></i><b>14</b> Categorical predictors</a><ul>
+<li class="chapter" data-level="14.1" data-path="Chap-04-03-predictors-two-levels.html"><a href="Chap-04-03-predictors-two-levels.html"><i class="fa fa-check"></i><b>14.1</b> Single two-level predictor</a></li>
+<li class="chapter" data-level="14.2" data-path="Chap-04-03-predictors-multi-levels.html"><a href="Chap-04-03-predictors-multi-levels.html"><i class="fa fa-check"></i><b>14.2</b> Single multi-level predictor</a></li>
+<li class="chapter" data-level="14.3" data-path="Chap-04-03-predictors-multiple-predictors.html"><a href="Chap-04-03-predictors-multiple-predictors.html"><i class="fa fa-check"></i><b>14.3</b> Multiple predictors</a><ul>
+<li class="chapter" data-level="14.3.1" data-path="Chap-04-03-predictors-multiple-predictors.html"><a href="Chap-04-03-predictors-multiple-predictors.html#treatment-coding"><i class="fa fa-check"></i><b>14.3.1</b> Treatment coding</a></li>
+<li class="chapter" data-level="14.3.2" data-path="Chap-04-03-predictors-multiple-predictors.html"><a href="Chap-04-03-predictors-multiple-predictors.html#sum-coding"><i class="fa fa-check"></i><b>14.3.2</b> Sum coding</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="Chap-04-04-GLM.html"><a href="Chap-04-04-GLM.html"><i class="fa fa-check"></i><b>15</b> Generalized linear model</a><ul>
+<li class="chapter" data-level="15.1" data-path="generalizing-the-linear-regression-model.html"><a href="generalizing-the-linear-regression-model.html"><i class="fa fa-check"></i><b>15.1</b> Generalizing the linear regression model</a></li>
+<li class="chapter" data-level="15.2" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>15.2</b> Logistic regression</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">An Introduction to Data Analysis</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="ordinary-least-squares-regression" class="section level2">
+<h2><span class="header-section-number">12.1</span> Ordinary least squares regression</h2>
+<p>This section introduces ordinary least squares (OLS) linear regression. The main idea is that we look for the best-fitting line in a (multi-dimensional) cloud of points, where “best-fitting” is defined in terms of a geometrical measure of distance (squared prediction error).</p>
+<div id="prediction-without-any-further-information" class="section level3">
+<h3><span class="header-section-number">12.1.1</span> Prediction without any further information</h3>
+<p>We are interested in explaining or predicting the murder rates in a city using the <a href="#app-93-data-sets-murder-data">murder data set</a>.
+Concretely, we are interested in whether knowing a city’s unemployment rate (stored in variable <code>unemployment</code>) helps make better predictions for that city’s murder rate (stored in variable <code>murder_rate</code>).</p>
+<p>Let’s first plot the murder rate for every city (just numbered consecutively in the order of their appearance in the data set):</p>
+<p><img src="I2DA_files/figure-html/unnamed-chunk-352-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Suppose we know the vector <span class="math inline">\(y\)</span> of all observed murder rates but we don’t know which murder rate belongs to which city.
+We are given a city to guess its murder rate.
+But we cannot tell cities apart.
+So we must guess one number as a prediction for any of the cities.
+What’s a good guess?</p>
+<p>Actually, how good a guess is depends on what we want to do with this guess (the utility function of a decision problem).
+For now, let’s just assume that we have a measure of <strong>prediction error</strong> which we would like to minimize with our guesses.
+A common measure of <strong>prediction error</strong> uses intuitions about geometric distance and is defined in terms of the <strong>total sum of squares</strong>, where <span class="math inline">\(y\)</span> is the <span class="math inline">\(n\)</span>-dimensional vector of observed murder rates and <span class="math inline">\(\xi \in \mathbb{R}\)</span> is a single numeric prediction:</p>
+<p><span class="math display">\[
+\text{TSS}(\xi) = \sum_{i=1}^n (y_i - \xi)^2
+\]</span></p>
+<p>This measure of prediction error is what underlies the ordinary least squares approach to regression.</p>
+<p>It turns out that the <strong>best prediction</strong> we can make, i.e., the number <span class="math inline">\(\hat{\xi} = \arg \min_{\xi} \text{TSS}(\xi)\)</span> for which TSS is minimized, is the mean <span class="math inline">\(\bar{y}\)</span> of the original predictions.
+So, given the goal of minimizing TSS, our best guess is the mean of the observed murder rates.</p>
+<div class="mathstuff">
+
+<div class="proposition">
+<p><span id="prp:TSS-solution-mean" class="proposition"><strong>Proposition 12.1  (Mean minimizes total sum of squares.)  </strong></span>
+<span class="math display">\[
+\arg \min_{\xi} \sum_{i=1}^n (y_i - \xi)^2 = \frac{1}{n} \sum_{i=1}^n y_i = \bar{y}
+\]</span></p>
+</div>
+<div class="collapsibleProof">
+<button class="trigger">
+Show proof.
+</button>
+<div class="content">
+
+<div class="proof">
+<p> <span class="proof"><em>Proof. </em></span> 
+To find a minimum, consider the first derivative of <span class="math inline">\(\text{TSS}(\xi)\)</span> and find its zero points:</p>
+<p><span class="math display">\[
+\begin{align*}
+&amp; f(\xi)   = \sum_{i=1}^n (y_i - \xi)^2 = \sum_{i=1}^n (y_i^2 - 2 y_i \xi + \xi^2) \\
+&amp; f&#39;(\xi)  = \sum_{i=1}^n (-2y_i + 2\xi) = 0 \\
+\Leftrightarrow &amp;  \sum_{i=1}^n -2y_i  = -2 n \xi \\
+\Leftrightarrow &amp;  \xi = \frac{1}{n} \sum_{i=1}^n y_i  = \bar{y} \\
+\end{align*}
+\]</span></p>
+<p>Indeed, the zero point <span class="math inline">\(\xi = \bar{y}\)</span> is a minimum because its second derivative is positive:</p>
+<p><span class="math display">\[
+f&#39;&#39;(\bar{y}) = 2
+\]</span></p>
+</div>
+<p> </p>
+</div>
+</div>
+</div>
+<p>The plot below visualizes the prediction we make based on the naive predictor <span class="math inline">\(\hat{y}\)</span>.
+The black dots show the data points, the red line shows the prediction we make (the mean murder rate), the small hollow dots show the specific predictions for each observed value and the gray lines show the distance between our prediction and the actual data observation.</p>
+<p><img src="I2DA_files/figure-html/unnamed-chunk-354-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>To obtain the TSS for the prediction shown in the plot above, we would need to take each gray line, measure its distance, square this number and sum over all lines (cities).
+In the case at hand, the prediction error we make by assuming just the mean as predictor is:</p>
+<div class="sourceCode" id="cb530"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb530-1"><a href="ordinary-least-squares-regression.html#cb530-1"></a>y &lt;-<span class="st"> </span>murder_data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(murder_rate)</span>
+<span id="cb530-2"><a href="ordinary-least-squares-regression.html#cb530-2"></a>n &lt;-<span class="st"> </span><span class="kw">length</span>(y)</span>
+<span id="cb530-3"><a href="ordinary-least-squares-regression.html#cb530-3"></a>tss_simple &lt;-<span class="st"> </span><span class="kw">sum</span>((y <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(y))<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb530-4"><a href="ordinary-least-squares-regression.html#cb530-4"></a>tss_simple</span></code></pre></div>
+<pre><code>## [1] 1855.202</code></pre>
+<p>At this stage, a question might arise:
+Why square the distances to obtain the total sum of, well, <em>squares</em>?
+One intuitive motivation is that we want small deviations from our prediction to have less overall impact than huge deviations.
+A technical motivation is that the best solution to OLS estimation corresponds to the best solution under a maximum likelihood approach, if we use a normal distribution as likelihood function.
+This is what we will cover in Section <a href="Chap-04-01-linear-regression-MLE.html#Chap-04-01-linear-regression-MLE">12.2</a> after having introduced the regression model in full.</p>
+</div>
+<div id="prediction-with-knowledge-of-unemployment-rate" class="section level3">
+<h3><span class="header-section-number">12.1.2</span> Prediction with knowledge of unemployment rate</h3>
+<p>We might not be very content with this prediction error. Suppose we could use some piece of information about the random city whose murder rate we are trying to predict. For instance, we might happen to know the value of the variable <code>unemployment</code>. How could that help us make a better prediction?</p>
+<p>There does seem to be some useful information in the unemployment rate, which may lead to better predictions of the murder rate. We see this in a scatter plot:</p>
+<p><img src="I2DA_files/figure-html/unnamed-chunk-356-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Let us assume, for the sake of current illustration, that we expect a very particular functional relationship between the variables <code>murder_rate</code> and <code>unemployment</code>. For some reason or other, we hypothesize that even with 0% unemployment, the murder rate would be positive, namely at 4 murders per million inhabitants. We further hypothesize that with each increase of 1% in the unemployment percentage, the murder rate per million increases by 2. The functional relationship between dependent variable <span class="math inline">\(y\)</span> (= murder rate) and predictor variable <span class="math inline">\(x\)</span> (= unemployment) can then be expressed as a linear function of the following form, where <span class="math inline">\(\xi \in \mathbb{R}^n\)</span> is now a vector of <span class="math inline">\(n\)</span> predictions (one prediction <span class="math inline">\(\xi_i\)</span> for each data observation <span class="math inline">\(y_i\)</span>):<a href="#fn53" class="footnote-ref" id="fnref53"><sup>53</sup></a></p>
+<p><span class="math display">\[
+\xi_i = 2x_i + 4
+\]</span></p>
+<p>Here is a graphical representation of this particular functional relationship assumed in the equation above. Again, the black dots show the data points, the red line the linear function <span class="math inline">\(f(x) = 2x +4\)</span>, the small hollow dots show the specific predictions for each observed value <span class="math inline">\(x_i\)</span> and the gray lines show the distance between our prediction <span class="math inline">\(\xi_i\)</span> and the actual data observation <span class="math inline">\(y_i\)</span>. (Notice that there are data points for which the unemployment rate is the same, but we observed different murder rates.)</p>
+<p><img src="I2DA_files/figure-html/unnamed-chunk-357-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>We can again quantify our prediction error in terms of a sum of squares like we did before. For the case of a prediction vector <span class="math inline">\(\xi\)</span>, the quantity in question is called the <strong>residual sum of squares</strong>.</p>
+<p><span class="math display">\[
+\text{RSS} = \sum_{i=1}^n (y_i - \xi_i)^2
+\]</span></p>
+<p>Here is how we can calculate RSS in R for the particular vector <span class="math inline">\(\xi \in \mathbb{R}^n\)</span> for which <span class="math inline">\(\xi_{i} = 2x_i + 4\)</span>:</p>
+<div class="sourceCode" id="cb532"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb532-1"><a href="ordinary-least-squares-regression.html#cb532-1"></a>y &lt;-<span class="st"> </span>murder_data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(murder_rate)</span>
+<span id="cb532-2"><a href="ordinary-least-squares-regression.html#cb532-2"></a>x &lt;-<span class="st"> </span>murder_data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(unemployment)</span>
+<span id="cb532-3"><a href="ordinary-least-squares-regression.html#cb532-3"></a>predicted_y &lt;-<span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span><span class="dv">4</span></span>
+<span id="cb532-4"><a href="ordinary-least-squares-regression.html#cb532-4"></a>n &lt;-<span class="st"> </span><span class="kw">length</span>(y)</span>
+<span id="cb532-5"><a href="ordinary-least-squares-regression.html#cb532-5"></a>rss_guesswork &lt;-<span class="st"> </span><span class="kw">sum</span>((y <span class="op">-</span><span class="st"> </span>predicted_y)<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb532-6"><a href="ordinary-least-squares-regression.html#cb532-6"></a>rss_guesswork</span></code></pre></div>
+<pre><code>## [1] 1327.74</code></pre>
+<p>Compared to the previous prediction, which was based on the mean <span class="math inline">\(\bar{y}\)</span> only, this linear function reduces the prediction error (measured here geometrically in terms of a sum of squares).
+This alone could be taken as <em>prima facie</em> evidence that knowledge of <code>unemployment</code> helps make better predictions about <code>murder_rate</code>.</p>
+<div class="exercises">
+<p><strong>Exercise 13.1 [optional]</strong></p>
+<ol style="list-style-type: lower-alpha">
+<li>Compare RSS and TSS. How / where exactly do these notions differ from each other? Think about which information the difference between the two measures conveys.</li>
+</ol>
+<div class="collapsibleSolution">
+<button class="trigger">
+Solution
+</button>
+<div class="content">
+<p>TSS computes the distance between a data point and the overall mean of all data points, whereas RSS computes the distance between a data point and a predictor value specific to this data point.
+The difference between RSS and TSS tells us how good our prediction is in comparison to a naive prediction (using just the mean).</p>
+</div>
+</div>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Is it possible for TSS to be smaller than RSS?
+That is, could the error based on a single numeric prediction for all data points be smaller than an error obtained for a linear predictor that has a single prediction for each data point?</li>
+</ol>
+<div class="collapsibleSolution">
+<button class="trigger">
+Solution
+</button>
+<div class="content">
+<p>Yes, that’s possible.
+The definition of RSS and TSS does not imply that we look at the <em>optimal</em> point-valued or linear predictor.
+It is conceivable to choose a good single number and a very bad linear predictor, so that RSS is smaller than TSS.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="linear-regression-general-problem-formulation" class="section level3">
+<h3><span class="header-section-number">12.1.3</span> Linear regression: general problem formulation</h3>
+<p>Suppose we have <span class="math inline">\(k\)</span> predictor variables <span class="math inline">\(x_1, \dots , x_k\)</span> and a dependent variable <span class="math inline">\(y\)</span>.
+We consider the linear relation:</p>
+<p><span class="math display">\[ \xi_i({\beta}_0, {\beta}_1, \dots, {\beta}_k) = \beta_0 + \beta_1 x_{1i} + \dots + \beta_k x_{ki} \]</span>
+Often we do not explicitly write <span class="math inline">\(\xi\)</span> as a function of the parameters <span class="math inline">\(\beta_0, \dots \beta_k\)</span>, and write instead:</p>
+<p><span class="math display">\[ \xi_i = \beta_0 + \beta_1 x_{1i} + \dots + \beta_k x_{ki} \]</span>
+The parameters <span class="math inline">\(\beta_0, \beta_1, \dots, \beta_k\)</span> are called <strong>(regression) coefficients</strong>.
+In particular, <span class="math inline">\(\beta_0\)</span> is called the <strong>(regression) intercept</strong> and <span class="math inline">\(\beta_1, \dots, \beta_k\)</span> are <strong>(regression) slope coefficients</strong>.</p>
+<p>The term <strong>simple linear regression</strong> is often used to cover the special case of <span class="math inline">\(k=1\)</span>.
+If there is more than one predictor, i.e., <span class="math inline">\(k &gt; 1\)</span>, the term <strong>multiple linear regression</strong> is common.</p>
+<p>Based on the predictions of a parameter vector <span class="math inline">\(\langle {\beta}_0, {\beta}_1, \dots, {\beta}_k\rangle\)</span>, we consider the residual sum of squares as a measure of prediction error:</p>
+<p><span class="math display">\[\text{RSS}_{\langle {\beta}_0, {\beta}_1, \dots, {\beta}_k\rangle} = \sum_{i = 1}^k [y_i - \xi_i ({\beta}_0, {\beta}_1, \dots, {\beta}_k) ]^2 \]</span></p>
+<p>We would like to find the <em>best parameter values</em> (denoted traditionally by a hat on the parameter’s variable: <span class="math inline">\(\hat{\beta}_i\)</span>) in the sense of minimizing the residual sum of squares:</p>
+<p><span class="math display">\[
+\langle \hat{\beta}_0, \hat{\beta}_1, \dots  , \hat{\beta}_k\rangle = \arg \min_{\langle \beta_0, \beta_1, \dots, \beta_k\rangle} \text{RSS}_{\langle {\beta}_0, {\beta}_1, \dots, {\beta}_k\rangle}
+\]</span></p>
+<p>The prediction corresponding to the best parameter values is denoted by <span class="math inline">\(\hat{\xi} \in \mathbb{R}^n\)</span> and called the <em>best linear predictor</em>:</p>
+<p><span class="math display">\[ \hat{\xi}_i = \hat{\beta}_0 + \hat{\beta}_1 x_{1i} + \dots + \hat{\beta}_k x_{ki}\]</span></p>
+<p>It is also possible, and often convenient, to state the linear regression model in terms of matrix operations.
+Traditionally, we consider a so-called <strong>predictor matrix</strong> <span class="math inline">\(X\)</span> of size <span class="math inline">\(n \times (k+1)\)</span>, where <span class="math inline">\(n\)</span> is the number of observations in the data set and <span class="math inline">\(k\)</span> is the number of predictor variables.
+The predictor matrix includes the values for all predictor variables and it also includes an “intercept column” <span class="math inline">\((X^{T})_0\)</span> for which <span class="math inline">\(X_{i0}=1\)</span> for all <span class="math inline">\(1 \le i \le n\)</span> so that the intercept <span class="math inline">\(\beta_0\)</span> can be treated on a par with the other regression coefficients.<a href="#fn54" class="footnote-ref" id="fnref54"><sup>54</sup></a></p>
+<p>Using the predictor matrix <span class="math inline">\(X\)</span>, the linear predictor vector <span class="math inline">\(\xi\)</span> is:</p>
+<p><span class="math display">\[\xi = X \beta\]</span></p>
+<div class="exercises">
+<p><strong>Exercise 13.2</strong></p>
+<p>How can we interpret the parameters <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> of the linear model <span class="math inline">\(\xi_i = a x_i + b\)</span>?
+How are these parameters usually called in regression jargon?</p>
+<div class="collapsibleSolution">
+<button class="trigger">
+Solution
+</button>
+<div class="content">
+<p>Parameter <span class="math inline">\(a\)</span> is the slope, <span class="math inline">\(b\)</span> the intercept of a simple linear regression.
+Parameter <span class="math inline">\(a\)</span> gives the amount of change of <span class="math inline">\(y\)</span> for each unit change in <span class="math inline">\(x\)</span>.
+Parameter <span class="math inline">\(b\)</span> gives the prediction <span class="math inline">\(\xi\)</span> for <span class="math inline">\(x=0\)</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="finding-the-ols-solution" class="section level3">
+<h3><span class="header-section-number">12.1.4</span> Finding the OLS-solution</h3>
+<p>In the above example, where we regressed <code>murder_rate</code> against <code>unemployment</code>, the model has two regression coefficients: an intercept term and a slope for <code>unemployment</code>.
+The optimal solution for these delivers the regression line in the graph below.</p>
+<p><img src="I2DA_files/figure-html/unnamed-chunk-359-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The total sum of squares for the best fitting parameters is:</p>
+<pre><code>## [1] 467.6023</code></pre>
+<p>This is the best prediction we can make based on a linear predictor.
+In the following, we discuss several methods of finding the best-fitting values for regression coefficients that minimize the residual sum of squares.</p>
+<div id="finding-optimal-parameters-with-optim" class="section level4">
+<h4><span class="header-section-number">12.1.4.1</span> Finding optimal parameters with <code>optim</code></h4>
+<p>We can use the <code>optim</code> function to find the best-fitting parameter values for our simple linear regression example.</p>
+<div class="sourceCode" id="cb535"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb535-1"><a href="ordinary-least-squares-regression.html#cb535-1"></a><span class="co"># data to be explained / predicted</span></span>
+<span id="cb535-2"><a href="ordinary-least-squares-regression.html#cb535-2"></a>y &lt;-<span class="st"> </span>murder_data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(murder_rate)</span>
+<span id="cb535-3"><a href="ordinary-least-squares-regression.html#cb535-3"></a><span class="co"># data to use for prediction / explanation</span></span>
+<span id="cb535-4"><a href="ordinary-least-squares-regression.html#cb535-4"></a>x &lt;-<span class="st"> </span>murder_data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(unemployment)</span>
+<span id="cb535-5"><a href="ordinary-least-squares-regression.html#cb535-5"></a><span class="co"># function to calculate residual sum of squares</span></span>
+<span id="cb535-6"><a href="ordinary-least-squares-regression.html#cb535-6"></a>get_rss =<span class="st"> </span><span class="cf">function</span>(y, x, beta_<span class="dv">0</span>, beta_<span class="dv">1</span>) {</span>
+<span id="cb535-7"><a href="ordinary-least-squares-regression.html#cb535-7"></a>  yPred =<span class="st"> </span>beta_<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>x <span class="op">*</span><span class="st"> </span>beta_<span class="dv">1</span></span>
+<span id="cb535-8"><a href="ordinary-least-squares-regression.html#cb535-8"></a>  <span class="kw">sum</span>((y <span class="op">-</span><span class="st"> </span>yPred)<span class="op">^</span><span class="dv">2</span>) </span>
+<span id="cb535-9"><a href="ordinary-least-squares-regression.html#cb535-9"></a>}</span>
+<span id="cb535-10"><a href="ordinary-least-squares-regression.html#cb535-10"></a><span class="co"># finding best-fitting values for RSS</span></span>
+<span id="cb535-11"><a href="ordinary-least-squares-regression.html#cb535-11"></a>fit_rss =<span class="st"> </span><span class="kw">optim</span>(<span class="dt">par =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),  <span class="co"># initial parameter values</span></span>
+<span id="cb535-12"><a href="ordinary-least-squares-regression.html#cb535-12"></a>  <span class="dt">fn =</span> <span class="cf">function</span>(par) {  <span class="co"># function to minimize</span></span>
+<span id="cb535-13"><a href="ordinary-least-squares-regression.html#cb535-13"></a>    <span class="kw">get_rss</span>(y, x, par[<span class="dv">1</span>], par[<span class="dv">2</span>])</span>
+<span id="cb535-14"><a href="ordinary-least-squares-regression.html#cb535-14"></a>  }</span>
+<span id="cb535-15"><a href="ordinary-least-squares-regression.html#cb535-15"></a>)</span>
+<span id="cb535-16"><a href="ordinary-least-squares-regression.html#cb535-16"></a><span class="co"># output the results</span></span>
+<span id="cb535-17"><a href="ordinary-least-squares-regression.html#cb535-17"></a><span class="kw">message</span>(</span>
+<span id="cb535-18"><a href="ordinary-least-squares-regression.html#cb535-18"></a>  <span class="st">&quot;Best fitting parameter values:&quot;</span>,</span>
+<span id="cb535-19"><a href="ordinary-least-squares-regression.html#cb535-19"></a>  <span class="st">&quot;</span><span class="ch">\n\t</span><span class="st">Intercept: &quot;</span>, fit_rss<span class="op">$</span>par[<span class="dv">1</span>] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">round</span>(<span class="dv">2</span>),</span>
+<span id="cb535-20"><a href="ordinary-least-squares-regression.html#cb535-20"></a>  <span class="st">&quot;</span><span class="ch">\n\t</span><span class="st">Slope: &quot;</span>, fit_rss<span class="op">$</span>par[<span class="dv">2</span>] <span class="op">%&gt;%</span><span class="st">  </span><span class="kw">round</span>(<span class="dv">2</span>),</span>
+<span id="cb535-21"><a href="ordinary-least-squares-regression.html#cb535-21"></a>  <span class="st">&quot;</span><span class="ch">\n</span><span class="st">RSS for best fit: &quot;</span>, fit_rss<span class="op">$</span>value <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">round</span>(<span class="dv">2</span>)</span>
+<span id="cb535-22"><a href="ordinary-least-squares-regression.html#cb535-22"></a>)</span></code></pre></div>
+<pre><code>## Best fitting parameter values:
+##  Intercept: -28.53
+##  Slope: 7.08
+## RSS for best fit: 467.6</code></pre>
+</div>
+<div id="fitting-ols-regression-lines-with-lm" class="section level4">
+<h4><span class="header-section-number">12.1.4.2</span> Fitting OLS regression lines with <code>lm</code></h4>
+<p>R also has a built-in function <code>lm</code> which fits linear regression models via RSS minimization. Here is how you call this function for the running example:</p>
+<div class="sourceCode" id="cb537"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb537-1"><a href="ordinary-least-squares-regression.html#cb537-1"></a><span class="co"># fit an OLS regression</span></span>
+<span id="cb537-2"><a href="ordinary-least-squares-regression.html#cb537-2"></a>fit_lm &lt;-<span class="st"> </span><span class="kw">lm</span>(</span>
+<span id="cb537-3"><a href="ordinary-least-squares-regression.html#cb537-3"></a>  <span class="co"># the formula argument specifies dependent and independent variables</span></span>
+<span id="cb537-4"><a href="ordinary-least-squares-regression.html#cb537-4"></a>  <span class="dt">formula =</span> murder_rate <span class="op">~</span><span class="st"> </span>unemployment,</span>
+<span id="cb537-5"><a href="ordinary-least-squares-regression.html#cb537-5"></a>  <span class="co"># we also need to say where the data (columns) should come from</span></span>
+<span id="cb537-6"><a href="ordinary-least-squares-regression.html#cb537-6"></a>  <span class="dt">data =</span> murder_data</span>
+<span id="cb537-7"><a href="ordinary-least-squares-regression.html#cb537-7"></a>)</span>
+<span id="cb537-8"><a href="ordinary-least-squares-regression.html#cb537-8"></a><span class="co"># output the fitted object</span></span>
+<span id="cb537-9"><a href="ordinary-least-squares-regression.html#cb537-9"></a>fit_lm</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = murder_rate ~ unemployment, data = murder_data)
+## 
+## Coefficients:
+##  (Intercept)  unemployment  
+##       -28.53          7.08</code></pre>
+<p>The output of the fitted object shows the best-fitting values (compare them to what we obtained before).<a href="#fn55" class="footnote-ref" id="fnref55"><sup>55</sup></a></p>
+</div>
+<div id="finding-optimal-parameter-values-with-math" class="section level4">
+<h4><span class="header-section-number">12.1.4.3</span> Finding optimal parameter values with math</h4>
+<p>It is also possible to determine the OLS-fits by a mathematical derivation. We start with the case of a simple linear regression with just one predictor variable.</p>
+<div class="mathstuff">
+
+<div class="theorem">
+<p><span id="thm:OLS-Solution" class="theorem"><strong>Theorem 12.1  (OLS solution for simple linear regression)  </strong></span>For a simple linear regression model with just one predictor for a data set with <span class="math inline">\(n\)</span> observations, the solution for:</p>
+<p><span class="math display">\[\arg \min_{\langle \beta_0, \beta_1\rangle} \sum_{i = 1}^n (y_i - (\beta_0 + \beta_1 x_{i}))^2\]</span></p>
+<p>is given by:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{\beta_1} &amp;= \frac{Cov(x,y)}{Var(x)} &amp; 
+\hat{\beta_0} &amp;= \bar{y} - \hat{\beta}_1 \bar{x} 
+\end{aligned}
+\]</span></p>
+</div>
+<div class="collapsibleProof">
+<button class="trigger">
+Show proof.
+</button>
+<div class="content">
+
+<div class="proof">
+<p> <span class="proof"><em>Proof. </em></span> <em><span class="citation">(See e.g., Olive <a href="#ref-olive2017" role="doc-biblioref">2017</a>, 57–59)</span></em></p>
+<p>Given a set of <span class="math inline">\(n\)</span> observations <span class="math inline">\((x_i, y_i)\)</span>, we want to find:</p>
+<p><span class="math display">\[\langle \hat{\beta}_0, \hat{\beta}_1 \rangle = \arg \min_{\langle \beta_0, \beta_1 \rangle} \sum_{i = 1}^n (y_i - (\beta_0 + \beta_1 x_{i}))^2\]</span></p>
+<p>Let <span class="math inline">\(Q\)</span> denote the RSS function. We want to find the minima of <span class="math inline">\(Q\)</span>.
+So, we want to find the values <span class="math inline">\(\hat\beta_0\)</span> and <span class="math inline">\(\hat\beta_1\)</span> for which <span class="math inline">\(\frac{\partial Q}{\partial \hat\beta_0}=0\)</span> and <span class="math inline">\(\frac{\partial Q}{\partial \hat\beta_1}=0\)</span>, since all partial derivatives equal to 0 at the global minimum.</p>
+<p>The first condition is:</p>
+<p><span class="math display">\[ \begin{align} \frac{\partial Q}{\partial \hat\beta_0}=\sum_{i=1}^{n}-2(y_i-\hat\beta_0-\hat\beta_1x_i)&amp;= 0\\
+&amp;=-\sum_{i=1}^ny_i+\sum_{i=1}^n\hat \beta_0+\sum_{i=1}^n\hat\beta_1x_i\\
+&amp;=-\sum_{i=1}^ny_i+n\hat\beta_0+\sum_{i=1}^n\hat\beta_1x_i
+\end{align}\]</span></p>
+<p>If we solve for <span class="math inline">\(\hat\beta_0\)</span>, this becomes:</p>
+<p><span class="math display">\[\begin{align}
+\hat\beta_0&amp;=\frac{1}{n}\sum_{i=1}^{n}y_i-\frac{1}{n}\hat\beta_1\sum_{i=1}^{n}x_i\\
+&amp;=\bar y - \hat\beta_1\bar x
+\end{align}\]</span></p>
+<p>This solution is indeed a minimum as the second partial derivative is positive:</p>
+<p><span class="math inline">\(\frac{\partial^2 Q}{\partial\hat\beta_0^2}=n&gt;0\)</span></p>
+<p>The second condition is:</p>
+<p><span class="math display">\[ \begin{align}
+\frac{\partial Q}{\partial \hat\beta_1}&amp; =\sum_{i=1}^{n}-2x_i(y_i-\hat\beta_0-\hat\beta_1x_i)=0\\
+&amp;=\sum_{i=1}^{n}(-x_iy_i+\hat\beta_0x_i+\hat\beta_1x_i^2)\\
+&amp;=-\sum_{i=1}^{n}x_iy_i+\hat\beta_0\sum_{i=1}^{n}x_i+\hat\beta_1\sum_{i=1}^{n}x_i^2
+\end{align}\]</span></p>
+<p>Substitution of <span class="math inline">\(\hat\beta_0\)</span> by (1.1.5) yields:</p>
+<p><span class="math display">\[ \begin{align}
+0&amp;=-\sum_{i=1}^{n}x_iy_i+(\bar y - \hat\beta_1\bar x)\sum_{i=1}^{n}x_i+\hat\beta_1\sum_{i=1}^{n}x_i^2\\
+&amp;=-\sum_{i=1}^{n}x_iy_i+\bar y\sum_{i=1}^{n}x_i-\hat\beta_1\bar x\sum_{i=1}^{n}x_i+\hat\beta_1\sum_{i=1}^{n}x_i^2
+\end{align}\]</span></p>
+<p>Separating into two sums:</p>
+<p><span class="math display">\[ \sum_{i=1}^{n}\left( x_iy_i-x_i\bar y\right)-\hat\beta_1\sum_{i=1}^{n}\left(x_i^2-x_i\bar x\right)=0 \tag{1.1.9}\]</span></p>
+<p>So that:</p>
+<p><span class="math display">\[ \hat\beta_1 = \frac{\sum_{i=1}^{n}\left( x_iy_i-x_i\bar y\right)}{\sum_{i=1}^{n}\left( x_i^2-x_i\bar x\right)} = \frac{\sum_{i=1}^{n}\left( x_iy_i\right)-n\bar x\bar y}{\sum_{i=1}^{n}\left( x_i^2\right)-n \bar x^2} \tag{1.1.10}\]</span></p>
+<p>Thus:</p>
+<p><span class="math display">\[ \sum_{i=1}^{n}\left( \bar x^2-x_i\bar x\right)=0\]</span></p>
+<p>And:</p>
+<p><span class="math display">\[ \sum_{i=1}^{n}\left(\bar x \bar y - y_i \bar x\right)=0\]</span></p>
+<p>This can be used in order to expand the previous term and finally to rewrite <span class="math inline">\(\hat\beta_1\)</span> as the ratio of <span class="math inline">\(Cov(x,y)\)</span> to <span class="math inline">\(Var(x)\)</span>:</p>
+<p><span class="math display">\[
+\begin{align}
+\hat\beta_1&amp;=\frac{\sum_{i=1}^{n}\left( x_iy_i-x_i\bar y\right)+\sum_{i=1}^{n}\left(\bar x\bar y - y_i \bar x\right)}{\sum_{i=1}^{n}\left( x_i^2-x_i\bar x\right)+\sum_{i=1}^{n}\left( \bar x^2-x_i\bar x\right)}=\frac{\sum_{i=1}^{n}\left( x_iy_i-x_i\bar y\right)+0}{\sum_{i=1}^{n}\left( x_i^2-x_i\bar x\right)+0}\\
+\\
+&amp;=\frac{\frac{1}{n}\sum_{i=1}^{n}\left( x_i-\bar x\right) \left(y_i- \bar y \right)}{\frac{1}{n}\sum_{i=1}^{n}\left( x_i-\bar x\right)^2}\\
+\\
+&amp;=\frac{Cov(x,y)}{Var(x)}
+\end{align}\]</span></p>
+<p>The solution is indeed a minimum as the second partial derivative is positive:</p>
+<span class="math display">\[\frac{\partial^2Q}{\partial \hat\beta_1^2}= 2 \sum_{i=1}^{n}x_i^2 &gt;0\]</span>
+</div>
+<p> </p>
+</div>
+</div>
+</div>
+<p>Let’s use these formulas to calculate regression coefficients for the running example as well:</p>
+<div class="sourceCode" id="cb539"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb539-1"><a href="ordinary-least-squares-regression.html#cb539-1"></a><span class="kw">tibble</span>(</span>
+<span id="cb539-2"><a href="ordinary-least-squares-regression.html#cb539-2"></a>  <span class="dt">beta_1 =</span> <span class="kw">cov</span>(x, y) <span class="op">/</span><span class="st"> </span><span class="kw">var</span>(x),</span>
+<span id="cb539-3"><a href="ordinary-least-squares-regression.html#cb539-3"></a>  <span class="dt">beta_0 =</span> <span class="kw">mean</span>(y) <span class="op">-</span><span class="st"> </span>beta_<span class="dv">1</span> <span class="op">*</span><span class="st"> </span><span class="kw">mean</span>(x)</span>
+<span id="cb539-4"><a href="ordinary-least-squares-regression.html#cb539-4"></a>)</span></code></pre></div>
+<pre><code>## # A tibble: 1 × 2
+##   beta_1 beta_0
+##    &lt;dbl&gt;  &lt;dbl&gt;
+## 1   7.08  -28.5</code></pre>
+<p>A similar result also exists for regression with more than one predictor variable, so-called <strong>multiple linear regression</strong>.</p>
+<div class="mathstuff">
+
+<div class="theorem">
+<p><span id="thm:OLS-Solution-general" class="theorem"><strong>Theorem 12.2  (OLS general)  </strong></span>Let <span class="math inline">\(X\)</span> be the <span class="math inline">\(n \times (k+1)\)</span> regression matrix for a linear regression model with <span class="math inline">\(k\)</span> predictor variables for a data set <span class="math inline">\(y\)</span> with <span class="math inline">\(n\)</span> observations. The solution for OLS regression</p>
+<p><span class="math display">\[
+\hat{\beta} = \langle \hat{\beta}_0, \hat{\beta}_1, \dots  , \hat{\beta}_k\rangle = \arg \min_{\beta} \sum_{i = 1}^k (y_i - (X \beta)_i)^2
+\]</span></p>
+<p>is given by:</p>
+<p><span class="math display">\[
+\hat{\beta} = (X^T \ X)^{-1}\ X^Ty
+\]</span></p>
+</div>
+<div class="collapsibleProof">
+<button class="trigger">
+Show proof.
+</button>
+<div class="content">
+
+<div class="proof">
+<p> <span class="proof"><em>Proof. </em></span> 
+With <span class="math inline">\(n\)</span> observations, the vector <span class="math inline">\(\xi\)</span> of predicted values for given coefficient vector <span class="math inline">\(\beta\)</span> is:</p>
+<p><span class="math display">\[
+\xi=X \beta
+\]</span></p>
+<p>More explicitly, this means that:</p>
+<p><span class="math display">\[
+\begin{align*}
+\xi_1&amp;=\beta_0 + \beta_{1} X_{11}+\beta_2 X_{12} + \ldots + \beta_k X_{1k}\\
+\xi_2&amp;=\beta_0 + \beta_{1} X_{21}+\beta_2 X_{22} + \ldots + \beta_k X_{2k}\\
+\ldots\\
+\xi_n&amp;=\beta_0 + \beta_{1} X_{n1}+\beta_2 X_{n2}+ \ldots + \beta_k X_{nk}
+\end{align*}
+\]</span></p>
+<p>The OLS estimator is obtained (like in the special case of simple linear regression) by minimizing the residual sum of squares (RSS).
+The RSS for the multiple linear regression model is</p>
+<p><span class="math display">\[
+Q=\sum_{i=1}^n \left(y_i-\beta_0 - \beta_1 X_{i1}- \beta_2 X_{i2}-...-\beta_k X_{ik}\right)^2
+\]</span></p>
+<p>To find the minimum of <span class="math inline">\(Q\)</span> we calculate the first partial derivative of <span class="math inline">\(Q\)</span> for each <span class="math inline">\(\beta_j\)</span>:</p>
+<p><span class="math display">\[\begin{align}
+\frac{\partial Q}{\partial\beta_0}&amp;=2\sum_{i=1}^n\left(y_i-\beta_0-\beta_1 X_{i1}-\beta_2 X_{i2}- \ldots -\beta_k X_{ik}\right)(-1)\\
+\\
+\frac{\partial Q}{\partial\beta_1}&amp;=2\sum_{i=1}^n\left(y_i-\beta_0-\beta_1 X_{i1}-\beta_2 X_{i2}- \ldots -\beta_k X_{ik}\right)(- X_{i1})\\
+\\
+\frac{\partial Q}{\partial\beta_2}&amp;=2\sum_{i=1}^n\left(y_i-\beta_0-\beta_1 X_{i1}-\beta_2 X_{i2}- \ldots -\beta_k X_{ik}\right)(- X_{i2})\\
+ \ldots \\
+\frac{\partial Q}{\partial\beta_k}&amp;=2\sum_{i=1}^n\left(y_i-\beta_0-\beta_1 X_{i1}-\beta_2 X_{i2}- \ldots -\beta_k X_{ik}\right)(- X_{ik})
+\end{align}\]</span></p>
+<p>For the minimum <span class="math inline">\(\hat{\beta}\)</span> the derivative of each equation must be zero:</p>
+<p><span class="math display">\[\begin{align}
+&amp;\sum_{i=1}^n\left(y_i-\hat\beta_0-\hat\beta_1 X_{i1}-\hat\beta_2 X_{i2}- \ldots -\hat\beta_k X_{ik}\right) = 0\\
+&amp;\sum_{i=1}^n\left(y_i-\hat\beta_0-\hat\beta_1 X_{i1}-\hat\beta_2 X_{i2}- \ldots -\hat\beta_k X_{ik}\right) X_{i1} = 0\\
+&amp;\sum_{i=1}^n\left(y_i-\hat\beta_0-\hat\beta_1 X_{i1}-\hat\beta_2 X_{i2}- \ldots -\hat\beta_k X_{ik}\right) X_{i2} = 0\\
+&amp; \ldots \\
+&amp;\sum_{i=1}^n\left(y_i-\hat\beta_0-\hat\beta_1 X_{i1}-\hat\beta_2 X_{i2}- \ldots -\hat\beta_k X_{ik}\right) X_{ik} = 0
+\end{align}\]</span></p>
+<p>Alternatively, we can use matrix notation and combine the above equations into the following form:</p>
+<p><span class="math display">\[X^Ty-X^TX\hat\beta=0\]</span></p>
+<p>Rearranging this, the following expression is known as <strong>normal equations</strong>:</p>
+<p><span class="math display">\[X^TX\hat\beta=X^Ty\]</span></p>
+<p>Just for illustration, the system of normal equations in expanded matrix notation is:</p>
+<p><span class="math display">\[
+\begin{bmatrix} 
+n &amp; \sum_{i=1}^n X_{i1} &amp; ... &amp; \sum_{i=1}^n X_{ik}\\
+\sum_{i=1}^n X_{i1} &amp; \sum_{i=1}^n X_{i1}^2 &amp; ... &amp; \sum_{i=1}^n X_{i1} X_{ik}\\... &amp; ... &amp; ... &amp; ...\\
+\sum_{i=1}^n X_{ik} &amp; \sum_{i=1}^n X_{ik} X_{i1} &amp; ... &amp; \sum_{i=1}^n X_{ik}^2
+\end{bmatrix}
+\begin{bmatrix}
+\hat\beta_0 \\
+\hat\beta_1 \\
+\ldots \\
+\hat\beta_k
+\end{bmatrix}
+=
+\begin{bmatrix}
+\sum_{i=1}^ny_i\\\sum_{i=1}^n X_{i1}y_i \\
+\ldots \\
+\sum_{i=1}^nX_{ik}y_i
+\end{bmatrix}
+\]</span></p>
+<p>The estimator <span class="math inline">\(\hat\beta\)</span> can be obtained by rearranging again:</p>
+<p><span class="math display">\[
+\hat{\beta} = (X^T \ X)^{-1}\ X^Ty
+\]</span></p>
+<p>Finally, to see that <span class="math inline">\(\hat\beta\)</span> is indeed a global minimizer of the OLS criterion, we check that the second order condition is always a semidefinite positive matrix (details omitted here):</p>
+<p><span class="math display">\[\frac{\partial^2 Q}{\partial \mathbf{\hat\beta}^2}=2X&#39;X &gt;0.\]</span></p>
+</div>
+<p> </p>
+</div>
+</div>
+</div>
+<p>The availability of these elegant mathematical solutions for OLS-regression explains why the computation of best-fitting regression coefficients with a built-in function like <code>lm</code> is lightning fast: it does not rely on optimization with <code>optim</code>, sampling methods or other similar computational approaches. Instead, it instantaneously calculates the analytical solution.</p>
+</div>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-olive2017">
+<p>Olive, David J. 2017. <em>Linear Regression</em>. Springer International Publishing.</p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="53">
+<li id="fn53"><p>The predictor vector for linear regression is often written as <span class="math inline">\(\hat{y}\)</span>. The notation in terms of a linear predictor <span class="math inline">\(\xi\)</span> is useful for later extensions to generalized linear regression models.<a href="ordinary-least-squares-regression.html#fnref53" class="footnote-back">↩︎</a></p></li>
+<li id="fn54"><p>You can conveniently think of the predictor matrix as just the data you want to analyze in a tidy tibble format, with the columns giving the variables of interest, only that you have removed the column with the dependent variable <span class="math inline">\(y\)</span> and that you have instead added the “intercept column” containing the entry 1 in each row.<a href="ordinary-least-squares-regression.html#fnref54" class="footnote-back">↩︎</a></p></li>
+<li id="fn55"><p>The fitted object <code>fit_lm</code> also contains additional information, to be inspected with <code>summary(fit_lm)</code>. We skip these details here because the current focus is on applied <em>Bayesian</em> analyses.<a href="ordinary-least-squares-regression.html#fnref55" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="Chap-04-01-simple-linear-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="Chap-04-01-linear-regression-MLE.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": false,
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
