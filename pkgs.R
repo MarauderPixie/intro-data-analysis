@@ -28,7 +28,7 @@ library(zeallot)     # unpacking / multiple assignment operator %<-%
 # if (!("dirichlet" %in% installed.packages())) {
 #   devtools::install_github("dkahle/dirichlet")
 # }
-# library(dirichlet)
+library(dirichlet)
 # # same/similar  for aida-package:
 # if (!("aida" %in% installed.packages())) {
 #   devtools::install_github("michael-franke/aida-package")

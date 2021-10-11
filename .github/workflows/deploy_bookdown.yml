@@ -22,8 +22,11 @@ jobs:
           
       - uses: r-lib/actions/setup-r-dependencies@v1
       
-      - name: install AIDA
+      - name: install AIDA from github
         run: Rscript -e 'devtools::install_github("michael-franke/aida-package")'
+        
+      - name: install dirichlet from github
+        run: Rscript -e 'devtools::install_github("dkahle/dirichlet")'
 
       - uses: r-lib/actions/setup-renv@v1
       
