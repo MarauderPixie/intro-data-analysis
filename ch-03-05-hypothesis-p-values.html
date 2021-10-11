@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>16.2 Quantifying evidence against a null-model with p-values | An Introduction to Data Analysis</title>
+  <meta name="description" content="Introductory text for statistics and data analysis (using R)" />
+  <meta name="generator" content="bookdown 0.24.1 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="16.2 Quantifying evidence against a null-model with p-values | An Introduction to Data Analysis" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Introductory text for statistics and data analysis (using R)" />
+  <meta name="github-repo" content="MarauderPixie/intro-data-analysis" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="16.2 Quantifying evidence against a null-model with p-values | An Introduction to Data Analysis" />
+  
+  <meta name="twitter:description" content="Introductory text for statistics and data analysis (using R)" />
+  
+
+<meta name="author" content="Michael Franke" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="ch-05-01-frequentist-testing-overview.html"/>
+<link rel="next" href="ch-03-05-hypothesis-testing-CLT.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span. { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="index.html#section"></a></li>
+<li class="part"><span><b>I Preliminaries</b></span></li>
+<li class="chapter" data-level="1" data-path="general-introduction.html"><a href="general-introduction.html"><i class="fa fa-check"></i><b>1</b> General Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="Chap-01-00-intro-learning-goals.html"><a href="Chap-01-00-intro-learning-goals.html"><i class="fa fa-check"></i><b>1.1</b> Learning goals</a></li>
+<li class="chapter" data-level="1.2" data-path="Chap-01-00-intro-course-structure.html"><a href="Chap-01-00-intro-course-structure.html"><i class="fa fa-check"></i><b>1.2</b> Course structure</a></li>
+<li class="chapter" data-level="1.3" data-path="Chap-01-00-intro-tools.html"><a href="Chap-01-00-intro-tools.html"><i class="fa fa-check"></i><b>1.3</b> Tools used in this course</a></li>
+<li class="chapter" data-level="1.4" data-path="Chap-01-00-intro-topics.html"><a href="Chap-01-00-intro-topics.html"><i class="fa fa-check"></i><b>1.4</b> Topics covered (and not covered) in the course</a></li>
+<li class="chapter" data-level="1.5" data-path="Chap-01-00-intro-data-sets.html"><a href="Chap-01-00-intro-data-sets.html"><i class="fa fa-check"></i><b>1.5</b> Data sets covered</a></li>
+<li class="chapter" data-level="1.6" data-path="Chap-01-00-intro-installation.html"><a href="Chap-01-00-intro-installation.html"><i class="fa fa-check"></i><b>1.6</b> Installation</a></li>
+<li class="chapter" data-level="1.7" data-path="Chap-01-00-intro-schedule.html"><a href="Chap-01-00-intro-schedule.html"><i class="fa fa-check"></i><b>1.7</b> Example schedule (12-week course)</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="Chap-01-01-R.html"><a href="Chap-01-01-R.html"><i class="fa fa-check"></i><b>2</b> Basics of R</a><ul>
+<li class="chapter" data-level="2.1" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html"><i class="fa fa-check"></i><b>2.1</b> First steps</a><ul>
+<li class="chapter" data-level="2.1.1" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#functions"><i class="fa fa-check"></i><b>2.1.1</b> Functions</a></li>
+<li class="chapter" data-level="2.1.2" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#variables"><i class="fa fa-check"></i><b>2.1.2</b> Variables</a></li>
+<li class="chapter" data-level="2.1.3" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#literate-coding"><i class="fa fa-check"></i><b>2.1.3</b> Literate coding</a></li>
+<li class="chapter" data-level="2.1.4" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#objects"><i class="fa fa-check"></i><b>2.1.4</b> Objects</a></li>
+<li class="chapter" data-level="2.1.5" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#packages"><i class="fa fa-check"></i><b>2.1.5</b> Packages</a></li>
+<li class="chapter" data-level="2.1.6" data-path="ch1-first-steps.html"><a href="ch1-first-steps.html#Chap-01-01-R-help"><i class="fa fa-check"></i><b>2.1.6</b> Getting help</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="ch1-data-types.html"><a href="ch1-data-types.html"><i class="fa fa-check"></i><b>2.2</b> Data types</a><ul>
+<li class="chapter" data-level="2.2.1" data-path="ch1-data-types.html"><a href="ch1-data-types.html#numeric-vectors-matrices"><i class="fa fa-check"></i><b>2.2.1</b> Numeric vectors &amp; matrices</a></li>
+<li class="chapter" data-level="2.2.2" data-path="ch1-data-types.html"><a href="ch1-data-types.html#booleans"><i class="fa fa-check"></i><b>2.2.2</b> Booleans</a></li>
+<li class="chapter" data-level="2.2.3" data-path="ch1-data-types.html"><a href="ch1-data-types.html#special-values"><i class="fa fa-check"></i><b>2.2.3</b> Special values</a></li>
+<li class="chapter" data-level="2.2.4" data-path="ch1-data-types.html"><a href="ch1-data-types.html#characters-strings"><i class="fa fa-check"></i><b>2.2.4</b> Characters (= strings)</a></li>
+<li class="chapter" data-level="2.2.5" data-path="ch1-data-types.html"><a href="ch1-data-types.html#factors"><i class="fa fa-check"></i><b>2.2.5</b> Factors</a></li>
+<li class="chapter" data-level="2.2.6" data-path="ch1-data-types.html"><a href="ch1-data-types.html#lists-data-frames-tibbles"><i class="fa fa-check"></i><b>2.2.6</b> Lists, data frames &amp; tibbles</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="Chap-01-01-functions.html"><a href="Chap-01-01-functions.html"><i class="fa fa-check"></i><b>2.3</b> Functions</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="Chap-01-01-functions.html"><a href="Chap-01-01-functions.html#some-important-built-in-functions"><i class="fa fa-check"></i><b>2.3.1</b> Some important built-in functions</a></li>
+<li class="chapter" data-level="2.3.2" data-path="Chap-01-01-functions.html"><a href="Chap-01-01-functions.html#defining-your-own-functions"><i class="fa fa-check"></i><b>2.3.2</b> Defining your own functions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="ch-01-01-loops-and-maps.html"><a href="ch-01-01-loops-and-maps.html"><i class="fa fa-check"></i><b>2.4</b> Loops and maps</a><ul>
+<li class="chapter" data-level="2.4.1" data-path="ch-01-01-loops-and-maps.html"><a href="ch-01-01-loops-and-maps.html#for-loops"><i class="fa fa-check"></i><b>2.4.1</b> For-loops</a></li>
+<li class="chapter" data-level="2.4.2" data-path="ch-01-01-loops-and-maps.html"><a href="ch-01-01-loops-and-maps.html#functional-iterators"><i class="fa fa-check"></i><b>2.4.2</b> Functional iterators</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="Chap-01-01-piping.html"><a href="Chap-01-01-piping.html"><i class="fa fa-check"></i><b>2.5</b> Piping</a><ul>
+<li class="chapter" data-level="2.5.1" data-path="Chap-01-01-piping.html"><a href="Chap-01-01-piping.html#excursion-more-on-pipes-in-r"><i class="fa fa-check"></i><b>2.5.1</b> Excursion: More on pipes in R</a></li>
+<li class="chapter" data-level="2.5.2" data-path="Chap-01-01-piping.html"><a href="Chap-01-01-piping.html#excursion-multiple-assignments-or-unpacking"><i class="fa fa-check"></i><b>2.5.2</b> Excursion: Multiple assignments, or “unpacking”</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="ch-01-01-Rmarkdown.html"><a href="ch-01-01-Rmarkdown.html"><i class="fa fa-check"></i><b>2.6</b> Rmarkdown</a></li>
+</ul></li>
+<li class="part"><span><b>II Data</b></span></li>
+<li class="chapter" data-level="3" data-path="Chap-02-01-data.html"><a href="Chap-02-01-data.html"><i class="fa fa-check"></i><b>3</b> Data, variables &amp; experimental designs</a><ul>
+<li class="chapter" data-level="3.1" data-path="Chap-02-01-data-what-is-data.html"><a href="Chap-02-01-data-what-is-data.html"><i class="fa fa-check"></i><b>3.1</b> What is data?</a></li>
+<li class="chapter" data-level="3.2" data-path="Chap-02-01-data-kinds-of-data.html"><a href="Chap-02-01-data-kinds-of-data.html"><i class="fa fa-check"></i><b>3.2</b> Different kinds of data</a></li>
+<li class="chapter" data-level="3.3" data-path="Chap-02-01-data-variables.html"><a href="Chap-02-01-data-variables.html"><i class="fa fa-check"></i><b>3.3</b> On the notion of “variables”</a></li>
+<li class="chapter" data-level="3.4" data-path="Chap-02-01-data-exp-design.html"><a href="Chap-02-01-data-exp-design.html"><i class="fa fa-check"></i><b>3.4</b> Basics of experimental design</a><ul>
+<li class="chapter" data-level="3.4.1" data-path="Chap-02-01-data-exp-design.html"><a href="Chap-02-01-data-exp-design.html#what-to-analyze-dependent-variables"><i class="fa fa-check"></i><b>3.4.1</b> What to analyze? – Dependent variables</a></li>
+<li class="chapter" data-level="3.4.2" data-path="Chap-02-01-data-exp-design.html"><a href="Chap-02-01-data-exp-design.html#conditions-trials-items"><i class="fa fa-check"></i><b>3.4.2</b> Conditions, trials, items</a></li>
+<li class="chapter" data-level="3.4.3" data-path="Chap-02-01-data-exp-design.html"><a href="Chap-02-01-data-exp-design.html#sample-size"><i class="fa fa-check"></i><b>3.4.3</b> Sample size</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="data-wrangling.html"><a href="data-wrangling.html"><i class="fa fa-check"></i><b>4</b> Data Wrangling</a><ul>
+<li class="chapter" data-level="4.1" data-path="Chap-02-02-data-IO.html"><a href="Chap-02-02-data-IO.html"><i class="fa fa-check"></i><b>4.1</b> Data in, data out</a></li>
+<li class="chapter" data-level="4.2" data-path="Chap-02-02-data-tidy-data.html"><a href="Chap-02-02-data-tidy-data.html"><i class="fa fa-check"></i><b>4.2</b> Tidy data</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="Chap-02-02-data-tidy-data.html"><a href="Chap-02-02-data-tidy-data.html#running-example"><i class="fa fa-check"></i><b>4.2.1</b> Running example</a></li>
+<li class="chapter" data-level="4.2.2" data-path="Chap-02-02-data-tidy-data.html"><a href="Chap-02-02-data-tidy-data.html#definition-of-tidy-data"><i class="fa fa-check"></i><b>4.2.2</b> Definition of <em>tidy data</em></a></li>
+<li class="chapter" data-level="4.2.3" data-path="Chap-02-02-data-tidy-data.html"><a href="Chap-02-02-data-tidy-data.html#excursion-non-redundant-data"><i class="fa fa-check"></i><b>4.2.3</b> Excursion: non-redundant data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html"><i class="fa fa-check"></i><b>4.3</b> Data manipulation: the basics</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#pivoting"><i class="fa fa-check"></i><b>4.3.1</b> Pivoting</a></li>
+<li class="chapter" data-level="4.3.2" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#subsetting-rows-columns"><i class="fa fa-check"></i><b>4.3.2</b> Subsetting rows &amp; columns</a></li>
+<li class="chapter" data-level="4.3.3" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#Chap-02-02-tidy-selection"><i class="fa fa-check"></i><b>4.3.3</b> Tidy selection of column names</a></li>
+<li class="chapter" data-level="4.3.4" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#adding-changing-and-renaming-columns"><i class="fa fa-check"></i><b>4.3.4</b> Adding, changing and renaming columns</a></li>
+<li class="chapter" data-level="4.3.5" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#splitting-and-uniting-columns"><i class="fa fa-check"></i><b>4.3.5</b> Splitting and uniting columns</a></li>
+<li class="chapter" data-level="4.3.6" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#sorting-a-data-set"><i class="fa fa-check"></i><b>4.3.6</b> Sorting a data set</a></li>
+<li class="chapter" data-level="4.3.7" data-path="Chap-02-02-data-preprocessing-cleaning.html"><a href="Chap-02-02-data-preprocessing-cleaning.html#combining-tibbles"><i class="fa fa-check"></i><b>4.3.7</b> Combining tibbles</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="Chap-02-02-data-grouping-nesting.html"><a href="Chap-02-02-data-grouping-nesting.html"><i class="fa fa-check"></i><b>4.4</b> Grouped operations</a></li>
+<li class="chapter" data-level="4.5" data-path="Chap-02-02-data-case-study-KoF.html"><a href="Chap-02-02-data-case-study-KoF.html"><i class="fa fa-check"></i><b>4.5</b> Case study: the King of France</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="Chap-02-02-data-case-study-KoF.html"><a href="Chap-02-02-data-case-study-KoF.html#cleaning-the-data"><i class="fa fa-check"></i><b>4.5.1</b> Cleaning the data</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="Chap-02-03-summary-statistics.html"><a href="Chap-02-03-summary-statistics.html"><i class="fa fa-check"></i><b>5</b> Summary statistics</a><ul>
+<li class="chapter" data-level="5.1" data-path="Chap-02-03-summary-statistics-counts.html"><a href="Chap-02-03-summary-statistics-counts.html"><i class="fa fa-check"></i><b>5.1</b> Counts and proportions</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="Chap-02-03-summary-statistics-counts.html"><a href="Chap-02-03-summary-statistics-counts.html#loading-and-inspecting-the-data"><i class="fa fa-check"></i><b>5.1.1</b> Loading and inspecting the data</a></li>
+<li class="chapter" data-level="5.1.2" data-path="Chap-02-03-summary-statistics-counts.html"><a href="Chap-02-03-summary-statistics-counts.html#obtaining-counts-with-n-count-and-tally"><i class="fa fa-check"></i><b>5.1.2</b> Obtaining counts with <code>n</code>, <code>count</code> and <code>tally</code></a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html"><i class="fa fa-check"></i><b>5.2</b> Central tendency and dispersion</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html#the-data-for-the-remainder-of-the-chapter"><i class="fa fa-check"></i><b>5.2.1</b> The data for the remainder of the chapter</a></li>
+<li class="chapter" data-level="5.2.2" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html#measures-of-central-tendency"><i class="fa fa-check"></i><b>5.2.2</b> Measures of central tendency</a></li>
+<li class="chapter" data-level="5.2.3" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html#measures-of-dispersion"><i class="fa fa-check"></i><b>5.2.3</b> Measures of dispersion</a></li>
+<li class="chapter" data-level="5.2.4" data-path="Chap-02-03-summary-statistics-1D.html"><a href="Chap-02-03-summary-statistics-1D.html#excursion-quantifying-confidence-with-bootstrapping"><i class="fa fa-check"></i><b>5.2.4</b> Excursion: Quantifying confidence with bootstrapping</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="Chap-02-03-summary-statistics-2D.html"><a href="Chap-02-03-summary-statistics-2D.html"><i class="fa fa-check"></i><b>5.3</b> Covariance and correlation</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="Chap-02-03-summary-statistics-2D.html"><a href="Chap-02-03-summary-statistics-2D.html#covariance"><i class="fa fa-check"></i><b>5.3.1</b> Covariance</a></li>
+<li class="chapter" data-level="5.3.2" data-path="Chap-02-03-summary-statistics-2D.html"><a href="Chap-02-03-summary-statistics-2D.html#correlation"><i class="fa fa-check"></i><b>5.3.2</b> Correlation</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="Chap-02-02-visualization.html"><a href="Chap-02-02-visualization.html"><i class="fa fa-check"></i><b>6</b> Data Visualization</a><ul>
+<li class="chapter" data-level="6.1" data-path="Chap-02-04-Anscombe-example.html"><a href="Chap-02-04-Anscombe-example.html"><i class="fa fa-check"></i><b>6.1</b> Motivating example: Anscombe’s quartet</a></li>
+<li class="chapter" data-level="6.2" data-path="Chap-02-04-good-visualization.html"><a href="Chap-02-04-good-visualization.html"><i class="fa fa-check"></i><b>6.2</b> Visualization: the good, the bad and the infographic</a></li>
+<li class="chapter" data-level="6.3" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html"><i class="fa fa-check"></i><b>6.3</b> Basics of <code>ggplot</code></a><ul>
+<li class="chapter" data-level="6.3.1" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#incremental-composition-of-a-plot"><i class="fa fa-check"></i><b>6.3.1</b> Incremental composition of a plot</a></li>
+<li class="chapter" data-level="6.3.2" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#elements-in-the-layered-grammar-of-graphs"><i class="fa fa-check"></i><b>6.3.2</b> Elements in the layered grammar of graphs</a></li>
+<li class="chapter" data-level="6.3.3" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#layers-and-groups"><i class="fa fa-check"></i><b>6.3.3</b> Layers and groups</a></li>
+<li class="chapter" data-level="6.3.4" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#grouping"><i class="fa fa-check"></i><b>6.3.4</b> Grouping</a></li>
+<li class="chapter" data-level="6.3.5" data-path="Chap-02-04-ggplot.html"><a href="Chap-02-04-ggplot.html#example-of-a-customized-plot"><i class="fa fa-check"></i><b>6.3.5</b> Example of a customized plot</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html"><i class="fa fa-check"></i><b>6.4</b> A rendezvous with popular geoms</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#scatter-plots-with-geom_point"><i class="fa fa-check"></i><b>6.4.1</b> Scatter plots with <code>geom_point</code></a></li>
+<li class="chapter" data-level="6.4.2" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#smooth"><i class="fa fa-check"></i><b>6.4.2</b> Smooth</a></li>
+<li class="chapter" data-level="6.4.3" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#line"><i class="fa fa-check"></i><b>6.4.3</b> Line</a></li>
+<li class="chapter" data-level="6.4.4" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#bar-plot"><i class="fa fa-check"></i><b>6.4.4</b> Bar plot</a></li>
+<li class="chapter" data-level="6.4.5" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#plotting-distributions-histograms-boxplots-densities-and-violins"><i class="fa fa-check"></i><b>6.4.5</b> Plotting distributions: histograms, boxplots, densities and violins</a></li>
+<li class="chapter" data-level="6.4.6" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#rugs"><i class="fa fa-check"></i><b>6.4.6</b> Rugs</a></li>
+<li class="chapter" data-level="6.4.7" data-path="Chap-02-04-geoms.html"><a href="Chap-02-04-geoms.html#annotation"><i class="fa fa-check"></i><b>6.4.7</b> Annotation</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="Chap-02-04-faceting.html"><a href="Chap-02-04-faceting.html"><i class="fa fa-check"></i><b>6.5</b> Faceting</a></li>
+<li class="chapter" data-level="6.6" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html"><i class="fa fa-check"></i><b>6.6</b> Customization etc.</a><ul>
+<li class="chapter" data-level="6.6.1" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#themes"><i class="fa fa-check"></i><b>6.6.1</b> Themes</a></li>
+<li class="chapter" data-level="6.6.2" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#guides"><i class="fa fa-check"></i><b>6.6.2</b> Guides</a></li>
+<li class="chapter" data-level="6.6.3" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#axes-ticks-and-tick-labels"><i class="fa fa-check"></i><b>6.6.3</b> Axes, ticks and tick labels</a></li>
+<li class="chapter" data-level="6.6.4" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#labels"><i class="fa fa-check"></i><b>6.6.4</b> Labels</a></li>
+<li class="chapter" data-level="6.6.5" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#combining-arranging-plots"><i class="fa fa-check"></i><b>6.6.5</b> Combining &amp; arranging plots</a></li>
+<li class="chapter" data-level="6.6.6" data-path="Chap-02-04-customization.html"><a href="Chap-02-04-customization.html#latex-expressions-in-plot-labels"><i class="fa fa-check"></i><b>6.6.6</b> LaTeX expressions in plot labels</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>III Bayesian Data Analysis</b></span></li>
+<li class="chapter" data-level="7" data-path="Chap-03-01-probability.html"><a href="Chap-03-01-probability.html"><i class="fa fa-check"></i><b>7</b> Basics of Probability Theory</a><ul>
+<li class="chapter" data-level="7.1" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html"><i class="fa fa-check"></i><b>7.1</b> Probability</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html#outcomes-events-observations"><i class="fa fa-check"></i><b>7.1.1</b> Outcomes, events, observations</a></li>
+<li class="chapter" data-level="7.1.2" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html#probability-distributions"><i class="fa fa-check"></i><b>7.1.2</b> Probability distributions</a></li>
+<li class="chapter" data-level="7.1.3" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html#interpretations-of-probability"><i class="fa fa-check"></i><b>7.1.3</b> Interpretations of probability</a></li>
+<li class="chapter" data-level="7.1.4" data-path="Chap-03-01-probability-basics.html"><a href="Chap-03-01-probability-basics.html#distributions-as-samples"><i class="fa fa-check"></i><b>7.1.4</b> Distributions as samples</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="Chap-03-01-probability-marginal.html"><a href="Chap-03-01-probability-marginal.html"><i class="fa fa-check"></i><b>7.2</b> Structured events &amp; marginal distributions</a><ul>
+<li class="chapter" data-level="7.2.1" data-path="Chap-03-01-probability-marginal.html"><a href="Chap-03-01-probability-marginal.html#probability-table-for-a-flip-and-draw-scenario"><i class="fa fa-check"></i><b>7.2.1</b> Probability table for a flip-and-draw scenario</a></li>
+<li class="chapter" data-level="7.2.2" data-path="Chap-03-01-probability-marginal.html"><a href="Chap-03-01-probability-marginal.html#structured-events-and-joint-probability-distributions"><i class="fa fa-check"></i><b>7.2.2</b> Structured events and joint-probability distributions</a></li>
+<li class="chapter" data-level="7.2.3" data-path="Chap-03-01-probability-marginal.html"><a href="Chap-03-01-probability-marginal.html#marginalization"><i class="fa fa-check"></i><b>7.2.3</b> Marginalization</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="Chap-03-01-probability-conditional.html"><a href="Chap-03-01-probability-conditional.html"><i class="fa fa-check"></i><b>7.3</b> Conditional probability</a><ul>
+<li class="chapter" data-level="7.3.1" data-path="Chap-03-01-probability-conditional.html"><a href="Chap-03-01-probability-conditional.html#bayes-rule"><i class="fa fa-check"></i><b>7.3.1</b> Bayes rule</a></li>
+<li class="chapter" data-level="7.3.2" data-path="Chap-03-01-probability-conditional.html"><a href="Chap-03-01-probability-conditional.html#Chap-03-01-probability-independence"><i class="fa fa-check"></i><b>7.3.2</b> Stochastic (in-)dependence</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html"><i class="fa fa-check"></i><b>7.4</b> Random variables</a><ul>
+<li class="chapter" data-level="7.4.1" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html#notation-terminology"><i class="fa fa-check"></i><b>7.4.1</b> Notation &amp; terminology</a></li>
+<li class="chapter" data-level="7.4.2" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html#cumulative-distribution-functions-mass-density"><i class="fa fa-check"></i><b>7.4.2</b> Cumulative distribution functions, mass &amp; density</a></li>
+<li class="chapter" data-level="7.4.3" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html#expected-value-variance"><i class="fa fa-check"></i><b>7.4.3</b> Expected value &amp; variance</a></li>
+<li class="chapter" data-level="7.4.4" data-path="Chap-03-01-probability-random-variables.html"><a href="Chap-03-01-probability-random-variables.html#composite-random-variables"><i class="fa fa-check"></i><b>7.4.4</b> Composite random variables</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="Chap-03-01-probability-R.html"><a href="Chap-03-01-probability-R.html"><i class="fa fa-check"></i><b>7.5</b> Probability distributions in R</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="Chap-03-03-models.html"><a href="Chap-03-03-models.html"><i class="fa fa-check"></i><b>8</b> Statistical models</a><ul>
+<li class="chapter" data-level="8.1" data-path="Chap-03-03-models-general.html"><a href="Chap-03-03-models-general.html"><i class="fa fa-check"></i><b>8.1</b> Statistical models</a></li>
+<li class="chapter" data-level="8.2" data-path="Chap-03-03-models-representation.html"><a href="Chap-03-03-models-representation.html"><i class="fa fa-check"></i><b>8.2</b> Notation &amp; graphical representation</a><ul>
+<li class="chapter" data-level="8.2.1" data-path="Chap-03-03-models-representation.html"><a href="Chap-03-03-models-representation.html#formula-notation"><i class="fa fa-check"></i><b>8.2.1</b> Formula notation</a></li>
+<li class="chapter" data-level="8.2.2" data-path="Chap-03-03-models-representation.html"><a href="Chap-03-03-models-representation.html#graphical-notation"><i class="fa fa-check"></i><b>8.2.2</b> Graphical notation</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="Chap-03-03-models-parameters-priors.html"><a href="Chap-03-03-models-parameters-priors.html"><i class="fa fa-check"></i><b>8.3</b> Parameters, priors, and prior predictions</a><ul>
+<li class="chapter" data-level="8.3.1" data-path="Chap-03-03-models-parameters-priors.html"><a href="Chap-03-03-models-parameters-priors.html#whats-a-model-parameter"><i class="fa fa-check"></i><b>8.3.1</b> What’s a model parameter?</a></li>
+<li class="chapter" data-level="8.3.2" data-path="Chap-03-03-models-parameters-priors.html"><a href="Chap-03-03-models-parameters-priors.html#Chap-03-02-models-priors"><i class="fa fa-check"></i><b>8.3.2</b> Priors over parameters</a></li>
+<li class="chapter" data-level="8.3.3" data-path="Chap-03-03-models-parameters-priors.html"><a href="Chap-03-03-models-parameters-priors.html#Chap-03-03-models-parameters-prior-predictive"><i class="fa fa-check"></i><b>8.3.3</b> Prior predictions</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="ch-03-04-parameter-estimation.html"><a href="ch-03-04-parameter-estimation.html"><i class="fa fa-check"></i><b>9</b> Bayesian parameter estimation</a><ul>
+<li class="chapter" data-level="9.1" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html"><i class="fa fa-check"></i><b>9.1</b> Bayes rule for parameter estimation</a><ul>
+<li class="chapter" data-level="9.1.1" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#definitions-and-terminology"><i class="fa fa-check"></i><b>9.1.1</b> Definitions and terminology</a></li>
+<li class="chapter" data-level="9.1.2" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#the-effects-of-prior-and-likelihood-on-the-posterior"><i class="fa fa-check"></i><b>9.1.2</b> The effects of prior and likelihood on the posterior</a></li>
+<li class="chapter" data-level="9.1.3" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#ch-03-04-parameter-estimation-conjugacy"><i class="fa fa-check"></i><b>9.1.3</b> Computing Bayesian posteriors with conjugate priors</a></li>
+<li class="chapter" data-level="9.1.4" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#excursion-sequential-updating"><i class="fa fa-check"></i><b>9.1.4</b> Excursion: Sequential updating</a></li>
+<li class="chapter" data-level="9.1.5" data-path="ch-03-03-estimation-bayes.html"><a href="ch-03-03-estimation-bayes.html#posterior-predictive-distribution"><i class="fa fa-check"></i><b>9.1.5</b> Posterior predictive distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="9.2" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html"><i class="fa fa-check"></i><b>9.2</b> Point-valued and interval-ranged estimates</a><ul>
+<li class="chapter" data-level="9.2.1" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html#point-valued-estimates"><i class="fa fa-check"></i><b>9.2.1</b> Point-valued estimates</a></li>
+<li class="chapter" data-level="9.2.2" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html#interval-ranged-estimates"><i class="fa fa-check"></i><b>9.2.2</b> Interval-ranged estimates</a></li>
+<li class="chapter" data-level="9.2.3" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html#computing-bayesian-estimates"><i class="fa fa-check"></i><b>9.2.3</b> Computing Bayesian estimates</a></li>
+<li class="chapter" data-level="9.2.4" data-path="ch-03-04-parameter-estimation-points-intervals.html"><a href="ch-03-04-parameter-estimation-points-intervals.html#excursion-computing-mles-and-maps-in-r"><i class="fa fa-check"></i><b>9.2.4</b> Excursion: Computing MLEs and MAPs in R</a></li>
+</ul></li>
+<li class="chapter" data-level="9.3" data-path="Ch-03-03-estimation-algorithms.html"><a href="Ch-03-03-estimation-algorithms.html"><i class="fa fa-check"></i><b>9.3</b> Approximating the posterior</a><ul>
+<li class="chapter" data-level="9.3.1" data-path="Ch-03-03-estimation-algorithms.html"><a href="Ch-03-03-estimation-algorithms.html#ch-03-03-MCMC"><i class="fa fa-check"></i><b>9.3.1</b> Of apples and trees: Markov Chain Monte Carlo sampling</a></li>
+<li class="chapter" data-level="9.3.2" data-path="Ch-03-03-estimation-algorithms.html"><a href="Ch-03-03-estimation-algorithms.html#ch-03-03-estimation-Stan"><i class="fa fa-check"></i><b>9.3.2</b> Excursion: Probabilistic modeling with Stan</a></li>
+</ul></li>
+<li class="chapter" data-level="9.4" data-path="ch-03-04-parameter-estimation-normal.html"><a href="ch-03-04-parameter-estimation-normal.html"><i class="fa fa-check"></i><b>9.4</b> Estimating the parameters of a Normal distribution</a><ul>
+<li class="chapter" data-level="9.4.1" data-path="ch-03-04-parameter-estimation-normal.html"><a href="ch-03-04-parameter-estimation-normal.html#uninformative-priors"><i class="fa fa-check"></i><b>9.4.1</b> Uninformative priors</a></li>
+<li class="chapter" data-level="9.4.2" data-path="ch-03-04-parameter-estimation-normal.html"><a href="ch-03-04-parameter-estimation-normal.html#conjugate-priors"><i class="fa fa-check"></i><b>9.4.2</b> Conjugate priors</a></li>
+<li class="chapter" data-level="9.4.3" data-path="ch-03-04-parameter-estimation-normal.html"><a href="ch-03-04-parameter-estimation-normal.html#estimating-the-difference-between-group-means"><i class="fa fa-check"></i><b>9.4.3</b> Estimating the difference between group means</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="Chap-03-06-model-comparison.html"><a href="Chap-03-06-model-comparison.html"><i class="fa fa-check"></i><b>10</b> Model Comparison</a><ul>
+<li class="chapter" data-level="10.1" data-path="Chap-03-06-model-comparison-case-study.html"><a href="Chap-03-06-model-comparison-case-study.html"><i class="fa fa-check"></i><b>10.1</b> Case study: recall models</a></li>
+<li class="chapter" data-level="10.2" data-path="Chap-03-06-model-comparison-AIC.html"><a href="Chap-03-06-model-comparison-AIC.html"><i class="fa fa-check"></i><b>10.2</b> Akaike Information Criterion</a></li>
+<li class="chapter" data-level="10.3" data-path="Chap-03-06-model-comparison-BF.html"><a href="Chap-03-06-model-comparison-BF.html"><i class="fa fa-check"></i><b>10.3</b> Bayes factors</a><ul>
+<li class="chapter" data-level="10.3.1" data-path="Chap-03-06-model-comparison-BF.html"><a href="Chap-03-06-model-comparison-BF.html#Chap-03-06-model-comparison-BF-grid"><i class="fa fa-check"></i><b>10.3.1</b> Grid approximation</a></li>
+<li class="chapter" data-level="10.3.2" data-path="Chap-03-06-model-comparison-BF.html"><a href="Chap-03-06-model-comparison-BF.html#Chap-03-06-model-comparison-BF-naiveMC"><i class="fa fa-check"></i><b>10.3.2</b> Naive Monte Carlo</a></li>
+<li class="chapter" data-level="10.3.3" data-path="Chap-03-06-model-comparison-BF.html"><a href="Chap-03-06-model-comparison-BF.html#Chap-03-06-model-comparison-BF-bridge"><i class="fa fa-check"></i><b>10.3.3</b> Excursion: Bridge sampling</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="ch-03-07-hypothesis-testing-Bayes.html"><a href="ch-03-07-hypothesis-testing-Bayes.html"><i class="fa fa-check"></i><b>11</b> Bayesian hypothesis testing</a><ul>
+<li class="chapter" data-level="11.1" data-path="ch-03-07-hypothesis-testing-Bayes-hypotheses.html"><a href="ch-03-07-hypothesis-testing-Bayes-hypotheses.html"><i class="fa fa-check"></i><b>11.1</b> Statistical hypotheses</a></li>
+<li class="chapter" data-level="11.2" data-path="data-and-models-for-this-chapter.html"><a href="data-and-models-for-this-chapter.html"><i class="fa fa-check"></i><b>11.2</b> Data and models for this chapter</a><ul>
+<li class="chapter" data-level="11.2.1" data-path="data-and-models-for-this-chapter.html"><a href="data-and-models-for-this-chapter.html#section-1"><i class="fa fa-check"></i><b>11.2.1</b> 24/7</a></li>
+<li class="chapter" data-level="11.2.2" data-path="data-and-models-for-this-chapter.html"><a href="data-and-models-for-this-chapter.html#simon-task"><i class="fa fa-check"></i><b>11.2.2</b> Simon task</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="ch-03-05-Bayes-testing-estimation.html"><a href="ch-03-05-Bayes-testing-estimation.html"><i class="fa fa-check"></i><b>11.3</b> Testing via posterior estimation</a><ul>
+<li class="chapter" data-level="11.3.1" data-path="ch-03-05-Bayes-testing-estimation.html"><a href="ch-03-05-Bayes-testing-estimation.html#example-247"><i class="fa fa-check"></i><b>11.3.1</b> Example: 24/7</a></li>
+<li class="chapter" data-level="11.3.2" data-path="ch-03-05-Bayes-testing-estimation.html"><a href="ch-03-05-Bayes-testing-estimation.html#example-simon-task"><i class="fa fa-check"></i><b>11.3.2</b> Example: Simon Task</a></li>
+</ul></li>
+<li class="chapter" data-level="11.4" data-path="ch-03-05-Bayesian-testing-comparison.html"><a href="ch-03-05-Bayesian-testing-comparison.html"><i class="fa fa-check"></i><b>11.4</b> Testing via model comparison</a><ul>
+<li class="chapter" data-level="11.4.1" data-path="ch-03-05-Bayesian-testing-comparison.html"><a href="ch-03-05-Bayesian-testing-comparison.html#ch-03-07-hypothesis-testing-Bayes-Savage-Dickey"><i class="fa fa-check"></i><b>11.4.1</b> The Savage-Dickey method</a></li>
+<li class="chapter" data-level="11.4.2" data-path="ch-03-05-Bayesian-testing-comparison.html"><a href="ch-03-05-Bayesian-testing-comparison.html#ch-03-07-hypothesis-testing-Bayes-encompassing-models"><i class="fa fa-check"></i><b>11.4.2</b> Encompassing models</a></li>
+</ul></li>
+</ul></li>
+<li class="part"><span><b>IV Applied (generalized) linear modeling</b></span></li>
+<li class="chapter" data-level="12" data-path="Chap-04-01-simple-linear-regression.html"><a href="Chap-04-01-simple-linear-regression.html"><i class="fa fa-check"></i><b>12</b> Linear regression</a><ul>
+<li class="chapter" data-level="12.1" data-path="ordinary-least-squares-regression.html"><a href="ordinary-least-squares-regression.html"><i class="fa fa-check"></i><b>12.1</b> Ordinary least squares regression</a><ul>
+<li class="chapter" data-level="12.1.1" data-path="ordinary-least-squares-regression.html"><a href="ordinary-least-squares-regression.html#prediction-without-any-further-information"><i class="fa fa-check"></i><b>12.1.1</b> Prediction without any further information</a></li>
+<li class="chapter" data-level="12.1.2" data-path="ordinary-least-squares-regression.html"><a href="ordinary-least-squares-regression.html#prediction-with-knowledge-of-unemployment-rate"><i class="fa fa-check"></i><b>12.1.2</b> Prediction with knowledge of unemployment rate</a></li>
+<li class="chapter" data-level="12.1.3" data-path="ordinary-least-squares-regression.html"><a href="ordinary-least-squares-regression.html#linear-regression-general-problem-formulation"><i class="fa fa-check"></i><b>12.1.3</b> Linear regression: general problem formulation</a></li>
+<li class="chapter" data-level="12.1.4" data-path="ordinary-least-squares-regression.html"><a href="ordinary-least-squares-regression.html#finding-the-ols-solution"><i class="fa fa-check"></i><b>12.1.4</b> Finding the OLS-solution</a></li>
+</ul></li>
+<li class="chapter" data-level="12.2" data-path="Chap-04-01-linear-regression-MLE.html"><a href="Chap-04-01-linear-regression-MLE.html"><i class="fa fa-check"></i><b>12.2</b> A maximum-likelihood approach</a><ul>
+<li class="chapter" data-level="12.2.1" data-path="Chap-04-01-linear-regression-MLE.html"><a href="Chap-04-01-linear-regression-MLE.html#a-likelihood-based-model"><i class="fa fa-check"></i><b>12.2.1</b> A likelihood-based model</a></li>
+<li class="chapter" data-level="12.2.2" data-path="Chap-04-01-linear-regression-MLE.html"><a href="Chap-04-01-linear-regression-MLE.html#finding-the-mle-solution-with-optim"><i class="fa fa-check"></i><b>12.2.2</b> Finding the MLE-solution with <code>optim</code></a></li>
+<li class="chapter" data-level="12.2.3" data-path="Chap-04-01-linear-regression-MLE.html"><a href="Chap-04-01-linear-regression-MLE.html#finding-the-mle-solution-with-glm"><i class="fa fa-check"></i><b>12.2.3</b> Finding the MLE-solution with <code>glm</code></a></li>
+<li class="chapter" data-level="12.2.4" data-path="Chap-04-01-linear-regression-MLE.html"><a href="Chap-04-01-linear-regression-MLE.html#finding-the-mle-solution-with-math"><i class="fa fa-check"></i><b>12.2.4</b> Finding the MLE-solution with math</a></li>
+</ul></li>
+<li class="chapter" data-level="12.3" data-path="a-bayesian-approach.html"><a href="a-bayesian-approach.html"><i class="fa fa-check"></i><b>12.3</b> A Bayesian approach</a></li>
+<li class="chapter" data-level="12.4" data-path="comparison-of-approaches.html"><a href="comparison-of-approaches.html"><i class="fa fa-check"></i><b>12.4</b> Comparison of approaches</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="Chap-04-02-Bayes-regression-practice.html"><a href="Chap-04-02-Bayes-regression-practice.html"><i class="fa fa-check"></i><b>13</b> Bayesian regression in practice</a><ul>
+<li class="chapter" data-level="13.1" data-path="simple-linear-regression-with-brms.html"><a href="simple-linear-regression-with-brms.html"><i class="fa fa-check"></i><b>13.1</b> Simple linear regression with <code>brms</code></a></li>
+<li class="chapter" data-level="13.2" data-path="extracting-posterior-samples.html"><a href="extracting-posterior-samples.html"><i class="fa fa-check"></i><b>13.2</b> Extracting posterior samples</a></li>
+<li class="chapter" data-level="13.3" data-path="excursion-inspecting-the-underlying-stan-code.html"><a href="excursion-inspecting-the-underlying-stan-code.html"><i class="fa fa-check"></i><b>13.3</b> [Excursion:] Inspecting the underlying Stan code</a></li>
+<li class="chapter" data-level="13.4" data-path="setting-priors.html"><a href="setting-priors.html"><i class="fa fa-check"></i><b>13.4</b> Setting priors</a></li>
+<li class="chapter" data-level="13.5" data-path="posterior-predictions.html"><a href="posterior-predictions.html"><i class="fa fa-check"></i><b>13.5</b> Posterior predictions</a></li>
+<li class="chapter" data-level="13.6" data-path="testing-hypotheses.html"><a href="testing-hypotheses.html"><i class="fa fa-check"></i><b>13.6</b> Testing hypotheses</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="Chap-04-03-predictors.html"><a href="Chap-04-03-predictors.html"><i class="fa fa-check"></i><b>14</b> Categorical predictors</a><ul>
+<li class="chapter" data-level="14.1" data-path="Chap-04-03-predictors-two-levels.html"><a href="Chap-04-03-predictors-two-levels.html"><i class="fa fa-check"></i><b>14.1</b> Single two-level predictor</a></li>
+<li class="chapter" data-level="14.2" data-path="Chap-04-03-predictors-multi-levels.html"><a href="Chap-04-03-predictors-multi-levels.html"><i class="fa fa-check"></i><b>14.2</b> Single multi-level predictor</a></li>
+<li class="chapter" data-level="14.3" data-path="Chap-04-03-predictors-multiple-predictors.html"><a href="Chap-04-03-predictors-multiple-predictors.html"><i class="fa fa-check"></i><b>14.3</b> Multiple predictors</a><ul>
+<li class="chapter" data-level="14.3.1" data-path="Chap-04-03-predictors-multiple-predictors.html"><a href="Chap-04-03-predictors-multiple-predictors.html#treatment-coding"><i class="fa fa-check"></i><b>14.3.1</b> Treatment coding</a></li>
+<li class="chapter" data-level="14.3.2" data-path="Chap-04-03-predictors-multiple-predictors.html"><a href="Chap-04-03-predictors-multiple-predictors.html#sum-coding"><i class="fa fa-check"></i><b>14.3.2</b> Sum coding</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="Chap-04-04-GLM.html"><a href="Chap-04-04-GLM.html"><i class="fa fa-check"></i><b>15</b> Generalized linear model</a><ul>
+<li class="chapter" data-level="15.1" data-path="generalizing-the-linear-regression-model.html"><a href="generalizing-the-linear-regression-model.html"><i class="fa fa-check"></i><b>15.1</b> Generalizing the linear regression model</a></li>
+<li class="chapter" data-level="15.2" data-path="logistic-regression.html"><a href="logistic-regression.html"><i class="fa fa-check"></i><b>15.2</b> Logistic regression</a></li>
+</ul></li>
+<li class="part"><span><b>V Frequentist statistics</b></span></li>
+<li class="chapter" data-level="16" data-path="ch-05-01-frequentist-hypothesis-testing.html"><a href="ch-05-01-frequentist-hypothesis-testing.html"><i class="fa fa-check"></i><b>16</b> Null Hypothesis Significance Testing</a><ul>
+<li class="chapter" data-level="16.1" data-path="ch-05-01-frequentist-testing-overview.html"><a href="ch-05-01-frequentist-testing-overview.html"><i class="fa fa-check"></i><b>16.1</b> Frequentist statistics: why &amp; how</a></li>
+<li class="chapter" data-level="16.2" data-path="ch-03-05-hypothesis-p-values.html"><a href="ch-03-05-hypothesis-p-values.html"><i class="fa fa-check"></i><b>16.2</b> Quantifying evidence against a null-model with <em>p</em>-values</a><ul>
+<li class="chapter" data-level="16.2.1" data-path="ch-03-05-hypothesis-p-values.html"><a href="ch-03-05-hypothesis-p-values.html#frequentist-null-models"><i class="fa fa-check"></i><b>16.2.1</b> Frequentist null-models</a></li>
+<li class="chapter" data-level="16.2.2" data-path="ch-03-05-hypothesis-p-values.html"><a href="ch-03-05-hypothesis-p-values.html#one--vs.-two-sided-p-values"><i class="fa fa-check"></i><b>16.2.2</b> One- vs. two-sided <span class="math inline">\(p\)</span>-values</a></li>
+<li class="chapter" data-level="16.2.3" data-path="ch-03-05-hypothesis-p-values.html"><a href="ch-03-05-hypothesis-p-values.html#significance-categorical-decisions"><i class="fa fa-check"></i><b>16.2.3</b> Significance &amp; categorical decisions</a></li>
+<li class="chapter" data-level="16.2.4" data-path="ch-03-05-hypothesis-p-values.html"><a href="ch-03-05-hypothesis-p-values.html#how-not-to-interpret-p-values"><i class="fa fa-check"></i><b>16.2.4</b> How (not) to interpret <em>p</em>-values</a></li>
+<li class="chapter" data-level="16.2.5" data-path="ch-03-05-hypothesis-p-values.html"><a href="ch-03-05-hypothesis-p-values.html#excursion-distribution-of-p-values"><i class="fa fa-check"></i><b>16.2.5</b> [Excursion] Distribution of <span class="math inline">\(p\)</span>-values</a></li>
+</ul></li>
+<li class="chapter" data-level="16.3" data-path="ch-03-05-hypothesis-testing-CLT.html"><a href="ch-03-05-hypothesis-testing-CLT.html"><i class="fa fa-check"></i><b>16.3</b> [Excursion] Central Limit Theorem</a></li>
+<li class="chapter" data-level="16.4" data-path="ch-03-04-hypothesis-significance-errors.html"><a href="ch-03-04-hypothesis-significance-errors.html"><i class="fa fa-check"></i><b>16.4</b> [Excursion] The Neyman-Pearson approach</a></li>
+<li class="chapter" data-level="16.5" data-path="ch-05-01-frequentist-testing-confidence-intervals.html"><a href="ch-05-01-frequentist-testing-confidence-intervals.html"><i class="fa fa-check"></i><b>16.5</b> Confidence intervals</a><ul>
+<li class="chapter" data-level="16.5.1" data-path="ch-05-01-frequentist-testing-confidence-intervals.html"><a href="ch-05-01-frequentist-testing-confidence-intervals.html#relation-of-p-values-to-confidence-intervals"><i class="fa fa-check"></i><b>16.5.1</b> Relation of <em>p</em>-values to confidence intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="16.6" data-path="ch-03-05-hypothesis-testing-tests.html"><a href="ch-03-05-hypothesis-testing-tests.html"><i class="fa fa-check"></i><b>16.6</b> Selected tests</a><ul>
+<li class="chapter" data-level="16.6.1" data-path="ch-03-05-hypothesis-testing-tests.html"><a href="ch-03-05-hypothesis-testing-tests.html#ch-03-05-hypothesis-testing-Pearsons-Chi"><i class="fa fa-check"></i><b>16.6.1</b> Pearson’s <span class="math inline">\(\chi^2\)</span>-tests</a></li>
+<li class="chapter" data-level="16.6.2" data-path="ch-03-05-hypothesis-testing-tests.html"><a href="ch-03-05-hypothesis-testing-tests.html#ch-03-05-hypothesis-testing-z-test"><i class="fa fa-check"></i><b>16.6.2</b> <em>z</em>-test</a></li>
+<li class="chapter" data-level="16.6.3" data-path="ch-03-05-hypothesis-testing-tests.html"><a href="ch-03-05-hypothesis-testing-tests.html#ch-03-05-hypothesis-testing-t-test"><i class="fa fa-check"></i><b>16.6.3</b> <em>t</em>-tests</a></li>
+<li class="chapter" data-level="16.6.4" data-path="ch-03-05-hypothesis-testing-tests.html"><a href="ch-03-05-hypothesis-testing-tests.html#ch-03-05-hypothesis-testing-ANOVA"><i class="fa fa-check"></i><b>16.6.4</b> ANOVA</a></li>
+<li class="chapter" data-level="16.6.5" data-path="ch-03-05-hypothesis-testing-tests.html"><a href="ch-03-05-hypothesis-testing-tests.html#linear-regression"><i class="fa fa-check"></i><b>16.6.5</b> Linear regression</a></li>
+<li class="chapter" data-level="16.6.6" data-path="ch-03-05-hypothesis-testing-tests.html"><a href="ch-03-05-hypothesis-testing-tests.html#Chap-05-01-LR-test"><i class="fa fa-check"></i><b>16.6.6</b> Likelihood-Ratio Test</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="17" data-path="ch-05-02-comparison-freq-Bayes.html"><a href="ch-05-02-comparison-freq-Bayes.html"><i class="fa fa-check"></i><b>17</b> Comparing frequentist and Bayesian statistics</a><ul>
+<li class="chapter" data-level="17.1" data-path="frequentist-and-bayesian-statistical-models.html"><a href="frequentist-and-bayesian-statistical-models.html"><i class="fa fa-check"></i><b>17.1</b> Frequentist and Bayesian statistical models</a></li>
+<li class="chapter" data-level="17.2" data-path="approximation-in-the-model-or-through-the-computation.html"><a href="approximation-in-the-model-or-through-the-computation.html"><i class="fa fa-check"></i><b>17.2</b> Approximation: in the model or through the computation</a></li>
+<li class="chapter" data-level="17.3" data-path="mc-simulated-p-values.html"><a href="mc-simulated-p-values.html"><i class="fa fa-check"></i><b>17.3</b> MC-simulated <span class="math inline">\(p\)</span>-values</a></li>
+<li class="chapter" data-level="17.4" data-path="bayesian-p-values-model-checking.html"><a href="bayesian-p-values-model-checking.html"><i class="fa fa-check"></i><b>17.4</b> Bayesian <span class="math inline">\(p\)</span>-values &amp; model checking</a></li>
+<li class="chapter" data-level="17.5" data-path="ch-05-01-estimation-comparison.html"><a href="ch-05-01-estimation-comparison.html"><i class="fa fa-check"></i><b>17.5</b> Comparing Bayesian and frequentist estimates</a></li>
+<li class="chapter" data-level="17.6" data-path="beliefs-decisions-and-long-term-error.html"><a href="beliefs-decisions-and-long-term-error.html"><i class="fa fa-check"></i><b>17.6</b> Beliefs, decisions and long-term error</a></li>
+<li class="chapter" data-level="17.7" data-path="evidence-for-the-null.html"><a href="evidence-for-the-null.html"><i class="fa fa-check"></i><b>17.7</b> Evidence for the null</a></li>
+<li class="chapter" data-level="17.8" data-path="Chap-05-02-models-three-pillars.html"><a href="Chap-05-02-models-three-pillars.html"><i class="fa fa-check"></i><b>17.8</b> Three pillars of data analysis</a></li>
+<li class="chapter" data-level="17.9" data-path="testing-hypotheses-by-estimation-comparison-model-checking.html"><a href="testing-hypotheses-by-estimation-comparison-model-checking.html"><i class="fa fa-check"></i><b>17.9</b> Testing hypotheses by estimation, comparison &amp; model checking</a></li>
+<li class="chapter" data-level="17.10" data-path="jeffreys-lindley-paradox.html"><a href="jeffreys-lindley-paradox.html"><i class="fa fa-check"></i><b>17.10</b> Jeffreys-Lindley paradox</a></li>
+<li class="chapter" data-level="17.11" data-path="explicit-beliefs-vs.-implicit-intentions.html"><a href="explicit-beliefs-vs.-implicit-intentions.html"><i class="fa fa-check"></i><b>17.11</b> Explicit beliefs vs. implicit intentions</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">An Introduction to Data Analysis</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="ch-03-05-hypothesis-p-values" class="section level2">
+<h2><span class="header-section-number">16.2</span> Quantifying evidence against a null-model with <em>p</em>-values</h2>
+<p>All prominent frequentist approaches to statistical hypothesis testing (see Section <a href="ch-05-01-frequentist-testing-overview.html#ch-05-01-frequentist-testing-overview">16.1</a>) agree that if empirical observations are sufficiently <em>un</em>likely from the point of view of the null hypothesis <span class="math inline">\(H_0\)</span>, this should be treated (in some way or other) as evidence <em>against</em> the null hypothesis.
+A measure of how unlikely the data is in the light of <span class="math inline">\(H_0\)</span> is the <span class="math inline">\(p\)</span>-value.<a href="#fn72" class="footnote-ref" id="fnref72"><sup>72</sup></a>
+To preview the main definition and intuition (to be worked out in detail hereafter), let’s first consider a verbal and then a mathematical formulation.</p>
+<div class="mathstuff">
+<p><strong>Definition <span class="math inline">\(p\)</span>-value.</strong> The <span class="math inline">\(p\)</span>-value associated with observed data <span class="math inline">\(D_\text{obs}\)</span> gives the probability, derived from the assumption that <span class="math inline">\(H_0\)</span> is true, of observing an outcome for the chosen test statistic that is at least as extreme evidence against <span class="math inline">\(H_0\)</span> as the observed outcome.</p>
+<p>Formally, the <span class="math inline">\(p\)</span>-value of observed data <span class="math inline">\(D_\text{obs}\)</span> is:
+<span class="math display">\[
+p\left(D_{\text{obs}}\right) = P\left(T^{|H_0} \succeq^{H_{0,a}} t\left(D_{\text{obs}}\right)\right)  % = P(\mathcal{D}^{|H_0} \in \{D \mid t(D) \ge t(D_{\text{obs}})\}) 
+\]</span>
+where <span class="math inline">\(t \colon \mathcal{D} \rightarrow \mathbb{R}\)</span> is a <strong>test statistic</strong> which picks out a relevant summary statistic of each potential data observation, <span class="math inline">\(T^{|H_0}\)</span> is the <strong>sampling distribution</strong>, namely the random variable derived from test statistic <span class="math inline">\(t\)</span> and the assumption that <span class="math inline">\(H_0\)</span> is true, and <span class="math inline">\(\succeq^{H_{0,a}}\)</span> is a linear order on the image of <span class="math inline">\(t\)</span> such that <span class="math inline">\(t(D_1) \succeq^{H_{0,a}} t(D_2)\)</span> expresses that test value <span class="math inline">\(t(D_1)\)</span> is at least as extreme evidence <em>against</em> <span class="math inline">\(H_0\)</span> as test value <span class="math inline">\(t(D_2)\)</span> when compared to an alternative hypothesis <span class="math inline">\(H_a\)</span>.<a href="#fn73" class="footnote-ref" id="fnref73"><sup>73</sup></a></p>
+</div>
+<p>A few aspects of this definition are particularly important (and subsequent text is dedicated to making these aspects more comprehensible):</p>
+<ol style="list-style-type: decimal">
+<li>this is a frequentist approach in the sense that probabilities are entirely based on (hypothetical) repetitions of the assumed data-generating process, which assumes that <span class="math inline">\(H_0\)</span> is true;</li>
+<li>the test statistic <em>t</em> plays a fundamental role and should be chosen such that:
+<ul>
+<li>it must necessarily select exactly those aspects of the data that matter to our research question,</li>
+<li>it should optimally make it possible to derive a closed-form (approximation) of <span class="math inline">\(T\)</span>,<a href="#fn74" class="footnote-ref" id="fnref74"><sup>74</sup></a> and</li>
+<li>it would be desirable (but not necessary) to formulate <span class="math inline">\(t\)</span> in such a way that the comparison relation <span class="math inline">\(\succeq^{H_{0,a}}\)</span> coincides with a simple comparison of numbers: <span class="math inline">\(t(D_1) \succeq^{H_{0,a}} t(D_2)\)</span> iff <span class="math inline">\(t(D_1) \ge t(D_2)\)</span>;</li>
+</ul></li>
+<li>there is an assumed data-generating model buried inside notation <span class="math inline">\(T^{|H_0}\)</span>; and</li>
+<li>the notion of “more extreme evidence against <span class="math inline">\(H_0\)</span>”, captured in comparison relation <span class="math inline">\(\succeq^{H_{0,a}}\)</span> depends on our epistemic purposes, i.e., what research question we are ultimately interested in.<a href="#fn75" class="footnote-ref" id="fnref75"><sup>75</sup></a></li>
+</ol>
+<p>The remainder of this section will elaborate on all of these points. It is important to mention that especially the third aspect (that there is an implicit data-generating model “inside of” classical hypothesis tests) is not something that receives a lot of emphasis in traditional statistics textbooks. Many textbooks do not even mention the assumptions implicit in a given test. Here we will not only stress key assumptions behind a test but present all of the assumptions behind classical tests in a graphical model, similar to what we did for Bayesian models. This arguably makes all implicit assumptions maximally transparent in a concise and lucid representation. It will also help see parallels between Bayesian and frequentist approaches, thereby helping to see both as more of the same rather than as something completely different. In order to cash in this model-based approach, the following sections will therefore introduce new graphical tools to communicate the data-generating model implicit in the classical tests we cover.</p>
+<div id="frequentist-null-models" class="section level3">
+<h3><span class="header-section-number">16.2.1</span> Frequentist null-models</h3>
+<p>We start with the Binomial Model because it is the simplest and perhaps most intuitive case. We work out what a <span class="math inline">\(p\)</span>-value is for data for this model and introduce the new graphical language to communicate “frequentist models” in the following. We also introduce the notions of <em>test statistic</em> and <em>sampling distribution</em> based on a case that should be very intuitive, if not familiar.</p>
+<p>The Binomial Model was covered before from a Bayesian point of view, where we represented it using graphical notation like in Figure <a href="ch-03-05-hypothesis-p-values.html#fig:ch-03-04-Binomial-Model-repeated">16.2</a> (repeated from before). Remember that this is a model to draw inferences about a coin’s bias <span class="math inline">\(\theta\)</span> based on observations of outcomes of flips of that coin. The Bayesian modeling approach treated the number of observed heads <span class="math inline">\(k\)</span> and the number of flips in total <span class="math inline">\(N\)</span> as given, and the coin’s bias parameter <span class="math inline">\(\theta\)</span> as latent.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ch-03-04-Binomial-Model-repeated"></span>
+<img src="visuals/binomial-model.png" alt="The Binomial Model (repeated from before) for a Bayesian approach to parameter inference/testing." width="40%" />
+<p class="caption">
+Figure 16.2: The Binomial Model (repeated from before) for a Bayesian approach to parameter inference/testing.
+</p>
+</div>
+<p>Actually, this way of writing the Binomial Model is a shortcut. It glosses over each individual data observation (whether the <span class="math inline">\(i\)</span>-th coin flip was heads or tails) and jumps directly to the most relevant summary statistic of how many of the <span class="math inline">\(N\)</span> flips were heads. This might, of course, be just the relevant level of analysis. If our assumption is true that the outcome of each coin flip is independent of any other flip, and given our goal to learn something about <span class="math inline">\(\theta\)</span>, all that really matters is <span class="math inline">\(k\)</span>. But we can also rewrite the Bayesian model from Figure <a href="ch-03-05-hypothesis-p-values.html#fig:ch-03-04-Binomial-Model-repeated">16.2</a> as the equivalent extended model in Figure <a href="ch-03-05-hypothesis-p-values.html#fig:ch-03-04-Binomial-Model-extended">16.3</a>. In the latter representation, the individual outcomes of each flip are represented as <span class="math inline">\(x_i \in \{0,1\}\)</span>. Each individual outcome is sampled from a <a href="#app-91-distributions-bernoulli">Bernoulli distribution</a>. Based on the whole vector of <span class="math inline">\(x_i\)</span>-s and our knowledge of <span class="math inline">\(N\)</span>, we derive the <strong>test statistic</strong> <span class="math inline">\(k\)</span>, which maps each observation (a vector <span class="math inline">\(x\)</span> of zeros and ones) to a single number <span class="math inline">\(k\)</span> (the number of heads in the vector). Notice that the node for <span class="math inline">\(k\)</span> has a solid double edge, indicating that it follows deterministically from its parent nodes. This is why we can think of <span class="math inline">\(k\)</span> as a sample from a random variable constructed from “raw data” observations <span class="math inline">\(x\)</span>.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ch-03-04-Binomial-Model-extended"></span>
+<img src="visuals/binomial-model-extended.png" alt="The Binomial Model for a Bayesian approach, extended to show 'raw observations' and the 'summary statistic' implicitly used." width="60%" />
+<p class="caption">
+Figure 16.3: The Binomial Model for a Bayesian approach, extended to show ‘raw observations’ and the ‘summary statistic’ implicitly used.
+</p>
+</div>
+<p>Compare this latter representation in Figure <a href="ch-03-05-hypothesis-p-values.html#fig:ch-03-04-Binomial-Model-extended">16.3</a> with the frequentist Binomial Model in Figure <a href="ch-03-05-hypothesis-p-values.html#fig:ch-03-04-Binomial-Model-frequentist">16.4</a>. The frequentist model treats the number of observations <span class="math inline">\(N\)</span> as observed, just like the Bayesian model. But it also fixes a specific value for the coin’s bias <span class="math inline">\(\theta\)</span>. This is where the (point-valued) null hypothesis comes in. For purposes of analysis, we fix the value of the relevant unobservable latent parameter to a specific value (because we do not want to assign probabilities to latent parameters, but we still like to talk about probabilities somehow). In our graphical model in Figure <a href="ch-03-05-hypothesis-p-values.html#fig:ch-03-04-Binomial-Model-frequentist">16.4</a>, the node for the coin’s bias is shaded (= treated as known) but also has a dotted second edge to indicate that this is where our null hypothesis assumption kicks in. We then treat the data vector <span class="math inline">\(x\)</span> and, with it, the associated test statistic <span class="math inline">\(k\)</span> as unobserved. The data we actually observed will, of course, come in at some point. But the frequentist model leaves the observed data out at first in order to bring in the kinds of probabilities frequentist approaches feel comfortable with: probabilities derived from (hypothetical) repetitions of chance events. So, the frequentist model can now make statements about the likelihood of (raw) data <span class="math inline">\(x\)</span> and values of the derived summary statistic <span class="math inline">\(k\)</span> based on the assumption that the null hypothesis is true. Indeed, for the case at hand, we already know that the <strong>sampling distribution</strong>, i.e., the distribution of values for <span class="math inline">\(k\)</span> given <span class="math inline">\(\theta_0\)</span> is the <a href="#app-91-distributions-binomial">Binomial distribution</a>.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ch-03-04-Binomial-Model-frequentist"></span>
+<img src="visuals/binomial-model-frequentist.png" alt="The Binomial Model for a frequentist binomial test." width="80%" />
+<p class="caption">
+Figure 16.4: The Binomial Model for a frequentist binomial test.
+</p>
+</div>
+<p>Let’s take a step back. The frequentist model for the binomial case considers (“raw”) data of the form <span class="math inline">\(\langle x_1, \dots, x_N \rangle\)</span> where each <span class="math inline">\(x_i \in \{0,1\}\)</span> indicates whether the <span class="math inline">\(i\)</span>-th flip was a success (= heads, = 1) or a failure (= tails, = 0). We identify the set of all binary vectors of length <span class="math inline">\(N\)</span> as the set of hypothetical data that we could, in principle, observe in a fictitious repetition of this data-generating process. <span class="math inline">\(\mathcal{D}^{|H_0}\)</span> is then the random variable that assigns each potential observation <span class="math inline">\(D = \langle x_1, \dots, x_N \rangle\)</span> the probability with which it would occur if <span class="math inline">\(H_0\)</span> (= a specific value of <span class="math inline">\(\theta\)</span>) is true. In our case, that is:</p>
+<p><span class="math display">\[P(\mathcal{D}^{|H_0} = \langle x_1, \dots, x_N \rangle) = \prod_{i=1}^N \text{Bernoulli}(x_i, \theta_0)\]</span></p>
+<p>The model does not work with this raw data and its implied distribution (represented by random variable <span class="math inline">\(\mathcal{D}^{|H_0}\)</span>), it instead uses a (very natural!) <strong>test statistic</strong> <span class="math inline">\(t \colon \langle x_1, \dots, x_N \rangle \mapsto \sum_{i=1}^N x_i\)</span>. The <strong>sampling distribution</strong> for this model is therefore the distribution of values for the derived measure <span class="math inline">\(k\)</span> - a distribution that follows from the distribution of the raw data (<span class="math inline">\(\mathcal{D}^{|H_0}\)</span>) and this particular test statistic <span class="math inline">\(t\)</span>. In its most general form, we write the sampling distribution as <span class="math inline">\(T^{|H_0} = t(\mathcal{D^{H_0}})\)</span>.<a href="#fn76" class="footnote-ref" id="fnref76"><sup>76</sup></a> It just so happens (what a relief!) that we know how to express <span class="math inline">\(T^{|H_0}\)</span> in a mathematically very concise fashion. It’s just the Binomial distribution, so that <span class="math inline">\(k \sim \text{Binomial}(\theta_0, N)\)</span>. (Notice how the sampling distribution is really a function of <span class="math inline">\(\theta_0\)</span>, i.e., the null hypothesis, and also of <span class="math inline">\(N\)</span>.)</p>
+</div>
+<div id="one--vs.-two-sided-p-values" class="section level3">
+<h3><span class="header-section-number">16.2.2</span> One- vs. two-sided <span class="math inline">\(p\)</span>-values</h3>
+<p>After seeing a frequentist null model and learning about notions like “test statistic” and “sampling distribution”, let’s explore what a <span class="math inline">\(p\)</span>-value is based on the frequentist Binomial Model. Our running example will be the 24/7 case, where <span class="math inline">\(N = 24\)</span> and <span class="math inline">\(k = 7\)</span>. Notice that we are glossing over the “raw” data immediately and work with the value of the test statistic of the observed data directly: <span class="math inline">\(t(D_{\text{obs}}) = 7\)</span>.</p>
+<p>Remember that, by the definition given above, <span class="math inline">\(p(D_{\text{obs}})\)</span> is the probability of observing a value of the test statistic that is at least as extreme evidence against <span class="math inline">\(H_0\)</span> as <span class="math inline">\(t(D_{\text{obs}})\)</span>, under the assumption that <span class="math inline">\(H_0\)</span> is true:</p>
+<p><span class="math display">\[
+  p(D_{\text{obs}}) = P(T^{|H_0} \succeq^{H_{0,a}} t(D_{\text{obs}})) % = P(\mathcal{D}^{|H_0} \in \{D \mid t(D) \ge t(D_{\text{obs}})\}) 
+\]</span></p>
+<p>To fill this with life, we need to set a null hypothesis, i.e., a value <span class="math inline">\(\theta_0\)</span> of coin bias <span class="math inline">\(\theta\)</span>, that we would like to collect evidence <em>against</em>. A fixed <span class="math inline">\(H_0\)</span> will directly fix <span class="math inline">\(T^{|H_0}\)</span>, but we will have to put extra thought into how to conceptualize <span class="math inline">\(\succeq^{H_{0,a}}\)</span> for any given <span class="math inline">\(H_0\)</span>. To make exactly this clearer is the job of this section. Specifically, we will look at what is standardly called a <strong>two-sided <span class="math inline">\(p\)</span>-value</strong> and a <strong>one-sided <span class="math inline">\(p\)</span>-value</strong>.
+The difference lies in whether we are testing a point-valued or an interval-based null hypothesis.
+So, let’s suppose that we want to test the following null hypotheses:</p>
+<ul>
+<li>Is the coin fair (<span class="math inline">\(\theta = 0.5\)</span>)?</li>
+<li>Is the coin biased towards heads (<span class="math inline">\(\theta &gt; 0.5\)</span>)?</li>
+</ul>
+<p>In the case of testing for fairness (<span class="math inline">\(\theta = 0.5\)</span>), the pair of null hypothesis and alternative hypothesis are:</p>
+<p><span class="math display">\[
+\begin{aligned}
+H_0 \colon \theta = 0.5 &amp;&amp; H_a \colon \theta \neq 0.5
+\end{aligned}
+\]</span></p>
+<p>The case for testing the null hypothesis <span class="math inline">\(\theta &gt; 0.5\)</span> is slightly more convoluted.
+The frequentist construction of a null model strictly requires point-valued assumptions about all model parameters.
+Otherwise, subjective priors would sneak it.
+(NB: Even the assumption of equal probability of parameter values, as in a non-informative prior, <em>is</em> a biased and subjective assumption, according to frequentism.)
+We therefore actually test the point-valued null hypothesis <span class="math inline">\(\theta = 0.5\)</span>, but we contrast it with a different alternative hypothesis, which is now one-sided:</p>
+<p><span class="math display">\[
+\begin{aligned}
+H_0 \colon \theta = 0.5 &amp;&amp; H_a \colon \theta &lt; 0.5
+\end{aligned}
+\]</span></p>
+<p><strong>Case <span class="math inline">\(\theta = 0.5\)</span>.</strong> To begin with, assume that we want to address the question of whether the coin is fair.
+Figure <a href="ch-03-05-hypothesis-p-values.html#fig:ch-03-04-testing-binomial-sampling-distribution">16.5</a> shows the sampling distribution of the test statistic <span class="math inline">\(k\)</span>.
+The probability of the observed value of the sampling statistic is shown in red.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ch-03-04-testing-binomial-sampling-distribution"></span>
+<img src="I2DA_files/figure-html/ch-03-04-testing-binomial-sampling-distribution-1.png" alt="Sampling distribution (here: Binomial distribution) and the probability associated with observed data $k=7$ highlighted in red, for $N = 24$ coin flips, under the assumption of a null hypothesis $\theta = 0.5$." width="672" />
+<p class="caption">
+Figure 16.5: Sampling distribution (here: Binomial distribution) and the probability associated with observed data <span class="math inline">\(k=7\)</span> highlighted in red, for <span class="math inline">\(N = 24\)</span> coin flips, under the assumption of a null hypothesis <span class="math inline">\(\theta = 0.5\)</span>.
+</p>
+</div>
+<p>The question we need to settle to obtain a <span class="math inline">\(p\)</span>-value is how to interpret <span class="math inline">\(\succeq^{H_{0,a}}\)</span> for this case.
+To do this, we need to decide which alternative values of <span class="math inline">\(k\)</span> would count as equally or more extreme evidence <em>against</em> the chosen null hypothesis when compared to the specified alternative hypothesis.
+The obvious approach is to use the probability of any value of the test statistic <span class="math inline">\(k\)</span> directly and say that observing <span class="math inline">\(D_1\)</span> counts as at least as extreme evidence against <span class="math inline">\(H_0\)</span> as observing <span class="math inline">\(D_2\)</span>, <span class="math inline">\(t(D_1) \succeq^{H_{0,a}} t(D_2)\)</span>, iff the probability of observing the test statistic associated with <span class="math inline">\(D_1\)</span> is at least as unlikely as observing <span class="math inline">\(D_2\)</span>: <span class="math inline">\(P(T^{|H_0} = t(D_1)) \le P(T^{|H_0} = t(D_2))\)</span>. To calculate the <span class="math inline">\(p\)</span>-value in this way, we therefore need to sum up the probabilities of all values <span class="math inline">\(k\)</span> under the Binomial distribution (with parameters <span class="math inline">\(N=24\)</span> and <span class="math inline">\(\theta = \theta_0 = 0.5\)</span>) that are no larger than the value of the observed <span class="math inline">\(k = 7\)</span>. In mathematical language:<a href="#fn77" class="footnote-ref" id="fnref77"><sup>77</sup></a></p>
+<p><span class="math display">\[
+p(k) = \sum_{k&#39; = 0}^{N} [\text{Binomial}(k&#39;, N, \theta_0) &lt;= \text{Binomial}(k, N, \theta_0)] \ \text{Binomial}(k&#39;, N, \theta_0)
+\]</span></p>
+<p>In code, we calculate this <span class="math inline">\(p\)</span>-value as follows:</p>
+<div class="sourceCode" id="cb644"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb644-1"><a href="ch-03-05-hypothesis-p-values.html#cb644-1"></a><span class="co"># exact p-value for k = 7 with N = 24 and null hypothesis theta = 0.5</span></span>
+<span id="cb644-2"><a href="ch-03-05-hypothesis-p-values.html#cb644-2"></a>k_obs &lt;-<span class="st"> </span><span class="dv">7</span></span>
+<span id="cb644-3"><a href="ch-03-05-hypothesis-p-values.html#cb644-3"></a>N &lt;-<span class="st"> </span><span class="dv">24</span></span>
+<span id="cb644-4"><a href="ch-03-05-hypothesis-p-values.html#cb644-4"></a>theta_<span class="dv">0</span> &lt;-<span class="st"> </span><span class="fl">0.5</span></span>
+<span id="cb644-5"><a href="ch-03-05-hypothesis-p-values.html#cb644-5"></a><span class="kw">tibble</span>( <span class="dt">lh =</span> <span class="kw">dbinom</span>(<span class="dv">0</span><span class="op">:</span>N, N, theta_<span class="dv">0</span>) ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb644-6"><a href="ch-03-05-hypothesis-p-values.html#cb644-6"></a><span class="st">  </span><span class="kw">filter</span>( lh <span class="op">&lt;=</span><span class="st">  </span><span class="kw">dbinom</span>(k_obs, N, theta_<span class="dv">0</span>) ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb644-7"><a href="ch-03-05-hypothesis-p-values.html#cb644-7"></a><span class="st">  </span><span class="kw">pull</span>(lh) <span class="op">%&gt;%</span><span class="st"> </span>sum <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">round</span>(<span class="dv">5</span>)</span></code></pre></div>
+<pre><code>## [1] 0.06391</code></pre>
+<p>Figure <a href="ch-03-05-hypothesis-p-values.html#fig:ch-03-04-testing-binomial-p-value">16.6</a> shows the values that need to be summed over in red.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ch-03-04-testing-binomial-p-value"></span>
+<img src="I2DA_files/figure-html/ch-03-04-testing-binomial-p-value-1.png" alt="Sampling distribution (Binomial likelihood function) and two-sided $p$-value for the observation of $k=7$ successes in $N = 24$ coin flips, under the assumption of a null hypothesis $\theta = 0.5$." width="672" />
+<p class="caption">
+Figure 16.6: Sampling distribution (Binomial likelihood function) and two-sided <span class="math inline">\(p\)</span>-value for the observation of <span class="math inline">\(k=7\)</span> successes in <span class="math inline">\(N = 24\)</span> coin flips, under the assumption of a null hypothesis <span class="math inline">\(\theta = 0.5\)</span>.
+</p>
+</div>
+<p>Of course, R also has a built-in function for a Binomial test. We can use it to verify that we get the same result for the <span class="math inline">\(p\)</span>-value:</p>
+<div class="sourceCode" id="cb646"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb646-1"><a href="ch-03-05-hypothesis-p-values.html#cb646-1"></a><span class="kw">binom.test</span>(</span>
+<span id="cb646-2"><a href="ch-03-05-hypothesis-p-values.html#cb646-2"></a>  <span class="dt">x =</span> <span class="dv">7</span>,     <span class="co"># observed successes</span></span>
+<span id="cb646-3"><a href="ch-03-05-hypothesis-p-values.html#cb646-3"></a>  <span class="dt">n =</span> <span class="dv">24</span>,    <span class="co"># total no. of observations</span></span>
+<span id="cb646-4"><a href="ch-03-05-hypothesis-p-values.html#cb646-4"></a>  <span class="dt">p =</span> <span class="fl">0.5</span>    <span class="co"># null hypothesis</span></span>
+<span id="cb646-5"><a href="ch-03-05-hypothesis-p-values.html#cb646-5"></a>)</span></code></pre></div>
+<pre><code>## 
+##  Exact binomial test
+## 
+## data:  7 and 24
+## number of successes = 7, number of trials = 24, p-value = 0.06391
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.1261521 0.5109478
+## sample estimates:
+## probability of success 
+##              0.2916667</code></pre>
+<div class="exercises">
+<p><strong>Exercise 16.1: Output of R’s <code>binom.test</code></strong></p>
+<p>Look at the output of the above call to R’s <code>binom.test</code> function.
+Which pieces of information in that output make sense to you (given your current knowledge) and which do not?</p>
+<div class="collapsibleSolution">
+<button class="trigger">
+Solution
+</button>
+<div class="content">
+<p>The output given first states what was computed, namely an <em>exact binomial test</em>.
+You should understand what a <em>binomial test</em> is.
+The additional adjective <em>exact</em> refers to the fact that we did not use any approximation to get at the shown <span class="math inline">\(p\)</span>-value.
+Next, we see the data repeated and the calculated <span class="math inline">\(p\)</span>-value, which we have seen how to calculate by hand.
+The output then also names the alternative hypothesis, just like the text previously explained, making clear that this is a two-valued <span class="math inline">\(p\)</span>-value.
+Then comes something which you do not yet know about: the notion of a 95% confidence interval will be covered later in this chapter.
+Finally, the output also gives the maximum likelihood estimate of the theta parameter.
+Together with the 95% confidence interval, the test result therefore also reports the most common frequentist estimators, point-values (MLE) and interval-valued (95% confidence interval) for the parameter of interest.</p>
+</div>
+</div>
+</div>
+<p><strong>Case <span class="math inline">\(\theta &gt; 0.5\)</span>.</strong> Let’s now look at the case where we want to test whether the coin is biased towards heads <span class="math inline">\(\theta &gt; 0.5\)</span>.
+As explained above, we need a point-valued assumption for the coin bias <span class="math inline">\(\theta\)</span> to set up a frequentist model and retrieve a sampling distribution for the relevant test statistic.
+We choose <span class="math inline">\(\theta_{0} = 0.5\)</span> as the point-valued null hypothesis, because <em>if</em> we get a high measure of the evidence against the hypothesis <span class="math inline">\(\theta_{0} = 0.5\)</span> (in a comparison against the alternative <span class="math inline">\(\theta &lt; 0.5\)</span>), we can discredit the whole interval-based hypothesis <span class="math inline">\(\theta &gt; 0.5\)</span> because any other value of <span class="math inline">\(\theta\)</span> bigger than 0.5 would give at least as high a <span class="math inline">\(p\)</span>-value.
+In other words, we pick the single value for the comparison which is most favorable <em>for</em> the hypothesis <span class="math inline">\(\theta &gt; 0.5\)</span> when compared against <span class="math inline">\(\theta &lt; 0.5\)</span>, so as when <em>even that</em> value is discredited, the whole hypothesis <span class="math inline">\(\theta &gt; 0.5\)</span> is discredited.</p>
+<p>But even though we use the same null-value of <span class="math inline">\(\theta_0 = 0.5\)</span>, the calculation of the <span class="math inline">\(p\)</span>-value will be different from the case we looked at previously.
+It will be one-sided.
+The reason lies in a change to what we should consider more extreme evidence against this interval-valued null hypothesis, i.e., the interpretation of <span class="math inline">\(\succeq^{H_{0,a}}\)</span>.
+Look at Figure <a href="ch-03-05-hypothesis-p-values.html#fig:ch-03-04-testing-binomial-p-value-one-sided">16.7</a>.
+As before we see the Bernoulli likelihood function derived from the point-value null hypothesis.
+The <span class="math inline">\(k\)</span>-value observed is <span class="math inline">\(k=7\)</span>.
+Again we need to ask: which values of <span class="math inline">\(k\)</span> would constitute equal or more evidence against the null hypothesis <em>when compared against the alternative hypothesis, which is now <span class="math inline">\(\theta &lt; 0.5\)</span></em>
+Unlike in the previous, two-sided case, observing large values of <span class="math inline">\(k\)</span>, e.g., larger than 12, even if they are unlikely for the point-valued hypothesis <span class="math inline">\(\theta_0 = 0.5\)</span>, does not constitute evidence against the interval-valued hypothesis we are interested in.
+So therefore, we disregard the contribution of the right-hand side in Figure <a href="ch-03-05-hypothesis-p-values.html#fig:ch-03-04-testing-binomial-p-value">16.6</a> to arrive at a picture like in Figure <a href="ch-03-05-hypothesis-p-values.html#fig:ch-03-04-testing-binomial-p-value-one-sided">16.7</a>.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ch-03-04-testing-binomial-p-value-one-sided"></span>
+<img src="I2DA_files/figure-html/ch-03-04-testing-binomial-p-value-one-sided-1.png" alt="Sampling distribution (Binomial likelihood function) and one-sided $p$-value for the observation of $k=7$ successes in $N = 24$ coin flips, under the assumption of a null hypothesis $\theta = 0.5$ compared against the alternative hypothesis $\theta &lt; 0$." width="672" />
+<p class="caption">
+Figure 16.7: Sampling distribution (Binomial likelihood function) and one-sided <span class="math inline">\(p\)</span>-value for the observation of <span class="math inline">\(k=7\)</span> successes in <span class="math inline">\(N = 24\)</span> coin flips, under the assumption of a null hypothesis <span class="math inline">\(\theta = 0.5\)</span> compared against the alternative hypothesis <span class="math inline">\(\theta &lt; 0\)</span>.
+</p>
+</div>
+<p>The associated <span class="math inline">\(p\)</span>-value with this so-called <strong>one-sided test</strong> is consequently:</p>
+<div class="sourceCode" id="cb648"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb648-1"><a href="ch-03-05-hypothesis-p-values.html#cb648-1"></a>k_obs &lt;-<span class="st"> </span><span class="dv">7</span></span>
+<span id="cb648-2"><a href="ch-03-05-hypothesis-p-values.html#cb648-2"></a>N &lt;-<span class="st"> </span><span class="dv">24</span></span>
+<span id="cb648-3"><a href="ch-03-05-hypothesis-p-values.html#cb648-3"></a>theta_<span class="dv">0</span> &lt;-<span class="st"> </span><span class="fl">0.5</span></span>
+<span id="cb648-4"><a href="ch-03-05-hypothesis-p-values.html#cb648-4"></a><span class="co"># exact p-value for k = 7 with N = 24 and null hypothesis theta &gt; 0.5</span></span>
+<span id="cb648-5"><a href="ch-03-05-hypothesis-p-values.html#cb648-5"></a><span class="kw">dbinom</span>(<span class="dv">0</span><span class="op">:</span>k_obs, N, theta_<span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span>sum <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">round</span>(<span class="dv">5</span>)</span></code></pre></div>
+<pre><code>## [1] 0.03196</code></pre>
+<p>We can double-check against the built-in function <code>binom.test</code> when we ask for a one-sided test:</p>
+<div class="sourceCode" id="cb650"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb650-1"><a href="ch-03-05-hypothesis-p-values.html#cb650-1"></a><span class="kw">binom.test</span>(</span>
+<span id="cb650-2"><a href="ch-03-05-hypothesis-p-values.html#cb650-2"></a>  <span class="dt">x =</span> <span class="dv">7</span>,     <span class="co"># observed successes</span></span>
+<span id="cb650-3"><a href="ch-03-05-hypothesis-p-values.html#cb650-3"></a>  <span class="dt">n =</span> <span class="dv">24</span>,    <span class="co"># total no. of observations</span></span>
+<span id="cb650-4"><a href="ch-03-05-hypothesis-p-values.html#cb650-4"></a>  <span class="dt">p =</span> <span class="fl">0.5</span>,    <span class="co"># null hypothesis</span></span>
+<span id="cb650-5"><a href="ch-03-05-hypothesis-p-values.html#cb650-5"></a>  <span class="dt">alternative =</span> <span class="st">&quot;less&quot;</span> <span class="co"># the alternative to compare against is theta &lt; 0.5</span></span>
+<span id="cb650-6"><a href="ch-03-05-hypothesis-p-values.html#cb650-6"></a>)</span></code></pre></div>
+<pre><code>## 
+##  Exact binomial test
+## 
+## data:  7 and 24
+## number of successes = 7, number of trials = 24, p-value = 0.03196
+## alternative hypothesis: true probability of success is less than 0.5
+## 95 percent confidence interval:
+##  0.0000000 0.4787279
+## sample estimates:
+## probability of success 
+##              0.2916667</code></pre>
+</div>
+<div id="significance-categorical-decisions" class="section level3">
+<h3><span class="header-section-number">16.2.3</span> Significance &amp; categorical decisions</h3>
+<p>Fisher’s early writings suggest that he considered <span class="math inline">\(p\)</span>-values as quantitative measures of strength of evidence against the null hypothesis.
+What would need to be done or concluded from such a quantitative measure would need to depend on further careful case-by-base deliberation.
+In contrast, the Neyman-Pearson approach, as well as the presently practiced hybrid NHST approach use <span class="math inline">\(p\)</span>-values to check, in a rigid conventionalized manner, whether a test result is noteworthy in a categorical, not quantitative way.
+More on the Neyman-Pearson approach in Section <a href="ch-03-04-hypothesis-significance-errors.html#ch-03-04-hypothesis-significance-errors">16.4</a>.</p>
+<p>Fixing an <span class="math inline">\(\alpha\)</span>-level of significance (with common values <span class="math inline">\(\alpha \in \{0.05, 0.01, 0.001\}\)</span>), we say that a test result is <strong>statistically significant</strong> (at level <span class="math inline">\(\alpha\)</span>) if the <span class="math inline">\(p\)</span>-value of the observed data is lower than the specified <span class="math inline">\(\alpha\)</span>.
+The significance of a test result, as a categorical measure, can then be further interpreted as a trigger for decision making.
+Commonly, a significant test result is interpreted as the signal to reject the null hypothesis, i.e., to speak and act as if it was false.
+Importantly, a non-significant test results by some <span class="math inline">\(\alpha\)</span>-level is <em>not</em> to be treated as evidence in favor of the null hypothesis.<a href="#fn78" class="footnote-ref" id="fnref78"><sup>78</sup></a></p>
+<div class="exercises">
+<p><strong>Exercise 16.2: Significance &amp; errors</strong></p>
+<p>If the <span class="math inline">\(p\)</span>-value is larger than a <em>prespecified</em> significance threshold <span class="math inline">\(\alpha\)</span> (e.g., <span class="math inline">\(\alpha = 0.05\)</span>), we…</p>
+<ol style="list-style-type: lower-alpha">
+<li>…accept <span class="math inline">\(H_0\)</span>.</li>
+<li>…reject <span class="math inline">\(H_0\)</span> in favor of <span class="math inline">\(H_a\)</span>.</li>
+<li>…fail to reject <span class="math inline">\(H_0\)</span>.</li>
+</ol>
+<div class="collapsibleSolution">
+<button class="trigger">
+Solution
+</button>
+<div class="content">
+<p>Statement c. is correct.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="how-not-to-interpret-p-values" class="section level3">
+<h3><span class="header-section-number">16.2.4</span> How (not) to interpret <em>p</em>-values</h3>
+<p>Though central to much of frequentist statistics, <span class="math inline">\(p\)</span>-values are frequently misinterpreted, even by seasoned scientists <span class="citation">(Haller and Krauss <a href="#ref-HallerKrauss2002:Misinterpretati" role="doc-biblioref">2002</a>)</span>. To repeat, the <span class="math inline">\(p\)</span>-value measures the probability of observing, if the null hypothesis is correct, a value of the test statistic that is (in a specific, contextually specified sense) more extreme than the value of the test statistic that we assign to the observed data. We can therefore treat <span class="math inline">\(p\)</span>-values as a measure of evidence <em>against</em> the null hypothesis. And if we want to be even more precise, we interpret this as evidence against the whole assumed data-generating process, a central part of which is the null hypothesis.</p>
+<p>The <span class="math inline">\(p\)</span>-value is <em>not</em> a statement about the probability of the null hypothesis given the data. So, it is <em>not</em> something like <span class="math inline">\(P(H_0 \mid D)\)</span>. The latter is a very appealing notion, but it is one that the frequentist denies herself access to. It can also only be computed based on some consideration of prior plausibility of <span class="math inline">\(H_0\)</span> in relation to some alternative hypothesis. Indeed, to calculate <span class="math inline">\(P(H_0 \mid D)\)</span> is unforgivingly a subjective, Bayesian notion.</p>
+<!-- exercise 1 -->
+<div class="exercises">
+<p><strong>Exercise 16.3: <span class="math inline">\(p\)</span>-values</strong></p>
+<ol style="list-style-type: decimal">
+<li>Which statement(s) about <span class="math inline">\(p\)</span>-values is/are true?</li>
+</ol>
+<p>The <span class="math inline">\(p\)</span>-value is…</p>
+<ol style="list-style-type: lower-alpha">
+<li>…the probability that the null hypothesis <span class="math inline">\(H_0\)</span> is true.</li>
+<li>…the probability that the alternative hypothesis <span class="math inline">\(H_a\)</span> is true.</li>
+<li>…the probability, derived from the assumption that <span class="math inline">\(H_0\)</span> is true, of obtaining an outcome for the chosen test statistic that is the exact same as the observed outcome.</li>
+<li>…a measure of evidence in favor of <span class="math inline">\(H_0\)</span>.</li>
+<li>…the probability, derived from the assumption that <span class="math inline">\(H_0\)</span> is true, of obtaining an outcome for the chosen test statistic that is the same as the observed outcome or more extreme evidence for <span class="math inline">\(H_a\)</span>.</li>
+<li>…a measure of evidence against <span class="math inline">\(H_0\)</span>.</li>
+</ol>
+<div class="collapsibleSolution">
+<button class="trigger">
+Solution
+</button>
+<div class="content">
+<p>Statements e. and f. are correct.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="excursion-distribution-of-p-values" class="section level3">
+<h3><span class="header-section-number">16.2.5</span> [Excursion] Distribution of <span class="math inline">\(p\)</span>-values</h3>
+<p>A result that might seem surprising at first is that if the null hypothesis is true, the distribution of <span class="math inline">\(p\)</span>-values is uniform. This, however, is intuitive on second thought. Mathematically it is a direct consequence of the <strong>Probability Integral Transform Theorem</strong>.</p>
+<div class="mathstuff">
+
+<div class="theorem">
+<span id="thm:Probability-Integral-Transform" class="theorem"><strong>Theorem 16.1  (Probability Integral Transform)  </strong></span>If <span class="math inline">\(X\)</span> is a continuous random variable with cumulative distribution function <span class="math inline">\(F_X\)</span>, the random variable <span class="math inline">\(Y = F_X(X)\)</span> is uniformly distributed over the interval <span class="math inline">\([0;1]\)</span>, i.e., <span class="math inline">\(y \sim \text{Uniform}(0,1)\)</span>.
+</div>
+<div class="collapsibleProof">
+<button class="trigger">
+Proof
+</button>
+<div class="content">
+
+<div class="proof">
+ <span class="proof"><em>Proof. </em></span> Notice that the cumulative density function of a standard uniform distribution <span class="math inline">\(y \sim \text{Uniform}(0,1)\)</span> is a linear line with intercept 0 and slope 1. It therefore suffices to show that <span class="math inline">\(F_Y(y) = y\)</span>.
+<span class="math display">\[
+\begin{aligned}
+F_Y(y) &amp; = P(Y \le y)  &amp;&amp; [\text{def. of cumulative distribution}] \\
+ &amp; = P(F_X(X) \le y)  &amp;&amp; [\text{by construction / assumption}] \\
+ &amp; = P(X \le F^{-1}_X(y))  &amp;&amp; [\text{applying inverse cumulative function}] \\
+ &amp; = F_X(F^{-1}_X(y))  &amp;&amp; [\text{def. of cumulative distribution}] \\
+ &amp; = y  &amp;&amp; [\text{inverses cancel out}] \\
+\end{aligned}
+\]</span>
+</div>
+<p> </p>
+</div>
+</div>
+</div>
+<p>Seeing the uniform distribution of <span class="math inline">\(p\)</span>-values (under a true null hypothesis) helps appreciate how the <span class="math inline">\(\alpha\)</span>-level of significance is related to long-term error control. If the null hypothesis is true, the probability of a significant test result is exactly the significance level.</p>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-HallerKrauss2002:Misinterpretati">
+<p>Haller, Heiko, and Stefan Krauss. 2002. “Misinterpretations of Significance: A Problem Students Share with Their Teachers?” <em>Methods of Psychological Research Online</em> 7 (1): 1–20.</p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="72">
+<li id="fn72"><p>For clarity: the <span class="math inline">\(p\)</span>-value is actually a measure of how surprising the data is in light of the whole null-model, which is built around the null hypothesis. As the further ingredients in the null-model are usually considered to be relatively uncontroversial (at least relative to the assumption of the null hypothesis), the <span class="math inline">\(p\)</span>-value parlance directly targets the null hypothesis.<a href="ch-03-05-hypothesis-p-values.html#fnref72" class="footnote-back">↩︎</a></p></li>
+<li id="fn73"><p>This formulation in terms of a context-dependent, i.e., <span class="math inline">\(H_0\)</span>-dependent, ordering is not usual. However, the interpretation <em>is</em> de facto context-dependent in this way, and so it makes sense to highlight this aspect of the use of <span class="math inline">\(p\)</span>-values also formally. Notice, however, that we can get rid of the context-dependence by using different test statistics. But this is also not how it is done in practice. Essentially, this definition aims for maximal generality so as to cover all cases of use. Since the class of use cases is fuzzy, the definition needs this flexibility. Alternative mathematical definitions that appear to be simpler just do not capture all the use cases.<a href="ch-03-05-hypothesis-p-values.html#fnref73" class="footnote-back">↩︎</a></p></li>
+<li id="fn74"><p>This latter aspect has been particularly important historically. Given more readily available computing power, alternative approaches based on Monte Carlo simulation of <span class="math inline">\(p\)</span>-values can also be used.<a href="ch-03-05-hypothesis-p-values.html#fnref74" class="footnote-back">↩︎</a></p></li>
+<li id="fn75"><p>It is admittedly a bit of a notational overkill to write this comparison relation as a function of <span class="math inline">\(H_0\)</span> and <span class="math inline">\(H_a\)</span> (the alternative hypothesis). Other definitions of the <span class="math inline">\(p\)</span>-value do not. But the comparison <em>is</em> context-dependent, and you deserve to see this clearly. To see it clearly, a certain heaviness of notation is the price to pay.<a href="ch-03-05-hypothesis-p-values.html#fnref75" class="footnote-back">↩︎</a></p></li>
+<li id="fn76"><p>Most often, the random variable capturing the sampling distribution is just written as <span class="math inline">\(T\)</span>, but it does make sense to stress also notationally that <span class="math inline">\(T\)</span> depends crucially on <span class="math inline">\(H_0\)</span>.<a href="ch-03-05-hypothesis-p-values.html#fnref76" class="footnote-back">↩︎</a></p></li>
+<li id="fn77"><p>Here, the bracket notation <span class="math inline">\([ \mathit{Boolean} ]\)</span> is the <a href="https://en.wikipedia.org/wiki/Iverson_bracket">Iverson bracket</a>, evaluating to 1 if the Boolean expression is true and to 0 otherwise.<a href="ch-03-05-hypothesis-p-values.html#fnref77" class="footnote-back">↩︎</a></p></li>
+<li id="fn78"><p>Frequentist hypothesis testing is superficially similar to Popperian falsificationism. It is, however, quite the opposite when looked at more carefully. Popper famously denied that empirical observation could constitute positive evidence in favor of a research hypothesis. Research hypotheses can only be refuted, viz., when their logical consequences are logically incompatible with the observed data. In a Popperian science, what is refuted are research hypotheses; frequentist statistics instead seeks to refute null hypotheses and counts successful refutation of a null hypothesis as evidence in favor of a research hypothesis.<a href="ch-03-05-hypothesis-p-values.html#fnref78" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="ch-05-01-frequentist-testing-overview.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="ch-03-05-hypothesis-testing-CLT.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": false,
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
