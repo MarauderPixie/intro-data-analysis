@@ -1,0 +1,911 @@
+# Bayesian hypothesis testing {#ch-03-07-hypothesis-testing-Bayes}
+
+<hr>
+
+This chapter introduces common Bayesian methods of testing what we could call _statistical hypotheses_.
+A statistical hypothesis is a hypothesis about a particular model parameter or a set of model parameters.
+Most often, such a hypothesis concerns one parameter, and the assumption in question is that this parameter takes on a specific value, or some value from a specific interval.
+Henceforth, we speak just of a "hypothesis" even though we mean a specific hypothesis about particular model parameters.
+For example, we might be interested in what we will call a _point-valued hypothesis_, stating that the value of parameter $\theta$ is fixed to a specific value $\theta = \theta^*$. 
+Section \@ref(ch-03-07-hypothesis-testing-Bayes-hypotheses) introduces different kinds of statistical hypotheses in more detail.
+
+Given a statistical hypothesis about parameter values, we are interested in "testing" it.
+Strictly speaking, the term "testing" should probably be reserved for statistical decision procedures which give clear categorical judgements, such as whether to reject a hypothesis, accept it as true or to withhold judgement because no decision can be made (yet/currently).
+While we will encounter such categorical decision routines in this chapter, Bayesian approaches to hypotheses "testing" are first and foremost concerned, not with categorical decisions, but with quantifying evidence in favor or against the hypothesis in question.
+(In a second step, using Bayesian decision theory which also weighs in the utility of different policy choices, we can use Bayesian inference also for informed decision making, of course.)
+But instead of speaking of "Bayesian inference to weigh evidence for/against a hypothesis" we will just speak of "Bayesian hypothesis testing" for ease of parlor.
+
+We consider two conceptually distinct approaches within Bayesian hypothesis testing.
+
+1. **Estimation-based testing** considers just one model. It uses the observed data $D_\text{obs}$ to retrieve posterior beliefs $P(\theta \mid D_{\text{obs}})$ and checks whether, _a posteriori_, our hypothesis is credible.
+2. **Comparison-based testing** uses Bayesian model comparison, in the form of Bayes factors, to compare two models, namely one model that assumes that the hypothesis in question is true, and one model that assumes that the complement of the hypothesis is true.
+
+The main difference between these two approaches is that estimation-based hypothesis testing is simpler (conceptually and computationally), but less informative than comparison-based hypothesis testing. 
+In fact, comparison-based methods give a clearer picture of the quantitative evidence for/against a hypothesis because they explicitly take into account a second alternative to the hypothesis which is to be tested. 
+As we will see in this chapter, the technical obstacles for comparison-based approaches can be overcome.
+For special but common use cases, like testing directional hypotheses, there are efficient methods of performing comparison-based hypothesis testing. 
+
+```{block, type='infobox'}
+The learning goals for this chapter are:
+
+- understand the notion of a _statistical hypothesis_ 
+  - point-valued, ROPE-d and directional hypotheses
+  - complement / alternative hypothesis
+- be able to apply Bayesian hypothesis testing to (simple) case studies
+- understand and be able to apply _the Savage-Dickey method_ (and its extension to interval-based hypotheses in terms of _encompassing models_)
+- become familiar with a Bayesian $t$-test model for comparing the means of two groups of metric measurements
+```
+
+## Statistical hypotheses {#ch-03-07-hypothesis-testing-Bayes-hypotheses}
+
+Given a model $M$ with parameter space $\Theta$, a **statistical hypothesis**, in the sense entertained here, is an assumption (made for purposes of investigation) that certain parameters $\Theta_i$ take on only a restricted range of values. 
+For example, we might be interested in the question of whether a particular coin is fair.
+We consider the Binomial model, which contains the coin bias parameter $\theta_c$.
+Informal assumptions about the coin's bias can then be translated into a concrete question about values of $\theta_{c}$.
+
+This chapter considers three types of statistical hypotheses, which are also represented schematically in Figure  \@ref(fig:03-05-Bayesian-testing-overview-hypotheses). 
+While all of the below also applies to discrete parameters and vectors of parameters, the implicit assumption in what follows is that we are dealing with a single continuous parameter. 
+
+1. **Point-valued hypotheses** ask whether it is plausible that the parameter of relevance is identical to exactly one specific value. For example, in a Binomial model with the coin's bias parameter $\theta_{c}$, a point-valued hypothesis could be that $\theta_c = 0.5$. More generally, we write $\theta = \theta^*$ for a point-valued hypothesis about some (singular) parameter $\theta$. 
+2. **ROPE-d hypotheses**, where "ROPE" is short for _region of practical equivalence_, define a small $\epsilon$-region around a point-value of interest, and address the question of whether it is plausible that the parameter value lies inside this interval. For example, suppose that instead of addressing the point-valued hypothesis $\theta_{c} = 0.5$ about a coin's latent bias, we are able (e.g., through prior research or *a priori* conceptual considerations) to specify a reasonable *region of practical equivalence (= ROPE)* around the parameter value of interest. For instance, we might know that a difference of 0.1 in a coin's bias really counts as normal slack and negligible for practical purposes. We then address the ROPE-d hypothesis that $\theta_{c} \in [0.49, 0.51]$. More generally, we write $\theta \in [\theta^* - \epsilon\ ;\ \theta^* + \epsilon]$, or $\theta = \theta^* \pm \epsilon$ for ROPE-d hypothesis around the pivotal values $\theta^*$.
+3. **Directional hypotheses** fix a specific parameter value, as a lower or upper bound and ask whether it is plausible that the parameter's value is bigger or smaller than that fixed value. For example, $\theta_{c} > 0.5$ could be the directional hypothesis that a coin is biased towards heads.
+
+```{r 03-05-Bayesian-testing-overview-hypotheses, echo = F, fig.cap="Three common types of hypotheses anchored to a point-value of interest of a parameter.", out.width='90%'}
+knitr::include_graphics("visuals/3-types-hypotheses.png")
+```
+
+Ignoring trivial edge cases, both ROPE-d and directional hypotheses are instances of **interval-based hypotheses** in the sense that they assume that the true value lies in an interval.
+
+The complement of a point-valued hypothesis $\theta = \theta^*$ is the hypothesis that the true value is _not_ equal to the critical value: $\theta \neq \theta^*$.
+The complement of an interval-based hypothesis is the hypothesis that the true parameter value does _not_ lie in the relevant interval.
+For example, the complement of the ROPE-d hypothesis $\theta \in [\theta^* - \epsilon\ ;\ \theta^* + \epsilon]$ is that $\theta \not \in [\theta^* - \epsilon\ ;\ \theta^* + \epsilon]$.
+
+In the context of hypothesis testing, in particular frequentist testing (see Chapter \@ref(ch-05-01-frequentist-hypothesis-testing)), we often address the hypothesis to be tested as the **null hypothesis**.
+The complement of the null hypothesis is called **alternative hypothesis**.
+
+## Data and models for this chapter
+
+This chapter uses two case studies as running examples: the (fictitious) 24/7 coin-flip example analyzed with the Binomial model, and data from the [Simon task](#app-93-data-sets-simon-task) analyzed with a so-called Bayesian $t$-test model.
+
+### 24/7
+
+We will use the same (old) example of binomial data: $k = 7$ heads out of $N = 24$ coin flips. 
+Just as before, we will use the standard binomial model with a flat Beta prior, shown below in graphical notation:
+
+```{r ch-03-06-Binomial-Model-repeated, echo = F, fig.cap="The Binomial Model (repeated from before).", out.width = '40%'}
+knitr::include_graphics("visuals/binomial-model.png")
+```
+
+We are interested in the following hypotheses:
+
+1. **Point-valued**: $\theta_c = 0.5$
+2. **ROPE-d** $\theta_c = \in [0.5 - \epsilon; 0.5 + \epsilon]$ with $\epsilon = 0.01$
+3. **Directional** $\theta_c < 0.5$
+
+### Simon task
+
+<div style = "float:right; width:20%;">
+<img src="visuals/badge-Simon-task.png" alt="badge model comparison">
+</div>
+
+The Simon task is a classic experimental design to investigate interference of, intuitively put, task-relevant properties and task-irrelevant properties. 
+Chapter \@ref(app-93-data-sets-simon-task) introduces the experiment and the (cleaned) data we analyze here.
+
+```{r}
+data_simon_cleaned <- aida::data_ST
+```
+
+The most important columns in this data set for our current purposes are:
+
+- `RT`: The reaction time for each trial.
+- `condition`: Whether the trial was a congruent or an incongruent trial.
+
+Concretely, we are interested in comparing the mean reaction times across conditions:
+
+```{r ch-03-05-Bayesian-testing-Simon-data, echo = F, out.width = '80%', fig.cap="Distribution of reaction times of correct answers in the congruent and incongruent condition of the Simon task. Vertical lines indicate the mean of each condition."}
+data_simon_cleaned %>% 
+  ggplot(aes(x = RT, color = condition, fill = condition)) +
+  geom_density(alpha=0.3) +
+  geom_vline(
+    aes(xintercept = mean_RT, color = condition),
+    data = data_simon_cleaned %>% 
+      group_by(condition) %>% 
+      summarize(
+        mean_RT = mean(RT)
+      )
+    )
+```
+
+
+In order to compare the means of continuous measurements between two groups we will use a so-called **$t$-test model**. (The reason why this is called a "$t$-test model" is historical and will become clear in Chapter \@ref(ch-05-01-frequentist-hypothesis-testing).) 
+There are different variations of Bayesian $t$-test models.
+Here, we use the one proposed by Gönen et al. [-@GoenenJohnson2005], which enables us to compute Bayes factor model comparison for point-valued hypotheses analytically.
+The model is shown in Figure \@ref(fig:ch-03-06-comparison-t-test-ST).
+
+```{r ch-03-06-comparison-t-test-ST, echo = F, out.width = '80%', fig.cap="Bayesian $t$-test model following Gönen et al. [-@GoenenJohnson2005] for inferences about the difference in means in the Simon task data."}
+knitr::include_graphics("visuals/t-test-model-ST-data-GoenenJohnson2005.png")
+```
+
+The model in Figure \@ref(fig:ch-03-06-comparison-t-test-ST) assumes that there are two vectors $y_1$ and $y_2$ of continuous measurements. 
+In our case, these are the continuous measurements of reaction times in the incongruent ($y_1$) and congruent ($y_2$) group.
+The model further assumes that all measurements in $y_1$ and $y_2$ are samples from two normal distributions, one for each group, with shared variance but possibly different means.
+The means of the two normal distributions are represented in terms of the midpoint $\mu$ between the means of either group.
+The model is set-up in such a way that there is a difference parameter $\delta$ which specifies the *standardized difference between group means*.
+Standardization here means that the difference between the means is represented in relation to the variance of the measurements in each group (which is assumed to be the same in both groups).
+The free variables in this model are therefore: the average of the group means $\mu$, the standardized difference $\delta$ of the group means from each other, and the common variance $\sigma$ of measurements in each group.
+The priors for these parameters are chosen in such a way as to enable direct calculation of Bayes factors for point-valued hypotheses.
+Notice that, by explicitly representing the difference parameter $\delta$ in the model, it is possible to put different kinds of _a priori_ assumptions about the likely differences between groups directly into the model, namely in the form of $\mu_g$ and $g$, which are not free model parameters, but will be set by us modelers, here as $\mu_g = 0$ and $g = 1$.
+
+We focus on the first hypothesis spelled out in Chapter \@ref(app-93-data-sets-simon-task), namely that the correct choices are faster in the congruent condition than in the incongruent condition.
+So, based on this data and model, we are interested in the following statistical hypotheses:
+
+1. **Point-valued**: $\delta = 0$
+2. **ROPE-d** $\delta = \in [0 - \epsilon; 0 + \epsilon]$ with $\epsilon = 0.1$
+3. **Directional** $\delta > 0$
+
+<div class = "exercises">
+**Exercise 11.1**
+
+Paraphrase the three hypotheses given for the 24/7 data and the three hypotheses given for the Simon task in your own words.
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+24/7:
+
+1. **Point-valued**: $\theta_c = 0.5$ - the coin is fair, with a bias of exactly 0.5
+2. **ROPE-d** $\theta_c = \in [0.5 - \epsilon; 0.5 + \epsilon]$ with $\epsilon = 0.01$ - the coins bias lies between 0.49 and 0.51
+3. **Directional** $\theta_c < 0.5$ - the coin is biased towards tails
+
+Simon task:
+
+1. **Point-valued**: $\delta = 0$ - the difference between the means of reaction times in both groups is 0
+2. **ROPE-d** $\delta = \in [0 - \epsilon; 0 + \epsilon]$ with $\epsilon = 0.1$ - the absolute difference between the means of reaction times in both groups is no bigger than 10% of the variance in both groups
+3. **Directional** $\delta > 0$ - the mean reaction time in group 1 is bigger than the mean reaction time in group 2
+  
+</div>
+</div>
+</div>
+
+
+## Testing via posterior estimation {#ch-03-05-Bayes-testing-estimation}
+
+The general logic of Bayesian hypothesis testing via parameter estimation is this.
+Let $M$ be the assumed model for observed data $D_{\text{obs}}$.
+We use Bayesian posterior inference to calculate or approximate the posterior $P_M(\theta \mid M)$.
+We then look at an interval-based estimate, most usually a Bayesian credible interval, and compare the hypothesis in question to the region of _a posteriori_ most probable values for the parameter(s) targeted by the hypothesis. 
+
+Concretely, for point-valued hypotheses we can use the following approach. Let $\Theta$ be the parameter space of a model $M$. We are interested in some component $\Theta_i$ and our hypothesis is $\Theta_i = \theta^*_i$ for some specific value $\theta^*_i$. A simple (but crude and controversial) way of addressing this point-valued hypothesis based on observed data $D$ is to look at whether $\theta^*_i$ lies inside some credible interval for parameter $\Theta_i$ in the posterior derived by updating with data $D$. A customary choice here are 95% credible intervals, but also other choices, e.g., 80% credible intervals, are used.
+If a categorical decision rule is needed, we can:
+
+- **accept** the point-valued hypothesis if $\theta^*$ is _inside_ of the credible interval; and
+- **reject** the point-valued hypothesis if $\theta^*$ is _outside_ of the credible interval.
+
+@kruschke2015 extends this approach to also address ROPE-d hypotheses. He argues that we should *not* be concerned with point-valued hypotheses, but rather with intervals constructed around the point-value of interest. Kruschke, therefore, suggests looking at a **region of practical equivalence** (ROPE), usually defined by some $\epsilon$-region around $\theta^*_i$:
+
+$$\text{ROPE}(\theta^*_i) = [\theta^*_i- \epsilon, \theta^*_i+ \epsilon]$$
+
+The choice of $\epsilon$ is context-dependent and requires an understanding of the scale at which parameter values $\Theta_i$ differ. If the parameter of interest is, for example, a difference $\delta$ in the means of reaction times, like in the Simon task, this parameter is intuitively interpretable. We can say, for instance, that an $\epsilon$-region of $\pm 15\text{ms}$ is really so short that any value in $[-15\text{ms}; 15\text{ms}]$ would be regarded as identical to $0$ for all practical purposes because of what we know about reaction times and their potential differences. However, with parameters that are less clearly anchored to a concrete physical measurement about which we have solid distributional knowledge and/or reliable intuitions, fixing the size of the ROPE can be more difficult. For the bias of a coin flip, for instance, which we want to test at the point value $\theta^* = 0.5$ (testing the coin for fairness), we might want to consider a ROPE like $[0.49; 0.51]$, although this choice may be less objectively defensible without previous experimental evidence from similar situations. 
+
+In Kruschke's ROPE-based approach where $\epsilon > 0$, the decision about a point-valued hypothesis becomes ternary. If $[l;u]$ is an interval-based estimate of parameter $\Theta_i$ and $[\theta^*_i - \epsilon; \theta^*_i + \epsilon]$ is the ROPE around the point-value of interest, we would:
+
+- **accept** the point-valued hypothesis iff $[l;u]$ is contained entirely in $[\theta^*_i - \epsilon; \theta^*_i + \epsilon]$;
+- **reject** the point-valued hypothesis iff $[l;u]$ and $[\theta^*_i - \epsilon; \theta^*_i + \epsilon]$ have no overlap; and
+- **withhold judgement** otherwise.
+
+Going beyond Kruschke's approach to ROPE-d hypotheses, it is possible to extend this ternary decision logic also to cover directional hypotheses.
+
+### Example: 24/7
+
+For the Binomial model and the 24/7 data, we know that the posterior is of the form $\text{Beta}(8,18)$.
+Here is a plot of the posterior (repeated from before) which also includes the 95% credible interval for the coin bias $\theta_c$.
+
+```{r, echo = F}
+posterior_plot_24_7
+```
+
+To address our point-valued hypothesis of $\theta_{c} = 0.5$ that the coin is fair, we just have to check if the critical value of 0.5 is inside or outside the 95% credible interval.
+In the case at hand, it is not.
+We would therefore, by the binary decision logic of this approach, *reject* the hypothesis $\theta_{c} = 0.5$ that the coin is fair.
+(Notice that while, strictly speaking, this approach does not pay attention to how closely the credible interval includes or excludes the critical value, we should normally take into account that the boundaries of the credible intervals are uncertain estimates based on posterior samples.)
+
+Using the ROPE-approach of Kruschke, we notice that our ROPE of $\theta = 0.5 \pm 0.01$ is also fully outside of the 95% HDI.
+Here too, we conclude that the idea of an "approximately fair coin" is sufficiently unlikely to act as if it was false.
+In other words, by the ternary decision logic of this approach, we would reject the ROPE-d hypothesis $\theta = 0.5 \pm 0.01$.
+(In practice, especially when we are uncertain about how exactly to pin down $\epsilon$, we might also sometimes want to give the range of $\epsilon$ values for which the ROPE-d hypothesis would be accepted or rejected. So, here we could also say that for any $\epsilon < 0.016$ we would reject the ROPE-d hypothesis.)
+
+The directional hypothesis that the coin is biased towards tails $\theta_c < 0.5$ contains the 95% credible interval in its entirety.
+We would therefore, following the ternary decision logic, *accept* this hypothesis based on the model and data.
+
+### Example: Simon Task
+
+We use `Stan` to draw samples from the posterior distribution.
+We start with assembling the data:
+
+```{r}
+simon_data_4_Stan <- list(
+  y1 = data_simon_cleaned %>% filter(condition == "incongruent") %>% pull(RT),
+  N1 = nrow(data_simon_cleaned %>% filter(condition == "incongruent")),
+  y2 = data_simon_cleaned %>% filter(condition == "congruent") %>% pull(RT),
+  N2 = nrow(data_simon_cleaned %>% filter(condition == "congruent"))
+)
+```
+
+Here is the model from Figure \@ref(fig:ch-03-06-comparison-t-test-ST) implemented in `Stan`.
+
+```{mystan, eval = F}
+data {
+int<lower=1> N1 ;
+int<lower=1> N2 ;
+vector[N1] y1 ;
+vector[N2] y2 ;
+}
+parameters {
+real mu ;
+real<lower=0> sigma ;
+real delta ;
+} 
+model {
+# priors
+target += log(1/sigma) ;
+delta ~ normal(0, 1) ;
+
+# likelihood
+y1 ~ normal(mu + sigma*delta/2, sigma^2) ;
+y2 ~ normal(mu - sigma*delta/2, sigma^2) ;
+}
+```
+
+<link rel="stylesheet" href="hljs.css">
+<script src="stan.js"></script>
+<script>$('pre.mystan code').each(function(i, block) {hljs.highlightBlock(block);});</script>
+
+```{r}
+# sampling
+stan_fit_ttest <- rstan::stan(
+  # where is the Stan code
+  file = 'models_stan/ttest_model.stan',
+  # data to supply to the Stan program
+  data = simon_data_4_Stan,
+  # how many iterations of MCMC 
+  #   more samples b/c of following approximations
+  iter = 20000,
+  # how many warmup steps
+  warmup = 1000
+)
+```
+
+
+Here is a concise summary of the relevant parameters:
+
+```{r}
+Bayes_estimates_ST <- rstan::As.mcmc.list(
+  stan_fit_ttest, pars = c('delta', 'mu', 'sigma')
+  ) %>% 
+  aida::summarize_mcmc_list()
+Bayes_estimates_ST
+```
+
+Figure \@ref(fig:ch-03-07-hypothesis-testing-Bayes-tt2-posterior) shows the posterior distribution over $\delta$ and the 95% HDI (in red).
+
+```{r ch-03-07-hypothesis-testing-Bayes-tt2-posterior, echo = F, fig.cap = "Posterior density of the $\\delta$ parameter in the Bayesian $t$-test model for Simon task data with the 95% HDI (in red)."}
+# cast results (type 'mcmc.list') into tidy tibble
+tidy_draws_tt2 = ggmcmc::ggs(stan_fit_ttest)
+
+# extract samples for parameter 'delta' (most relevant parameter)
+delta_samples <- filter(tidy_draws_tt2, Parameter == "delta") %>% pull(value)
+
+# get a density estimate for 'delta' parameter
+dens <- delta_samples %>% density()
+
+tibble(
+  delta = dens$x,
+  density = dens$y
+) %>% 
+  ggplot(aes(x = delta, y = density)) +
+  geom_line() +
+  geom_area(aes(x = ifelse(delta > Bayes_estimates_ST[1,2] %>% as.numeric & delta < Bayes_estimates_ST[1,4] %>% as.numeric , delta, 0)),
+            fill = "firebrick", alpha = 0.5) +
+  ylim(0, max(dens$y)) +
+  xlim(min(dens$x), max(dens$x))
+```
+
+
+For the point-valued estimate of $\delta = 0$, which is clearly outside of the 95% credible interval, the binary decision criterion would have us *reject* the hypothesis that the difference between group means is precisely zero.
+
+For a ROPE-d hypothesis $\delta = 0 \pm 0.1$, we reach the same conclusion by the ternary decision rule of Kruschke, since the entire ROPE is outside of the credible interval.
+
+The directional hypothesis that $\delta > 0$ is *accepted* by the ternary decision approach.
+
+
+<div class = "exercises">
+**Exercise 11.2**
+
+In this exercise, we will recap the decision rules of the two approaches introduced in this chapter. Using the binary approach for point-valued hypotheses, there are two possible outcomes, namely rejecting $H_0$ and failing to reject $H_0$. Following Kruschke's ROPE approach, we can also withhold judgment. Use pen and paper to draw examples of the situations a-e given below. For each case, draw any distribution representing the posterior (e.g., a bell-shaped curve), the approximate 95% HDI and an arbitrary point value of interest $\theta^*$. For tasks c-e, also draw an arbitrary ROPE around the point value.
+
+Concretely, we'd like you to sketch...
+
+a. ...one instance where we would not reject a point-valued hypothesis $H_0: \theta = \theta^*$.
+b. ...one instance where we would reject a point-valued hypothesis $H_0: \theta = \theta^*$.
+c. ...two instances where we would not reject a ROPE-d hypothesis $H_0: \theta = \theta^* \pm \epsilon$.
+d. ...two instances where we would reject a ROPE-d hypothesis $H_0: \theta = \theta^* \pm \epsilon$.
+e. ...two instances where we would withhold judgement regarding a ROPE-d hypothesis $H_0: \theta = \theta^* \pm \epsilon$.
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+One solution to this exercise might look as follows.
+
+```{r echo=FALSE, out.width='80%'}
+
+hdi <- tibble(
+  `lower` = HDInterval::hdi(function(x) qnorm(x, mean = 0, sd = 0.3))[1],
+  `upper` = HDInterval::hdi(function(x) qnorm(x, mean = 0, sd = 0.3))[2],
+ )
+
+base_plot <- ggplot(data.frame(x = c(-2, 2)), aes(x = x)) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 0.3)) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 0.3),
+                geom = "area", fill = "firebrick", xlim = c(hdi$lower, hdi$upper), alpha = 0.4) +
+  annotate(geom = "text", label = "95% HDI", x = 0, y = 0.5, color = "firebrick", size = 3, alpha = 0.5) +
+  theme_void()
+
+# point-value: accept
+a <- base_plot +
+  geom_point(aes(x = -0.3, y = 0), size = 3) +
+  annotate(geom = "text", label = "(a)", x = -2, y = 1.1, fontface = "bold")
+
+# point-value: reject
+b <- base_plot +
+  geom_point(aes(x = 1, y = 0), size = 3) +
+  annotate(geom = "text", label = "(b)", x = -2, y = 1.1, fontface = "bold")
+
+# Kruschke: accept
+c1 <- base_plot +
+  geom_point(aes(x = 0, y = 0), size = 3) +
+  annotate(geom = "segment", x = -0.8, xend = 0.8, y = 0, yend = 0, size = 2) +
+  annotate(geom = "text", label = "(c)", x = -2, y = 1.1, fontface = "bold")
+
+# Kruschke: accept
+c2 <- base_plot +
+  geom_point(aes(x = -0.7, y = 0), size = 3) +
+  annotate(geom = "segment", x = -2, xend = 0.6, y = 0, yend = 0, size = 2)
+
+# Kruschke: reject
+d1 <- base_plot +
+  geom_point(aes(x = -1.5, y = 0), size = 3) +
+  annotate(geom = "segment", x = -1.8, xend = -1.2, y = 0, yend = 0, size = 2) +
+  annotate(geom = "text", label = "(d)", x = -2, y = 1.1, fontface = "bold")
+
+# Kruschke: reject
+d2 <- base_plot +
+  geom_point(aes(x = 1.1, y = 0), size = 3) +
+  annotate(geom = "segment", x = 0.6, xend = 1.6, y = 0, yend = 0, size = 2)
+
+# Kruschke: withhold judgement
+e1 <- base_plot +
+  geom_point(aes(x = -1, y = 0), size = 3) +
+  annotate(geom = "segment", x = -1.8, xend = -0.2 , y = 0, yend = 0, size = 2) +
+  annotate(geom = "text", label = "(e)", x = -2, y = 1.1, fontface = "bold")
+
+# Kruschke: withhold judgement
+e2 <- base_plot +
+  geom_point(aes(x = 0.2, y = 0), size = 3) +
+  annotate(geom = "segment", x = -0.1, xend = 0.5, y = 0, yend = 0, size = 2)
+
+cowplot::plot_grid(a,b,c1,c2,d1,d2,e1,e2, ncol = 2)
+```
+
+The red shaded area under the curves shows the 95% credible interval. The black dots represent (arbitrary) point values of interest, and the horizontal bars in panels (c)-(e) depict the ROPE around a given point value.
+  
+</div>
+</div>
+</div>
+
+
+## Testing via model comparison {#ch-03-05-Bayesian-testing-comparison}
+
+Testing hypotheses based on parameter estimation, and in particular the categorical decision rules for accepting or rejecting hypotheses outlined in the previous section, only give a very coarse-grained picture.
+Bayesian analysis is about providing quantitative information about uncertainty and evidence, which are intuitive and easily interpretable.
+So, we would also like to have a quantitative assessment of the evidence for or against a hypothesis provided by some data against the background of a given model.
+This is what the comparison-based approaches to Bayesian hypothesis testing give us.
+
+Here is some further motivation why model comparison might be a good replacement for "testing via estimation".
+A statistical hypothesis $H$ is basically an event: a subset of parameter values are picked out of the whole parameter space.
+After observing data $D_\text{obs}$ and based on model $M$, the ideal measure to have is $P_M(H \mid D_\text{obs})$: given data and model, how likely is the hypothesis in question?
+The problem with this posterior formulation $P_M(H \mid D_\text{obs})$ is that, for it to be meaningful, it must quantify over the set of all alternative hypotheses.
+If $H$ is a point-valued hypothesis over a single parameter, the set of all alternative hypotheses could comprise all other logically possible point-valued hypotheses for the same parameter. 
+But then, if that parameter is a continuous parameter, the posterior density at $P_M(H \mid D_\text{obs})$ is not meaningfully interpretable as a probability (mass).
+If $H$ is an interval-based hypothesis, the posterior $P_M(H \mid D_\text{obs})$ would be meaningfully interpretable as a probability (mass), but still the question of what exactly the space of alternatives is is left implicit.
+Moreover, the posterior $P_M(H \mid D_\text{obs})$ is influenced by the model's prior over $H$.
+So, a nominally high value of $P_M(H \mid D_\text{obs})$ is as such uninteresting because we would need to take the prior $P_M(H)$ into account as well.
+
+This is why a comparison-based approach to Bayesian hypothesis testing explicitly compares two models:
+
+- **The null model** $M_0$ is the model that incorporates the assumption of the hypothesis $H$ to be tested. For example, the null model would put prior probability zero on those parameter values which are ruled out by $H$.
+- **The alternative model** $M_1$ is an explicitly formulated model which incorporates some contextually or technically useful alternative to $M_0$.
+
+The comparison-based approach to hypothesis testing then quantifies, using Bayes factors, the evidence that $D_\text{obs}$ provides for or against $M_0$ (the model representing the "null hypothesis") over the alternative model $M_1$ (the model representing the alternative hypothesis).
+In this way, by looking at the ratio:
+
+$$
+BF_{01} = \frac{P(D_\text{obs} \mid M_0)}{P(D_\text{obs} \mid M_1)}
+$$
+
+this approach is independent of the prior probability assigned to models $P(M_0)$ and $P(M_1)$. 
+Notice, however, that it is *not* independent of the priors over $\theta$ used in $M_1$!
+
+When the null hypothesis is point-valued, the alternative model is *not* based on the complement $\theta \neq \theta^*$, but on the technically much more practical and also conceptually more plausible alternative model that assumes that $\theta$ is free to range over a larger interval including, but not limited to $\theta^*$. We can then use the so-called Savage-Dickey method, described in Section \@ref(ch-03-07-hypothesis-testing-Bayes-Savage-Dickey), to compare the null and the alternative models as so-called *nested models*.
+
+When the null hypothesis is interval-valued, the alternative model can be conceived as based on the complement of the null hypothesis. We can then use an extension of the Savage-Dickey method based on a so-called encompassing model, described in Section \@ref(ch-03-07-hypothesis-testing-Bayes-encompassing-models), where we construe both the null model and the alternative model as nested under a third, well, encompassing model.
+
+This chapter shows how Bayes factors can be approximated based on samples from the posterior following both of these approaches.
+
+### The Savage-Dickey method {#ch-03-07-hypothesis-testing-Bayes-Savage-Dickey}
+
+The Savage-Dickey method is a very convenient way of computing Bayes factors for *nested models*, especially when models only differ with respect to one parameter.
+
+Suppose that there are $n$ continuous parameters of interest $\theta = \langle \theta_1, \dots, \theta_n \rangle$. $M_1$ is a (Bayesian) model defined by $P(\theta \mid M_1)$ and $P(D \mid \theta, M_1)$. $M_0$ is **properly nested** under $M_1$ if:
+
+- $M_0$ assigns fixed values to parameters $\theta_i = x_i, \dots, \theta_n = x_n$
+- $P(D \mid \theta_1, \dots, \theta_{i-1}, M_0) = P(D \mid \theta_1, \dots, \theta_{i-1}, \theta_i = x_i, \dots, \theta_n = x_n, M_1)$
+- $\lim_{\theta_i \rightarrow x_i, \dots, \theta_n \rightarrow x_n} P(\theta_1, \dots, \theta_{i-1} \mid \theta_i, \dots, \theta_n, M_1) = P(\theta_1, \dots, \theta_{i-1} \mid M_0)$
+
+Intuitively put, $M_0$ is properly nested under $M_1$, if $M_0$ is a special case of $M_1$ which fixes certain parameters to specific point-values.
+Notice that the last condition is satisfied in particular when $M_1$'s prior over $\theta_1, \dots, \theta_{i-1}$ is independent of the values for the remaining parameters.
+
+We can express a point-valued hypothesis in terms of a model $M_0$ which is nested under the alternative model $M_1$, the latter of which assumes that the parameters in question can take more than one value.
+For such properly nested models, we can compute a Bayes factor efficiently using the following result.
+
+<div class = "mathstuff">
+
+```{theorem, name = "Savage-Dickey Bayes factors for nested models"}
+Let $M_0$ be properly nested under $M_1$ s.t. $M_0$ fixes $\theta_i = x_i, \dots, \theta_n = x_n$. The Bayes factor $\text{BF}_{01}$ in favor of $M_0$ over $M_1$ is then given by the ratio of posterior probability to prior probability of the parameters $\theta_i = x_i, \dots, \theta_n = x_n$ from the point of view of the nesting model $M_1$:
+
+$$
+\begin{aligned}
+\text{BF}_{01} & = \frac{P(\theta_i = x_i, \dots, \theta_n = x_n \mid D, M_1)}{P(\theta_i = x_i, \dots, \theta_n = x_n \mid M_1)}
+\end{aligned}
+$$
+```
+
+<div class="collapsibleProof">
+<button class="trigger">Show proof.</button>
+<div class="content">
+
+```{proof}
+Let's assume that $M_0$ has parameters $\theta = \langle\phi, \psi\rangle$ with $\phi = \phi_0$, and that $M_1$ has parameters $\theta = \langle\phi, \psi \rangle$ with $\phi$ free to vary. If $M_0$ is properly nested under $M_1$, we know that $\lim_{\phi \rightarrow \phi_0} P(\psi \mid \phi, M_1) = P(\psi \mid M_0)$. We can then rewrite the marginal likelihood under $M_0$ as follows:
+
+$$ 
+\begin{aligned}
+P(D \mid M_0) & = \int P(D \mid \psi, M_0) P(\psi \mid M_0) \ \text{d}\psi
+& \text{[marginalization]}
+\\
+ & = \int P(D \mid \psi, \phi = \phi_0, M_1) P(\psi \mid \phi = \phi_0, M_1)  \ \text{d}\psi
+ & \text{[assumption of nesting]}
+ \\
+ & = P(D \mid \phi = \phi_0, M_1) 
+ & \text{[marginalization]}
+ \\
+ & = \frac{P(\phi = \phi_0 \mid D, M_1) P(D \mid M_1)}{P(\phi = \phi_0 \mid M_1)}
+ & \text{[Bayes rule]}
+\end{aligned}
+$$
+
+The result follows if we divide by $P(D \mid M_1)$ on both sides of the equation.
+
+```
+
+&nbsp;
+  
+</div>
+</div>
+</div>
+
+
+
+
+
+
+#### Example: 24/7
+
+Here is an example based on the 24/7 data. For a nesting model with a flat prior ($\theta \sim^{M_1} \text{Beta}(1,1)$), and a point hypothesis $\theta_c = 0.5$, we just have to calculate the prior and posterior probability of the critical value $\theta_c = 0.5$:
+
+```{r}
+# point-value of interest
+theta_star <- 0.5
+# posterior probability in nesting model
+posterior_theta_star <- dbeta(theta_star, 8, 18)
+# prior probability in nesting model
+prior_theta_star <- dbeta(theta_star, 1, 1)
+# Bayes factor (using Savage-Dickey)
+BF_01 <- posterior_theta_star / prior_theta_star
+BF_01
+```
+
+This is very minor evidence in favor of the alternative model (Bayes factor $\text{BF}_{10} \approx `r signif(1/BF_01,3)`$). We would not like to draw any (strong) categorical conclusions from this result regarding the question of whether the coin might be fair. Figure \@ref(fig:ch-03-07-hypothesis-testing-Bayes-SD-24-7) also shows the relation between prior and posterior at the point-value of interest. 
+
+```{r ch-03-07-hypothesis-testing-Bayes-SD-24-7, echo = F, fig.cap = "Illustration of the Savage-Dickey method of Bayes factor computation for the 24/7 case."}
+plotData <- tibble(
+  theta = seq(0.01,1, by = 0.01),
+  posterior = dbeta(theta, 8, 18 ),
+  prior = dbeta(theta, 1, 1)
+)
+plotData = pivot_longer(plotData, cols = c("posterior", "prior"), names_to = "distribution")
+pointData <- data.frame(x = c(0.5,0.5), y = c(dbeta(0.5,8,18),1))
+
+ggplot(plotData, aes(x = theta, y = value, color = distribution)) + xlim(0,1) + geom_line() + ylab("probability") +
+  geom_segment(aes(x = 0.52, y = 0, xend = 0.52, yend = 1), color = "darkgray") +
+  geom_segment(aes(x = 0.48, y = 0, xend = 0.48, yend = dbeta(0.5,8,18)), color = "darkgray") +
+  geom_segment(aes(x = 0.5, y = 1, xend = 0.52, yend = 1), color = "darkgray") +
+  geom_segment(aes(x = 0.5, y = dbeta(0.5,8,18), xend = 0.48, yend = dbeta(0.5,8,18)), color = "darkgray") +
+  annotate("point", x = 0.5, y = 1, color = "black") +
+  annotate("point", x = 0.5, y = dbeta(0.5,8,18), color = "black") + 
+  annotate("text", x = 0.3, y = 0.25, color = "darkgray", label = "P(0.5 | D, M1) = 0.516", size = 3) +
+  annotate("text", x = 0.68, y = 0.75, color = "darkgray", label = "P(0.5 | M1) = 1", size = 3)
+```
+
+#### Example: Simon task
+
+In the previous 24/7 example, using the Savage-Dickey method was particularly easy because we know a closed-form solution of the precise posterior, so that we could easily calculate the posterior for the critical value without further ado.
+When this is not the case, like in the application to the Simon task data, we have to obtain an estimate for the posterior density at the critical value, here: $\delta = 0$, from the posterior samples which we obtain from sampling, as we did earlier in this chapter (using Stan). 
+An approximate method for obtaining this value is implemented in the `polspline` package (using polynomial splines to approximate the posterior curve).
+
+```{r}
+# extract the samples for the delta parameter
+#   from the earlier Stan fit
+delta_samples <- tidy_draws_tt2 %>% 
+  filter(Parameter == "delta") %>% 
+  pull(value)
+
+# estimating the posterior density at delta = 0 with polynomial splines
+fit.posterior <- polspline::logspline(delta_samples)
+posterior_delta_null <- polspline::dlogspline(0, fit.posterior)
+
+# computing the prior density of the point-value of interest
+#   [NB: the prior on delta was a standard normal]
+prior_delta_null <- dnorm(0, 0, 1) 
+
+# compute BF via Savage-Dickey
+BF_delta_null = posterior_delta_null / prior_delta_null
+BF_delta_null
+```
+
+We conclude from this result that the data provide extremely strong evidence against the null model, which assumes that $\delta = 0$, when compared to an alternative model $M_1$, which assumes that $\delta \sim \mathcal{N}(0,1)$ in the prior.
+
+
+
+
+<!-- exercise 2 -->
+<!-- Taken from the prep exam (IDA-prep-exam-02.pages.pdf) -->
+<div class = "exercises">
+**Exercise 11.3: Bayes factors with the Savage-Dickey method**
+
+Look at the plot below. You see the prior distribution and the posterior distribution over the $\delta$ parameter in a Bayesian $t$-test model. We are going to use this plot to determine (roughly) the Bayes factor of two models: the full Bayesian $t$-test model, and a model nested under this full model which assumes that $\delta = 0$.
+
+```{r echo=FALSE, fig.align="center", fig.width=4, fig.height=4, warning=FALSE}
+ggplot(data = NULL, aes(x = x, color = legend)) +
+  stat_function(data = data.frame(x = -20:20, legend = factor(1)), fun = dnorm, args = list(mean = 1.5, sd = 3), size = 2) +
+  stat_function(data = data.frame(x = -20:20, legend = factor(2)), fun = dnorm, args = list(mean = 0, sd = 8), size = 2) +
+  scale_colour_manual(values = c("#E69F00", "#0072B2"), labels = c("posterior", "prior")) +
+  theme_minimal() +
+  theme(legend.title = element_blank(), 
+        legend.position = "top",
+        axis.title.y = element_blank()) +
+  xlab(latex2exp::TeX("$\\delta$"))
+```
+
+a. Describe in intuitive terms what it means for a Bayesian model to be nested under another model. It is sufficient to neglect the conditions on the priors.
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+A model nested under another model fixes certain parameters to specific values which may take on more than one value in the nesting model.
+
+</div>
+</div>
+
+b. Write down the formula for the Bayes factor in favor of the null model (where $\delta = 0$) over the full model using the Savage-Dickey theorem.
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+$BF_{01}=\frac{P(\delta = 0 \mid D, M_1)}{P(\delta = 0 \mid M_1)}$.
+
+</div>
+</div>
+
+c. Give a natural language paraphrase of the formula you wrote down above.
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+The Bayes factor in favor of the embedded null model over the embedding model is given by the posterior density at $\delta = 0$ under the nesting model divided by the prior in the nesting model at $\delta = 0$.
+
+</div>
+</div>
+
+d. Now look at the plot above. Give your approximate guess of the Bayes factor in favor of the null model in terms of a fraction of whole integers (something like: $\frac{4}{3}$ or $\frac{27}{120}$, ...).
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+```{r echo=FALSE, fig.align="center", fig.width=4, fig.height=4, warning=FALSE}
+ggplot(data = NULL, aes(x = x, color = legend)) +
+  stat_function(data = data.frame(x = -20:20, legend = factor(1)), fun = dnorm, args = list(mean = 1.5, sd = 3), size = 2) +
+  stat_function(data = data.frame(x = -20:20, legend = factor(2)), fun = dnorm, args = list(mean = 0, sd = 8), size = 2) +
+  scale_colour_manual(values = c("#E69F00", "#0072B2"), labels = c("posterior", "prior")) +
+  annotate(geom = "segment", x = 0, xend = 0, y = 0, yend = 0.049, arrow = arrow(length = unit(0.3, "cm"))) +
+  annotate(geom = "text", x = -1, y = 0.03, label = "2", color = "#0072B2") +
+  annotate(geom = "segment", x = 1.5, xend = 1.5, y = 0, yend = 0.125, arrow = arrow(length = unit(0.3, "cm"))) +
+  annotate(geom = "text", x = 3, y = 0.08, label = "5", color = "#E69F00") +
+  theme_minimal() +
+  theme(legend.title = element_blank(), 
+        legend.position = "top",
+        axis.title.y = element_blank()) +
+  xlab(latex2exp::TeX("$\\delta$"))
+```
+
+$BF_{01} \approx \frac{5}{2}$ (see plot above).
+
+</div>
+</div>
+
+e. Formulate a conclusion to be drawn from this numerical result about the research hypothesis that the mean of the two groups compared here is identical. Write one concise sentence like you would in a research paper.
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+A BF of $\frac{5}{2}$ is mild evidence in favor of the null model, but conventionally not considered strong enough to be particularly noteworthy.
+  
+</div>
+</div>
+
+</div>
+
+#### [Excursion:] Calculating the Bayes factor precisely
+
+<span style = "color:firebrick">under construction</span>
+
+<!-- Since this last numerical result relies on some computational approximation (namely in the estimation of the posterior density at $\delta = 0$ using polynomial splines approximation), we can also make use of the fact that the $t$-test model we used here allows for a direct mathematical computation of the Bayes factor. -->
+
+
+```{r, eval = F, echo = F}
+# store data to work with in short variables
+y1 <- simon_data_4_Stan$y1
+y2 <- simon_data_4_Stan$y2
+N1 <- simon_data_4_Stan$N1
+N2 <- simon_data_4_Stan$N2
+
+# means and sums of squares
+y1_bar  <-  mean(y1)
+y2_bar <- mean(y2)
+s_squared_1 <- sum((y1-y1_bar)^2)
+s_squared_2 <- sum((y2-y2_bar)^2)
+
+s_squared_1 <- var(y1)
+s_squared_2 <- var(y2)
+
+# parameters of the T-test model
+mu_delta <- 0
+g <- 1
+
+# degrees of freedom
+nu_obs <- N1 + N2 - 2
+
+# effective sample size
+n_delta <- (1/N1 + 1/N2)^(-1)
+
+# pooled sum of squares (divided by nu)
+s_pooled <- ((N1-1)*s_squared_1 + (N2-1)*s_squared_2) / nu_obs
+
+# observed t-value
+t_obs <- sqrt(n_delta) * (y1_bar - y2_bar) / s_pooled
+
+# handy constant for following calculation
+a <- 1/sqrt(1 + n_delta * g)
+
+BF_01_precise <- a * LaplacesDemon::dst(x = t_obs*a, mu = a*sqrt(n_delta)*mu_delta, nu = nu_obs, sigma = 1) / 
+  LaplacesDemon::dst(x = t_obs, mu = 0, nu = nu_obs, sigma = 1)
+BF_01_precise
+```
+
+### Encompassing models {#ch-03-07-hypothesis-testing-Bayes-encompassing-models}
+
+The Savage-Dickey method can be generalized to also cover interval-valued hypotheses.
+The previous literature has focused on inequality-based intervals/hypotheses (like $\theta \ge 0.5$) [@KlugkistKato2005:Bayesian-model;@WetzelsGrasman2010:An-encompassing;@Oh2014:Bayesian-compar], but the method also applies to ROPE-d hypotheses. 
+The advantage of this method is that we can use samples from the posterior distribution to approximate integrals, which is more robust than having to estimate point-values of posterior density. 
+
+Following previous work [@KlugkistKato2005:Bayesian-model;@WetzelsGrasman2010:An-encompassing;@Oh2014:Bayesian-compar], the main idea is to use so-called **encompassing priors**. Let $\theta$ be a single parameter of interest (for simplicity), which can in principle take on any real value. We are interested in the interval-based hypotheses:
+
+- $H_0 \colon \theta \in I_0$, and 
+- $H_a \colon \theta \not \in I_{0}$
+
+where $I_{0}$ is some possibly half-open interval.
+
+An **encompassing model** $M_e$ has a suitable likelihood function $P_{M_e}(D \mid \theta, \omega)$ (where $\omega$ is a vector of other parameters besides the parameter $\theta$ of interest). It also defines a prior $P_{M_e}(\theta, \omega)$, which does not already rule out $H_{0}$ or $H_{a}$.
+
+Generalizing over the Savage-Dickey approach, we construct *two* models, one for each hypothesis, *both* of which are nested under the encompassing model:
+
+- $M_0$ has prior $P_{M_0}(\theta, \omega) = P_{M_e}(\theta, \omega \mid \theta \in [a;b])$
+- $M_a$ has prior $P_{M_a}(\theta, \omega) = P_{M_e}(\theta, \omega \mid \theta \not \in [a;b])$
+
+Both $M_0$ and $M_a$ have the same likelihood function as $M_e$, which is why we drop the model index for better readability in the following. 
+
+Figure \@ref(fig:ch-03-07-hypothesis-testing-Bayes-encompassing-prior) shows an example of the priors of an encompassing model for two nested models based on a ROPE-d hypothesis testing approach.
+
+```{r ch-03-07-hypothesis-testing-Bayes-encompassing-prior, echo = F, fig.cap = "Example of the prior of an encompassing model and the priors of two models nested under it."}
+tibble(
+  delta = seq(-3,3,length.out = 1000),
+  encompassing = dnorm(delta)
+) %>%
+  mutate(
+    null = ifelse(-0.1 <= delta & delta <= 0.1,
+                  encompassing, 0),
+    alt  = ifelse(-0.1 >= delta | delta >= 0.1,
+                  encompassing, 0)
+  ) %>%
+  mutate(
+    encompassing = encompassing / sum(encompassing),
+    null = null / sum(null),
+    alt = alt / sum(alt)
+  ) %>%
+  pivot_longer(cols = -delta, names_to = "model", values_to = "density") %>%
+  mutate(model = factor(model, ordered = T, levels = c("encompassing", "null", "alt"))) %>%
+  ggplot(aes(x = delta, y = density)) +
+  geom_line() +
+  geom_area(fill = "lightgray", alpha = 0.6) +
+  facet_wrap(. ~ model, nrow = 3, scales = "free") +
+  labs(
+    x = "", y = ""
+  ) +
+  guides(fill = F) +
+  theme(
+    axis.text.y  = element_blank(),
+    axis.ticks.y = element_blank()
+  )
+```
+
+<div class = "mathstuff">
+
+```{theorem, "BF-ROPED-hypotheses"}
+Fix a Bayesian model $M$ (the encompassing model) with prior $P_M(\theta, \omega)$ and likelihood function $P_M(D \mid \theta, \omega)$, where $\theta$ is the parameter of interest and $\omega$ is a vector of other (nuisance) parameters. Assume that the priors over $\theta$ are independent of the nuisance parameters $\omega$. For an interval-valued hypothesis $H_0 \colon \theta \in I_0$, the Bayes factor in favor of this hypothesis over its negation $H_a \colon \theta \not \in I_0$ can be expressed as:
+
+$$ 
+\begin{aligned}
+\text {BF}_{01} & = \frac{\text{posterior-odds of } H_0}{\text{prior-odds of } H_0}  \\
+& = \frac{P_M(\theta \in I_0 \mid D)}{P_M(\theta \not \in I_0 \mid D)} \frac{P_M(\theta \not \in I_0)}{P_M(\theta \in I_0)}
+\end{aligned}
+$$
+
+```
+
+
+<div class="collapsibleProof">
+<button class="trigger">Show proof.</button>
+<div class="content">
+
+```{proof}
+TBD
+```
+
+&nbsp;
+  
+</div>
+</div>
+</div>
+
+
+
+#### Example: 24/7
+
+The Bayes factor using the ROPE-d method to compute the interval-valued hypothesis $\theta = 0.5 \pm \epsilon$ is:
+
+```{r}
+# set the scene
+theta_null <- 0.5
+epsilon <- 0.01                 # epsilon margin for ROPE
+upper <- theta_null + epsilon   # upper bound of ROPE
+lower <- theta_null - epsilon   # lower bound of ROPE
+# calculate prior odds of the ROPE-d hypothesis
+prior_of_hypothesis <- pbeta(upper, 1, 1) - pbeta(lower, 1, 1)
+prior_odds <- prior_of_hypothesis / (1 - prior_of_hypothesis)
+# calculate posterior odds of the ROPE-d hypothesis
+posterior_of_hypothesis <- pbeta(upper, 8, 18) - pbeta(lower, 8, 18)
+posterior_odds <- posterior_of_hypothesis / (1 - posterior_of_hypothesis)
+# calculate Bayes factor
+bf_ROPEd_hypothesis <- posterior_odds / prior_odds
+bf_ROPEd_hypothesis
+```
+
+This is unnoteworthy evidence in favor of the alternative hypothesis (Bayes factor $\text{BF}_{10} \approx `r signif(1/bf_ROPEd_hypothesis,3)`$). 
+Notice that the reason why the alternative hypothesis does not fare better in this analysis is because it also includes a lot of parameter values ($\theta > 0.5$) which explain the observed data even more poorly than the values included in the null hypothesis.
+
+We can also use this approach to test the directional hypothesis that $\theta < 0.5$.
+
+```{r}
+# calculate prior odds of the ROPE-d hypothesis
+#   [trivial in the case at hand, but just to be explicit]
+prior_of_hypothesis <- pbeta(0.5, 1, 1) 
+prior_odds <- prior_of_hypothesis / (1 - prior_of_hypothesis)
+
+# calculate posterior odds of the ROPE-d hypothesis
+posterior_of_hypothesis <- pbeta(0.5, 8, 18)
+posterior_odds <- posterior_of_hypothesis / (1 - posterior_of_hypothesis)
+# calculate Bayes factor
+bf_directional_hypothesis <- posterior_odds / prior_odds
+bf_directional_hypothesis
+```
+
+Here we should conclude that the data provide substantial evidence in favor of the assumption that the coin is biased towards tails, when compared against the alternative assumption that it is biased towards heads.
+If the dichotomy is "heads bias vs tails bias" the data clearly tilts our beliefs towards the "tails bias" possibility.
+
+#### Example: Simon task
+
+Using posterior samples, we can also do similar calculations for the Simon task.
+Let's first approximate the Bayes factor in favor of the ROPE-d hypothesis $\delta = 0 \pm 0.1$ when compared against the alternative hypothesis $\delta \not \in 0 \pm 0.1$.
+
+```{r}
+# estimating the BF for ROPE-d hypothesis with encompassing priors
+delta_null <- 0
+epsilon <- 0.1                  # epsilon margin for ROPE
+upper <- delta_null + epsilon   # upper bound of ROPE
+lower <- delta_null - epsilon   # lower bound of ROPE
+# calculate prior odds of the ROPE-d hypothesis
+prior_of_hypothesis <- pnorm(upper, 0, 1) - pnorm(lower, 0, 1)
+prior_odds <- prior_of_hypothesis / (1 - prior_of_hypothesis)
+# calculate posterior odds of the ROPE-d hypothesis
+posterior_of_hypothesis <- mean( lower <= delta_samples & delta_samples <= upper )
+posterior_odds <- posterior_of_hypothesis / (1 - posterior_of_hypothesis)
+# calculate Bayes factor
+bf_ROPEd_hypothesis <- posterior_odds / prior_odds
+bf_ROPEd_hypothesis
+```
+
+This is overwhelming evidence against the ROPE-d hypothesis that $\delta = 0 \pm 0.1$. 
+
+We can also use this approach to test the directional hypothesis that $\delta > 0.5$.
+
+```{r}
+# calculate prior odds of the ROPE-d hypothesis
+#   [trivial in the case at hand, but just to be explicit]
+prior_of_hypothesis <- 1 - pnorm(0, 0, 1)
+prior_odds <- prior_of_hypothesis / (1 - prior_of_hypothesis)
+# calculate posterior odds of the ROPE-d hypothesis
+posterior_of_hypothesis <- mean( delta_samples >= 0.5 )
+posterior_odds <- posterior_of_hypothesis / (1 - posterior_of_hypothesis)
+# calculate Bayes factor
+bf_directional_hypothesis <- posterior_odds / prior_odds
+bf_directional_hypothesis
+```
+
+Modulo imprecision induced by sampling, we see that the evidence in favor of the directional hypothesis $\delta > 0.5$ is immense.
+
+<!-- exercise 3 -->
+<div class = "exercises">
+**Exercise 11.4: True or False?**
+
+Decide for the following statements whether they are true or false.
+
+a. An encompassing model for addressing ROPE-d hypotheses needs two competing models nested under it.
+b. A Bayes factor of $BF_{01} = 20$ constitutes strong evidence in favor of the alternative hypothesis.
+c. A Bayes factor of $BF_{10} = 20$ constitutes minor evidence in favor of the alternative hypothesis.
+d. We can compute the BF in favor of the alternative hypothesis with $BF_{10} = \frac{1}{BF_{01}}$.
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+Statements a. and d. are correct.
+  
+</div>
+</div>
+</div>
+

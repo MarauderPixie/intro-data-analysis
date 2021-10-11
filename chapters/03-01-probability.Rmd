@@ -1,0 +1,936 @@
+# (PART) Bayesian Data Analysis {-}
+
+# Basics of Probability Theory {#Chap-03-01-probability}
+
+<hr>
+
+<div style = "float:right; width:35%;">
+<img src="visuals/badge-probability.png" alt="badge probability">  
+</div>  
+
+Probability is the basic ingredient of statistical inference.
+
+In this chapter, we will cover the very basics of probability theory. We will visit its axiomatic definition and some common interpretations in Section \@ref(Chap-03-01-probability-basics), where we also start with the main mental exercise of this section: seeing how **probability distributions can be approximately represented by samples**. We will cover important concepts such as joint and marginal probability in Section \@ref(Chap-03-01-probability-marginal). This paves the way for learning about conditional probability and Bayes rule in Section \@ref(Chap-03-01-probability-conditional). Section \@ref(Chap-03-01-probability-random-variables) introduces the notion of a random variable. Finally, Section \@ref(Chap-03-01-probability-R) briefly covers how information about common probability distributions can be accessed in R.
+
+```{block, type='infobox'}
+
+The learning goals for this chapter are:
+
+- become familiar with the notion of probability and also:
+  - its axiomatic definition
+  - the notion of joint, marginal and conditional probability
+- understand and apply Bayes rule
+- get comfortable with random variables
+- understand how probability distributions are approximately represented by samples
+- become able to use R's built-in probability distributions
+
+```
+
+## Probability  {#Chap-03-01-probability-basics}
+
+Intuitively put, a probability distribution is a formal construct that captures an agent's belief state.
+In Bayesian data analysis, that agent of interest is the analyst themselves or a hypothetical model of the analyst.
+More concretely, a probability distribution assigns numerical values (conveniently scaled to lie between 0 and 1) to a number of different contingencies, i.e., different ways the world could be.
+These numbers can be interpreted as the weight of belief (also referred to as "degree of credence" in the philosophical literature) that the agent assigns to each contingency: the higher the number assigned to a contingency, the more likely the agent considers this way the world could be. 
+
+### Outcomes, events, observations
+
+To define the notion of probability, we first consider the space of relevant contingencies (ways the world could be) $\Omega$ containing all **elementary outcomes** $\omega_1, \omega_2, \dots \in \Omega$ of a process or an event whose execution is (partially) random or unknown.
+Elementary outcomes are mutually exclusive ($\omega_i \neq \omega_j \; \text{for} \,\forall i \neq j$). The set $\Omega$ exhausts all possibilities.^[For simplicity of exposure, we gloss over subtleties arising when dealing with infinite sets $\Omega$. We make up for this when we define probability *density* functions for continuous random variables, which have an uncountably infinite number of elementary outcomes. We will usually be concerned with continuous random variables within applied statistics.]
+
+
+```{block2, type='infobox'}
+
+**Example.** The set of elementary outcomes of a single coin flip is $\Omega_{\text{coin flip}} = \set{\text{heads}, \text{tails}}$. The elementary outcomes of tossing a six-sided die are $\Omega_{\text{standard die}} = \{$&#9856;, &#9857;, &#9858;, &#9859;, &#9860;, &#9861; $\}$.^[Think of $\Omega$ as a partition of the space of all possible ways in which the world could be, where we lump together into one partition cell (one elementary outcome) all ways in which the world could be that are equivalent regarding those aspects of reality that we are interested in. We do not care whether the coin lands in the mud or in the sand. It only matters whether it came up heads or tails. Each elementary event can be realized in myriad ways. $\Omega$ is our, the modelers', first crude simplification of nature, abstracting away aspects we currently do not care about.]
+    
+```
+
+An **event** $A$ is a subset of $\Omega$. Think of an event as a (possibly partial)
+observation. We might observe, for instance, not the full outcome of tossing a die, but only
+that there is a dot in the middle. This would correspond to the event
+$A = \{$ &#9856;, &#9858;,  &#9860; $\}$,
+i.e., observing an odd-numbered outcome. The *trivial observation* $A = \Omega$ and the
+*impossible observation* $A = \emptyset$ are counted as events, too. The latter is included for
+technical reasons that we don't need to know for our purpose.
+
+
+For any two events $A, B \subseteq \Omega$, standard set operations correspond to logical
+connectives in the usual way. For example, the conjunction $A \cap B$ is the observation of
+both $A$ and $B$; the disjunction $A \cup B$ is the observation that it is either $A$ or $B$;
+the negation of $A$, $\overline{A} = \set{\omega \in \Omega \mid \omega \not \in A}$, is the
+observation that it is not $A$.
+
+### Probability distributions
+
+A **probability distribution** $P$ over $\Omega$ is a function
+$P \ \colon \ \mathfrak{P}(\Omega) \rightarrow \mathbb{R}$ ^[For any of you who are interested in the precise mathematical description of probability space, $\mathfrak{P}(\Omega)$ is called [Borel set](https://en.wikipedia.org/wiki/Borel_set). It is important since probabilities can only be defined for measurable sets.] that assigns to all events $A \subseteq \Omega$ a real number, such that the following (so-called Kolmogorov axioms) are satisfied:
+
+A1. $0 \le P(A) \le 1$
+
+A2. $P(\Omega) = 1$
+
+A3. $P(A_1 \cup A_2 \cup A_3 \cup \dots) = P(A_1) + P(A_2) + P(A_3) + \dots$ whenever $A_1, A_2, A_3, \dots$ are mutually exclusive^[A3 is the axiom of *countable additivity*. Finite additivity may be enough for finite or countable sets $\Omega$, but infinite additivity is necessary for full generality in the uncountable case.]
+
+Occasionally, we encounter the notation $P \in \Delta(\Omega)$ to express that $P$ is a probability
+distribution over $\Omega$. (E.g., in physics, theoretical economics or game theory. Less so in psychology or statistics.) If $\omega \in \Omega$ is an elementary event, we often write $P(\omega)$ as a shorthand for $P(\set{\omega})$. In fact, if $\Omega$ is finite, it suffices to assign probabilities to elementary outcomes.
+
+A number of rules follow immediately from the definition:
+
+C1. $P(\emptyset) = 0$
+
+C2. $P(\overline{A}) = 1 - P(A)$
+
+C3. $P(A \cup B) = P(A) + P(B) - P(A \cap B)$ for any $A, B \subseteq \Omega$
+
+<div class = "exercises">
+**Exercise 7.1 [optional]**
+
+Prove C1, C2 and C3 using A1, A2 and A3.
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+C1: $P(\Omega \cup \emptyset) = P(\Omega) + P(\emptyset)  \Leftrightarrow  P(\Omega) = P(\Omega) + P(\emptyset)  \Leftrightarrow  0 = P(\emptyset)$ following A3 since $\Omega$ and $\emptyset$ are mutually exclusive.
+
+C2: $P(\Omega) = P(A \cup \overline{A}) = P(A) + P(\overline{A}) = 1$.
+
+C3: $P(A \cup B) = P((A-B) \cup (A \cap B) \cup (B-A)) = P(A-B) + P(A \cap B) + P(B-A) = \\ (P(A \cup B) - P(B)) + P(A \cap B) + (P(A \cup B) - P(A)) = 2 P(A \cup B) - P(A) - P(B) + P(A \cap B) \\ \Leftrightarrow   P(A \cup B) = P(A) + P(B) - P(A \cap B)$
+
+</div>
+</div>
+</div>
+
+### Interpretations of probability
+It is reasonably safe to think of probability, as defined above, as a handy mathematical primitive which is useful for certain applications. There are at least three ways of thinking about where this primitive probability might come from:
+
+1. **Frequentist:** Probabilities are generalizations of intuitions/facts about frequencies of events in repeated executions of a random event.
+2. **Subjectivist:** Probabilities are subjective beliefs of a rational agent who is
+  uncertain about the outcome of a random event.
+3. **Realist:** Probabilities are the property of an intrinsically random world.
+
+While trying to stay away from philosophical quibbles, we will adopt a subjectivist interpretation of probabilities, but note that frequentist considerations should affect what a rational agent should believe.
+
+### Distributions as samples
+
+No matter what your metaphysics of probability are, it is useful to realize that probability distributions can be approximately represented by sampling.
+
+Think of an **urn** as a container with balls of different colors with different proportions (see Figure \@ref(fig:03-01-single-urn)). In the simplest case, there is a number of $N > 1$ balls of which $k > 0$ are black and $N-k > 0$ are white. (There are at least one black and one white ball.) For a single random draw from our urn we have: $\Omega_{\text{our urn}} = \set{\text{white}, \text{black}}$. We now draw from this urn with replacement. That is, we shake the urn, draw one ball, observe its color, take note of the color, and put it back into the urn. Each ball has the same chance of being sampled. If we imagine an infinite sequence of single draws from our urn with replacement, the limiting proportion with which we draw a black ball is $\frac{k}{N}$. This statement about frequency is what motivates saying that the probability of drawing a black ball on a single trial is (or should be^[If probabilities are subjective beliefs, a rational agent is, in a sense, normatively required to assign exactly this probability.])
+$P(\text{black}) = \frac{k}{N}$.
+
+```{r 03-01-single-urn, echo = F, fig.cap="An urn with seven black balls and three white balls. Imagine shaking this container, and then drawing blindly a single ball from it. If every ball has an equal probability of being drawn, what is the probability of drawing a black ball? That would be 0.7."}
+knitr::include_graphics("visuals/urn-single.png")
+```
+
+
+
+The plot below shows how the proportion of black balls drawn from an urn like in Figure \@ref(fig:03-01-single-urn) with $k = 7$ black balls and $N = 10$ balls in total, gravitates to the probability 0.7 when we keep drawing and drawing.
+
+```{r echo = F}
+# urn with 7 black and 3 white balls
+urn <- c(
+  rep("black", 7),
+  rep("white", 3)
+)
+
+# number of samples to take
+n_samples <- 10000
+
+# take `n_samples` samples from the urn (with replacement)
+draws <- sample(
+  # vector to sample from (default probability is uniform)
+  x = urn,
+  # specify number of samples
+  size = n_samples,
+  # put each ball back after drawing
+  replace = TRUE
+)
+
+# plotting the development of the proportion of 'black' balls
+tibble(
+  draw_nr = 1:n_samples,
+  draw = draws,
+  # relative frequency of 'black' balls over time
+  prop_black = cumsum(draw == "black") / draw_nr
+) %>%
+  # take only multiples of 10 draws
+  filter(draw_nr %% 10 == 0) %>%
+  ggplot(aes(x = draw_nr, y = prop_black)) +
+  geom_line(color = "darkgray") +
+  # add a red line for the true limiting probability
+  geom_hline(aes(yintercept = 0.7), color = "firebrick") +
+  labs(
+    x = "number of draws",
+    y = "proportion of 'black' balls drawn",
+    title = "Temporal development of the proportion of draws"
+  )
+```
+
+To sum this up concisely, we have a random process (drawing once from the urn) whose outcome is uncertain, and we convinced ourselves that the probability of an outcome corresponds to the relative frequency it occurs, in the limit of repeatedly executing the random process (i.e., sampling from the urn). From here, it requires only a small step to a crucial but ultimately very liberating realization. If the probability of an event occurring can be approximated by its frequency in a large sample, then we can approximately represent (say: internally in a computer) a probability distribution as one of two things:
+
+1. a large set of (what is called: representative) samples; or even better as
+2. an oracle (e.g., in the form of a clever algorithm) that quickly returns a representative sample.
+
+This means that, for approximately computing with probability, we can represent distributions through samples or a sample-generating function. We do not need to know precise probability or be able to express them in a mathematical formula. Samples or **sampling is often enough to approximate probability distributions**.
+
+<div class = "exercises">
+**Exercise 7.2**
+
+Explore how taking more or less samples affects the proportion of draws from an urn with the WebPPL code below. You can enter the number of black balls and the total number of balls for your urn. You can also enter the number of times you want to draw from your urn (with replacement - meaning that after every draw, the ball you just picked is placed back into the urn). 
+You should execute the code several times in sequence with the same parameter values. 
+This is because each time you run the code, another different random result will be shown.
+By inspecting what happens across several runs (each drawing `nr_draws` times from the urn), you can check the effect of varying the variable `nr_draws`.
+E.g., what happens with a low sample size, e.g., `nr_draws = 20`, as opposed to a large sample size, e.g., `nr_draws = 100000`? 
+
+<pre class="webppl">
+// how many balls are black? how many in total?
+var nr_black = 7
+var nr_total = 10
+// how many draws from the urn (with replacement)?
+var nr_draws = 20
+
+///fold:
+var model = function() {
+  flip(nr_black/nr_total) == 1 ? "black" : "white"
+}
+display('Proportion of balls sampled')
+Infer({method: "forward", samples : nr_draws}, model)
+///
+</pre>
+
+<script>
+// find all <pre> elements and set up the editor on them
+var preEls = Array.prototype.slice.call(document.getElementsByClassName("webppl"));
+preEls.map(function(el) { console.log(el); editor.setup(el, {language: 'webppl'}); });
+</script> 
+
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+With a small sample size, there is a lot of variation in the observed proportion. As the sample size gets larger and larger, the result converges to `nr_black / nr_total`.
+
+</div>
+</div>
+
+</div>
+
+
+<!-- **Exercise 7.2** -->
+
+<!-- The function `oracle` returns a representative sample from a hidden distribution. Guess the shape of the distribution just by sampling from `oracle`. -->
+
+<!-- ```{r} -->
+<!-- oracle() -->
+<!-- ``` -->
+
+
+<!-- <div class="collapsibleSolution"> -->
+<!-- <button class="trigger">Solution</button> -->
+<!-- <div class="content"> -->
+<!-- `oracle` returns a sample from a normal distribution with a mean of -10 and standard deviation of 10. By increasing the number of samples, the sampling distribution closely approximates the true distribution. -->
+
+<!-- ```{r} -->
+<!-- oracle <- function(){ -->
+<!--   rnorm(1, -10, 10) -->
+<!-- } -->
+
+<!-- # collect samples -->
+<!-- samples <- array(0, dim = 1e4) -->
+<!-- for (i in 1:1e4) { -->
+<!--   samples[i] <- oracle() -->
+<!-- } -->
+
+<!-- # true distribution -->
+<!-- x <- seq(-50, 50, length=1000) -->
+<!-- plot(x,dnorm(x, -10, 10), type='l') -->
+
+<!-- # sampling distribution with 10 samples -->
+<!-- samples %>%  -->
+<!--   sample(., 10) %>%  -->
+<!--   tibble() %>%  -->
+<!--   ggplot() + -->
+<!--   geom_density(aes(x=.)) + -->
+<!--   xlim(c(-50,50)) -->
+
+<!-- # sampling distribution with 1e4 samples -->
+<!-- samples %>%  -->
+<!--   tibble() %>%  -->
+<!--   ggplot() + -->
+<!--   geom_density(aes(x=.)) + -->
+<!--   xlim(c(-50,50)) -->
+<!-- ``` -->
+
+<!-- </div> -->
+<!-- </div> -->
+<!-- </div> -->
+
+## Structured events & marginal distributions {#Chap-03-01-probability-marginal}
+
+The single urn scenario of the last section is a very basic first example.
+To pave the way for learning about conditional probability and Bayes rule in the next sections, let us consider a slightly more complex example.
+We call it the *flip-and-draw scenario*.
+
+### Probability table for a flip-and-draw scenario
+
+Suppose we have two urns. Both have $N=10$ balls. Urn 1 has $k_1=2$ black and $N-k_1 = 8$ white balls. Urn 2 has $k_2=4$ black and $N-k_2=6$ white balls. We sometimes draw from urn 1, sometimes from urn 2. To decide from which urn a ball should be drawn, we flip a fair coin. If it comes up heads, we draw from urn 1; if it comes up tails, we draw from urn 2. The process is visualized in Figure \@ref(fig:03-01-flip-and-draw) below.
+
+An elementary outcome of this two-step process of flip-and-draw is a pair $\tuple{\text{outcome-flip}, \text{outcome-draw}}$. The set of all possible such outcomes is:
+
+$$\Omega_{\text{flip-and-draw}} = \set{\tuple{\text{heads}, \text{black}}, \tuple{\text{heads}, \text{white}}, \tuple{\text{tails}, \text{black}}, \tuple{\text{tails}, \text{white}}}\,.$$
+
+The probability of event $\tuple{\text{heads}, \text{black}}$ is given by multiplying the probability of seeing "heads" on the first flip, which happens with probability $0.5$, and then drawing a black ball, which happens with probability $0.2$, so that $P(\tuple{\text{heads}, \text{black}}) = 0.5 \mult 0.2 = 0.1$. The probability distribution over $\Omega_{\text{flip-draw}}$ is consequently as in Table \@ref(tab:flipdrawprobabilities). (If in doubt, start flipping & drawing and count your outcomes or use the WebPPL code box in the exercise below to simulate flips-and-draws.)
+
+```{r flipdrawprobabilities, echo = F}
+knitr::kable(
+  tibble(
+    " " = c("black", "white"),
+    heads = c("$0.5 \\times 0.2 = 0.1$", "$0.5 \\times 0.8 = 0.4$"),
+    tails = c("$0.5 \\times 0.4 = 0.2$", "$0.5 \\times 0.6 = 0.3$")
+  ),
+  booktabs = T,
+  caption = 'Joint probability table for the flip-and-draw scenario',
+  escape = F
+)
+```
+
+
+```{r 03-01-flip-and-draw, echo = F, fig.cap="The flip-and-draw scenario, with transition and full path probabilities."}
+knitr::include_graphics("visuals/flip-and-draw-scenario.png")
+```
+
+
+
+### Structured events and joint-probability distributions
+
+Table \@ref(tab:flipdrawprobabilities) is an example of a **joint probability distribution** over a structured event space, which here has two dimensions. Since our space of outcomes is the Cartesian product of two simpler outcome spaces, namely
+$\Omega_{flip\text{-}\&\text{-}draw} = \Omega_{flip} \times \Omega_{draw}$,^[With
+  $\Omega_{\text{flip}} = \set{\text{heads}, \text{tails}}$ and
+  $\Omega_{\text{draw}} = \set{\text{black}, \text{white}}$.] we can use notation
+$P(\text{heads}, \text{black})$ as shorthand for $P(\tuple{\text{heads}, \text{black}})$. More
+generally, if $\Omega = \Omega_1 \times \dots \Omega_n$, we can think of $P \in \Delta(\Omega)$
+as a joint probability distribution over $n$ subspaces.
+
+### Marginalization
+
+If $P$ is a joint probability distribution over event space $\Omega = \Omega_1 \times \dots \Omega_n$, the **marginal distribution** over subspace  $\Omega_i$, $1 \le i \le n$ is the probability distribution that assigns to all $A_i \subseteq \Omega_i$ the probability (where notation $P(\dots, \omega, \dots )$ is shorthand for $P(\dots, \{\omega \}, \dots)$):^[This notation, using $\sum$, assumes that subspaces are countable. In other cases, a parallel definition with integrals can be used.]
+
+$$
+\begin{align*}
+P(A_i) & = \sum_{\omega_1 \in \Omega_{1}} \sum_{\omega_2 \in \Omega_{2}} \dots  \sum_{\omega_{i-1} \in \Omega_{i-1}} \sum_{\omega_{i+1} \in \Omega_{i+1}} \dots \sum_{\omega_n \in \Omega_n} P(\omega_1, \dots, \omega_{i-1}, A_{i}, \omega_{i+1}, \dots \omega_n)
+\end{align*}
+$$
+
+For example, the marginal distribution of draws derivable from Table \@ref(tab:flipdrawprobabilities) has $P(\text{black}) = P(\text{heads, black}) + P(\text{tails, black}) = 0.3$ and $P(\text{white}) = 0.7$.^[The term "marginal distribution" derives from such probability tables, where traditionally the sum of each row/column was written in the margins.] The marginal distribution of coin flips derivable from the joint probability distribution in Table \@ref(tab:flipdrawprobabilities) gives $P(\text{heads}) = P(\text{tails}) = 0.5$, since the sum of each column is exactly $0.5$.
+
+<div class = "exercises">
+**Exercise 7.3**
+
+a. Given the following joint probability table, compute the probability that a student does not attend the lecture, i.e., $P(\text{miss})$.
+
+```{r ex73, echo = F}
+knitr::kable(
+  tibble(
+    " " = c("rainy", "dry"),
+    attend = c("0.1", "0.2"),
+    miss = c("0.6", "0.1")
+  ),
+  booktabs = T,
+  escape = F
+)
+```
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+$P(\text{miss}) = P(\text{miss, rainy}) + P(\text{miss, dry}) = 0.6 + 0.1 = 0.7$
+
+</div>
+</div>
+
+b. Play around with the following WebPPL implementation of the flip-and-draw scenario. Change the 'input values' of the coin's bias and the probabilities of sampling a black ball from either urn. Inspect the resulting joint probability tables and the marginal distribution of observing "black". Try to find at least three different parameter settings that result in the marginal probability of black being 0.7.
+
+<pre class="webppl">
+// you can play around with the values of these variables
+var coin_bias = 0.5          // coin bias
+var prob_black_urn_1 = 0.2   // probability of drawing "black" from urn 1 
+var prob_black_urn_2 = 0.4   // probability of drawing "black" from urn 2
+
+///fold:
+// convenience function for showing nicer tables
+var condProb2Table = function(condProbFct, row_names, col_names, precision){
+  var matrix = map(function(row) {
+    map(function(col) {
+      _.round(Math.exp(condProbFct.score({"coin": row, "ball": col})),precision)}, 
+        col_names)}, 
+                   row_names)
+  var max_length_col = _.max(map(function(c) {c.length}, col_names))
+  var max_length_row = _.max(map(function(r) {r.length}, row_names))
+  var header = _.repeat(" ", max_length_row + 2)+ col_names.join("  ") + "\n"
+  var row = mapIndexed(function(i,r) { _.padEnd(r, max_length_row, " ") + "  " + 
+                       mapIndexed(function(j,c) {
+                          _.padEnd(matrix[i][j], c.length+2," ")}, 
+                                  col_names).join("") + "\n" }, 
+                           row_names).join("")
+  return header + row
+}
+// flip-and-draw scenario model
+var model = function() {
+  var coin_flip = flip(coin_bias)  == 1 ? "heads" : "tails"
+  var prob_black_selected_urn = coin_flip == "heads" ?
+    prob_black_urn_1 : prob_black_urn_2
+  var ball_color = flip(prob_black_selected_urn) == 1 ? "black" : "white"
+  return({coin: coin_flip, ball: ball_color})
+}
+// infer model and display as (custom-made) table
+var inferred_model = Infer({method: 'enumerate'}, model)
+display("Joint probability table")
+display(condProb2Table(inferred_model, ["tails", "heads"], ["white", "black"], 3))
+display("\nMarginal probability of ball color")
+viz(marginalize(inferred_model, function(x) {return x.ball}))
+///
+</pre>
+
+<script>
+// find all <pre> elements and set up the editor on them
+var preEls = Array.prototype.slice.call(document.getElementsByClassName("webppl"));
+preEls.map(function(el) { console.log(el); editor.setup(el, {language: 'webppl'}); });
+</script> 
+
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+Three possibilities for obtaining a value of 0.7 for the marginal probability of "black":
+
+1. `prob_black_urn_1 = prob_black_urn_2 = 0.7`
+2. `coin_bias = 1` and `prob_black_urn_1 = 0.7`
+3. `coin_bias = 0.5`, `prob_black_urn_1 = 0.8` and `prob_black_urn_2 = 0.6`
+
+</div>
+</div>
+
+</div>
+
+## Conditional probability {#Chap-03-01-probability-conditional}
+
+Let us assume probability distribution $P \in \Delta(\Omega)$ and that events $A,B \subseteq \Omega$ are given. The conditional probability of $A$ given $B$, written as $P(A \mid B)$, gives the probability of $A$ on the assumption that $B$ is true.^[We also verbalize this as "the conditional probability of $A$ conditioned on $B$."] It is defined like so:
+
+$$P(A \mid B) = \frac{P(A \cap B)}{P(B)}$$
+
+Conditional probabilities are only defined when $P(B) > 0$.^[Updating with events that have probability zero entails far more severe adjustments of the underlying belief system than just ruling out information hitherto considered possible. Formal systems that capture such *belief revision* are studied in formal epistemology. @Halpern2003:Reasoning-about gives a good comprehensive treatment.]
+
+```{block2, type="infobox"}
+**Example.** If a die is unbiased, each of its six faces has equal probability to come up after a toss. The probability of event $B = \{$ &#9856;, &#9858;, &#9860; $\}$ that the tossed number is odd has probability $P(B) = \frac{1}{2}$. The probability of event $A = \{$ &#9858;, &#9859;,  &#9860;, &#9861; $\}$ that the tossed number is bigger than two is $P(A) = \frac{2}{3}$. The probability that the tossed number is bigger than two *and* odd is $P(A \cap B) = P(\{$ &#9858;,  &#9860; $\}) = \frac{1}{3}$. The conditional probability of tossing a number that is bigger than two, when we know that the toss is odd, is $P(A \mid B) = \frac{1 / 3}{1 / 2} = \frac{2}{3}$.
+```
+
+Algorithmically, conditional probability first rules out all events in which $B$ is not true and then simply renormalizes the probabilities assigned to the remaining events in such a way that their relative probabilities remain unchanged. 
+Given this, another way of interpreting conditional probability is that $P(A \mid B)$ is what a rational agent should \emph{should} believe about $A$ after observing (nothing more than) that $B$ is true. 
+The agent rules out, possibly hypothetically, that $B$ is false, but otherwise does not change opinion about the relative probabilities of anything that is compatible with $B$.
+This is also explained in the video embedded below.
+
+<iframe src="https://player.vimeo.com/video/480214538" width="640" height="360" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+
+
+### Bayes rule
+
+Looking back at the joint-probability distribution in Table \@ref(tab:flipdrawprobabilities), the conditional probability $P(\text{black} \mid \text{heads})$ of drawing a black ball, given that the initial coin flip
+showed heads, can be calculated as follows:
+
+$$
+P(\text{black} \mid \text{heads}) =
+\frac{P(\text{black} , \text{heads})}{P(\text{heads})} =
+\frac{0.1}{0.5} = 0.2
+$$
+This calculation, however, is quite excessive. 
+We can read out the conditional probability directly already from the way the flip-and-draw scenario was set up. 
+After flipping heads, we draw from urn 1, which has $k=2$ out\ of $N=10$ black balls, so clearly: if the initial flip comes up heads, then the probability of a black ball is $0.2$. 
+Indeed, in a step-wise random generative process like the flip-and-draw scenario, some conditional probabilities are very clear, and sometimes given by definition.
+These are, usually, the conditional probabilities that define how the process unfolds forward in time, so to speak.
+
+**Bayes rule** is a way of expressing, in a manner of speaking, conditional probabilities in terms of the
+"reversed" conditional probabilities:
+
+$$P(B \mid A) = \frac{P(A \mid B) \mult P(B)}{P(A)}$$
+
+Bayes rule is a straightforward corollary of the definition of conditional probabilities,
+according to which $P(A \cap B) = P(A \mid B) \mult P(B)$, so that:
+
+
+$$
+P(B \mid A) =
+\frac{P(A \cap B)}{P(A)} =
+\frac{P(A \mid B) \mult P(B)}{P(A)}
+$$
+
+
+Bayes rule allows for reasoning backward from observed causes to likely underlying effects. When we have a feed-forward model of how unobservable effects probabilistically constrain observable outcomes, Bayes rule allows us to draw inferences about *latent/unobservable variables* based on the observation of their downstream effects.
+
+Consider yet again the flip-and-draw scenario. But now assume that Jones flipped the coin and
+drew a ball. We see that it is black. What is the probability that it was drawn from urn 1,
+or equivalently, that the coin landed heads? It is not $P(\text{heads}) = 0.5$, the so-called
+*prior probability* of the coin landing heads. It is a conditional probability, also
+called the *posterior probability*,^[The terms *prior* and *posterior*
+  make sense when we think about an agent's belief state before (prior to) and after (posterior
+  to) an observation.] namely $P(\text{heads} \mid \text{black})$. But it is not as easy and straightforward to write down as the reverse probability
+$P(\text{black} \mid \text{heads})$ of which we said above that it is an almost trivial part of
+the set up of the flip-and-draw scenario. It is here that Bayes rule has its purpose:
+
+$$
+P(\text{heads} \mid \text{black}) =
+\frac{P(\text{black} \mid \text{heads}) \mult P(\text{heads})}{P(\text{black})} =
+\frac{0.2 \mult 0.5}{0.3} =
+\frac{1}{3}
+$$
+This result is quite intuitive. Drawing a black ball from urn 2 (i.e., after seeing tails) is twice as likely as drawing a black ball from urn 1 (i.e., after seeing heads). Consequently, after seeing a black ball drawn, with equal probabilities of heads and tails, the probability that
+the coin landed tails is also twice as large as that it landed heads.
+
+<div class = "exercises">
+**Exercise 7.4**
+
+a. Play around with the following WebPPL implementation of the flip-and-draw scenario, which calculates the posterior distribution over coin flip outcomes given that we observed the draw of a black ball. Change the parameters of the scenario and try to build intuitions about how your changes will affect the resulting posterior distribution. 
+
+<pre class="webppl">
+// you can play around with the values of these variables
+var coin_bias = 0.5          // coin bias
+var prob_black_urn_1 = 0.2   // probability of drawing "black" from urn 1 
+var prob_black_urn_2 = 0.4   // probability of drawing "black" from urn 2
+
+///fold:
+// flip-and-draw scenario model
+var model = function() {
+  var coin_flip = flip(coin_bias)  == 1 ? "heads" : "tails"
+  var prob_black_selected_urn = coin_flip == "heads" ?
+    prob_black_urn_1 : prob_black_urn_2
+  var ball_color = flip(prob_black_selected_urn) == 1 ? "black" : "white"
+  condition(ball_color == "black")
+  return({coin: coin_flip})
+}
+// infer model and display as (custom-made) table
+var inferred_model = Infer({method: 'enumerate'}, model)
+viz(inferred_model)
+///
+</pre>
+
+<script>
+// find all <pre> elements and set up the editor on them
+var preEls = Array.prototype.slice.call(document.getElementsByClassName("webppl"));
+preEls.map(function(el) { console.log(el); editor.setup(el, {language: 'webppl'}); });
+</script> 
+
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+Three possibilities for obtaining a value of 0.7 for the marginal probability of "black":
+
+1. `prob_black_urn_1 = prob_black_urn_2 = 0.7`
+2. `coin_bias = 1` and `prob_black_urn_1 = 0.7`
+3. `coin_bias = 0.5`, `prob_black_urn_1 = 0.8` and `prob_black_urn_2 = 0.6`
+
+</div>
+</div>
+
+
+b. Suppose that we know that around 6% of the population has statisticositis, a rare disease that makes you allergic to fallacious statistical reasoning.
+A new test has been developed to diagnose statisticositis but it is not infallible. 
+The _specificity_ of the test (the test result is negative when the subject really does not have statisticositis) is 98%. 
+The _sensitivity_ of the test (the test result is positive when the subject really does have statisticositis) is 95%. 
+When you take this test and it gives a negative test result, how likely is it that you do not have statisticositis?
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+First, let's abbreviate the test result being negative or positive as $\overline{T}$ and $T$ and actual statisticositis as $\overline{S}$ and $S$. 
+We want to calculate $P(\overline{S} \mid \overline{T})$. 
+According to Bayes rule, $P(\overline{S} \mid \overline{T}) = \frac{P(\overline{T} \mid \overline{S}) P(\overline{S})} {P(\overline{T})}$. 
+We are given that $P(\overline{T} \mid \overline{S}) = 0.98$, $P(\overline{T} \mid S) = 1 - P(T \mid S) = 0.05$ and $P(\overline{S}) = 1 - P(S) = 0.94$. 
+Furthermore, $P(\overline{T}) = P(\overline{T},S) + P(\overline{T},\overline{S}) = P(\overline{T} \mid S) P(S) + P(\overline{T} \mid \overline{S}) P(\overline{S}) = 0.9242$. Putting this all together, we get $P(\overline{S} \mid \overline{T}) \approx 99.7 \%$. So, given a negative test result, you can be pretty certain that you do not have statisticositis.
+
+Check out [this website](https://oehoedatascience.com/2020/06/12/bayes-rule-applied-on-covid-19-immunity-testing/) for more details on these calculations in the context of a more serious application.
+
+</div>
+</div>
+</div>
+
+```{block2, type="infobox"}
+**Excursion: Bayes rule for data analysis** In later chapters, we will use Bayes rule for data analysis. The flip-and-draw scenario structurally "reflects" what will happen later. Think of the color of the ball drawn as the *data* $D$ which we observe. Think of the coin as a *latent parameter* $\theta$ of a statistical model. Bayes rule for data analysis then looks like this:
+
+  $$P(\theta \mid D) = \frac{P(D \mid \theta) \mult P(\theta)}{P(D)}$$
+
+We will discuss this at length in Chapter \@ref(Chap-03-03-models) and thereafter.
+```
+
+### Stochastic (in-)dependence {#Chap-03-01-probability-independence}
+
+Event $A$ is **stochastically independent** of $B$ if, intuitively speaking, learning $B$ does not change one's beliefs about $A$, i.e., $P(A \mid B) = P(A)$. If $A$ is stochastically independent of $B$, then $B$ is stochastically independent of $A$ because:
+
+$$
+\begin{aligned}
+ P(B \mid A)
+ & =
+ \frac{P(A \mid B) \ P(B)}{P(A)} && \text{[Bayes rule]}
+ \\
+ & =
+ \frac{P(A) \ P(B)}{P(A)} && \text{[by ass. of independence]}
+ \\
+ & =
+ P(B) && \text{[cancellation]}
+ \\
+\end{aligned}
+$$
+
+
+For example, imagine a flip-and-draw scenario where the initial coin flip has a bias of $0.8$ towards heads, but each of the two urns has the same number of black balls, namely $3$ black and $7$ white balls. Intuitively and formally, the probability of drawing a black ball is then *independent* of the outcome of the coin flip; learning that the coin landed heads, does not change our beliefs about how likely the subsequent draw will result in a black ball. The probability table for this example is in Table \@ref(tab:flipdrawprobabilities-independent).
+
+```{r flipdrawprobabilities-independent, echo = F}
+knitr::kable(
+  tibble(
+    " " = c("black", "white", "$\\Sigma$ columns"),
+    "heads" = c("$0.8 \\mult 0.3 = 0.24$", "$0.8 \\mult 0.7 = 0.56$", 0.8),
+    tails = c("$0.2 \\mult 0.3 = 0.06$", "$0.2 \\mult 0.7 = 0.14$", 0.2),
+    "$\\Sigma$ rows" = c(0.3, 0.7, 1)
+  ),
+  booktabs = T,
+  caption = 'Joint probability table for a flip-and-draw scenario where the coin has a bias of $0.8$ towards heads and where each of the two urns holds $3$ black and $7$ white balls.',
+  escape = F
+)
+```
+
+Independence shows in Table \@ref(tab:flipdrawprobabilities-independent) in the fact that the probability in each cell is the product of the two marginal probabilities. This is a direct consequence of stochastic independence:
+
+<div class = "mathstuff">
+
+```{proposition, label = "conjunction-independent-events", name = "Probability of conjunction of stochastically independent events"}
+For any pair of events $A$ and $B$ with non-zero probability:
+
+$$P(A \cap B) = P(A) \ P(B) \, \ \ \ \ \text{[if } A \text{ and } B \text{ are stoch. independent]} $$
+```
+
+<div class="collapsibleProof">
+<button class="trigger">Show proof.</button>
+<div class="content">
+
+```{proof}
+By assumption of independence, it holds that $P(A \mid B) = P(A)$. But then:
+
+$$
+\begin{aligned}
+ P(A \cap B)
+ & =
+ P(A \mid B) \ P(B) && \text{[def. of conditional probability]}
+ \\
+ & =
+ P(A) \ P(B) && \text{[by ass. of independence]}
+\end{aligned}
+$$
+```
+
+&nbsp;
+
+
+</div>
+</div>
+</div>
+
+
+## Random variables {#Chap-03-01-probability-random-variables}
+
+So far, we have defined a probability distribution as a function that assigns a probability to each subset of the space $\Omega$ of elementary outcomes.
+We saw that rational beliefs should conform to certain axioms, reflecting a "logic of rational beliefs". 
+But in data analysis, we are often interested in a space of numeric outcomes.
+You probably know stuff like the "normal distribution" which is a distribution that assigns a probability to each real number.
+In keeping with our previous definition of probability as targeting a measurable set $\Omega$, we introduce what we could sloppily call "probability distributions over numbers" using the concept of random variables.
+Caveat: random variables are very useful concepts and offer highly versatile notation, but both concept and notation can be elusive in the beginning. 
+
+Formally, a **random variable** is a function $X \ \colon \ \Omega \rightarrow \mathbb{R}$ that assigns to each elementary outcome a numerical value.
+It is reasonable to think of this number as a **summary statistic**: a number that captures one aspect of relevance of what is actually a much more complex chunk of reality.
+
+```{block2, type='infobox'}
+**Example.** For a single coin flip, we have $\Omega_{\text{coin flip}} = \set{\text{heads}, \text{tails}}$. A usual way of mapping this onto numerical outcomes is to define $X_{\text{coin flip}} \ \colon \ \text{heads} \mapsto 1; \text{tails} \mapsto 0$. Less trivially, consider flipping a coin two times. Elementary outcomes should be individuated by the outcome of the first flip and the outcome of the second flip, so that we get:
+$$
+    \Omega_{\text{two flips}} = \set{\tuple{\text{heads}, \text{heads}}, \tuple{\text{heads}, \text{tails}},
+    \tuple{\text{tails}, \text{heads}}, \tuple{\text{tails}, \text{tails}}}
+$$
+Consider the random variable $X_{\text{two flips}}$ that counts the total number of heads. Crucially, $X_{\text{two flips}}(\tuple{\text{heads}, \text{tails}}) = 1 = X_{\text{two flips}}(\tuple{\text{tails}, \text{heads}})$. We assign the same numerical value to different elementary outcomes since the order is not relevant if we are only interested in a count of the number of heads.
+```
+
+
+### Notation & terminology
+
+Traditionally, random variables are represented by capital letters, like $X$. The numeric values they take on are written as small letters, like $x$.
+
+We write $P(X = x)$ as a shorthand for the probability $P(\set{\omega \in \Omega \mid X(\omega) = x})$, that an event $\omega$ occurs which is mapped onto $x$ by the random variable $X$. For example, if our coin is fair, then $P(X_{\text{two flips}} = x) = 0.5$ for $x=1$ and $0.25$ for $x \in \{0,2\}$. Similarly, we can also write $P(X \le x)$ for the probability of observing any event that $X$ maps to a number not bigger than $x$.
+
+If the range of $X$ is countable (not necessarily finite), we say that $X$ is **discrete**. For ease of exposition, we may say that if the range of $X$ is an interval of real numbers, $X$ is called **continuous**.
+
+
+### Cumulative distribution functions, mass & density
+
+For a discrete random variable $X$, the **cumulative distribution function** $F_X$ associated with $X$ is defined as:
+$$
+  F_X(x) = P(X \le x) = \sum_{x' \in \set{\text{Rng}(X) \mid x' \le x}} P(X = x)
+$$
+The **probability mass function** $f_x$ associated with $X$ is defined as:
+$$
+  f_X(x) = P(X = x)
+$$
+
+<div class="infobox">
+**Example.** Suppose we flip a coin with a bias of $\theta$ towards heads $n$ times. What is the probability that we  will see heads $k$ times? If we map the outcome of heads to 1 and tails to 0, this  probability is given by the [Binomial distribution](#app-91-distributions-binomial), as follows:
+$$
+    \text{Binom}(K = k ; n, \theta) = \binom{n}{k} \,  \theta^{k} \, (1-\theta)^{n-k}
+$$
+Here $\binom{n}{k} = \frac{n!}{k!(n-k)!}$ is the binomial coefficient, which gives the number of possibilities of drawing an unordered subset with $k$ elements from a set with a total of $n$ elements. Figure \@ref(fig:ch-03-BinomialDistribution-Mass) gives examples of the Binomial distribution, concretely its probability mass functions, for two values of the coin's bias, $\theta = 0.25$ or $\theta = 0.5$, when flipping the coin $n=24$  times. Figure \@ref(fig:ch-03-BinomialDistribution-Cumulative) gives the corresponding cumulative  distributions.
+<!-- add some more explanation -->
+
+```{r ch-03-BinomialDistribution-Mass, echo = FALSE, fig.cap = "Examples of the Binomial distribution. The $y$-axis gives the probability of seeing $k$ heads when flipping a coin $n=24$ times with a bias of either $\\theta = 0.25$ or $\\theta = 0.5$."}
+binom.plot.data = expand.grid(n = 24, theta = c(0.25, 0.5), k = 0:24) %>%
+  mutate(
+    probability = dbinom(k,n,theta),
+    theta = as.factor(theta)
+  )
+ggplot(binom.plot.data, aes(x = k, y = probability, fill = theta)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = project_colors) +
+  ylab(bquote("Binom(K = k; n = 24," ~ theta * ")"))
+```
+
+```{r ch-03-BinomialDistribution-Cumulative, echo = FALSE, fig.cap = "Examples of the cumulative distribution of the Binomial distribution. The $y$-axis gives the probability of seeing $k$ or fewer outcomes of heads when flipping a coin $n=24$ times with a bias of either $\\theta = 0.25$ or $\\theta = 0.5$."}
+binom.plot.data = expand.grid(n = 24, theta = c(0.25, 0.5), k = 0:24) %>%
+  mutate(
+    probability = pbinom(k,n,theta),
+    theta = as.factor(theta)
+  )
+ggplot(binom.plot.data, aes(x = k, y = probability, fill = theta)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = project_colors) +
+  ylab(bquote("Binom(K" <= "k; n = 24," ~ theta * ")"))
+```
+
+</div>
+
+
+
+For a continuous random variable $X$, the probability $P(X = x)$ will usually be zero: it is virtually impossible that we will see precisely the value $x$ realized in a random event that can realize uncountably many numerical values of $X$. However, $P(X \le x)$ does usually take non-zero values and so we define the cumulative distribution function $F_X$ associated with $X$ as:
+$$
+  F_X(x) = P(X \le x)
+$$
+Instead of a probability **mass** function, we derive a **probability density function** from the cumulative function as:
+$$
+  f_X(x) = F'(x)
+$$
+A probability density function can take values greater than one, unlike a probability mass
+function.
+
+<div class="infobox">
+**Example.** The [Gaussian (Normal) distribution](#app-91-distributions-normal) characterizes many natural distributions of  measurements which are symmetrically spread around a central tendency. It is defined as:
+$$
+    \mathcal{N}(X = x ; \mu, \sigma) = \frac{1}{\sqrt{2 \sigma^2 \pi}} \exp \left ( -
+      \frac{(x-\mu)^2}{2 \sigma^2} \right)
+$$
+where parameter $\mu$ is the *mean*, the central tendency, and parameter $\sigma$ is the *standard deviation*. Figure \@ref(fig:ch-03-NormalDistribution-Density) gives examples of the probability density function of two normal distributions. Figure \@ref(fig:ch-03-NormalDistribution-Cumulative) gives the corresponding cumulative distribution functions.
+
+```{r ch-03-NormalDistribution-Density, echo = F, fig.cap = "Examples of the Normal distribution. In both cases $\\mu = 0$, once with $\\sigma = 1$ and once with $\\sigma = 4$."}
+ggplot(data.frame(x = c(-8, 8)), aes(x = x)) +
+  stat_function(fun = function(x) dnorm(x, sd = 4), aes(color = "4"), size = 3) +
+  stat_function(fun = function(x) dnorm(x, sd = 1), aes(color = "1"), size = 3) +
+  scale_colour_manual("standard deviation",
+                      breaks = c("4", "1"),
+                      values = project_colors) +
+  ylab(bquote("Norm(X = x;" ~ mu == 0 * "," ~ sigma * ")"))
+```
+
+```{r ch-03-NormalDistribution-Cumulative, echo = F, fig.cap = "Examples of the cumulative normal distribution corresponding to the previous probability density functions."}
+ggplot(data.frame(x = c(-8, 8)), aes(x = x)) +
+  stat_function(fun = function(x) pnorm(x, sd = 4), aes(color = "4"), size = 3) +
+  stat_function(fun = function(x) pnorm(x, sd = 1), aes(color = "1"), size = 3) +
+  scale_colour_manual("standard deviation",
+                      breaks = c("4", "1"),
+                      values = project_colors) +
+  # ylab("Norm(X <= x ; mu = 0, sd")
+  ylab(bquote("Norm(X" <= "x;" ~ mu == 0 * "," ~ sigma * ")"))
+```
+
+</div>
+
+### Expected value & variance
+
+The **expected value** of a random variable $X$ is a measure of central tendency. It tells us, like the name suggests, which average value of $X$ we can expect when repeatedly sampling from $X$. If $X$ is discrete, the expected value is:
+$$
+  \mathbb{E}_X = \sum_{x} x \mult f_X(x)
+$$
+If $X$ is continuous, it is:
+$$
+  \mathbb{E}_X = \int x \mult f_X(x) \ \text{d}x
+$$
+The expected value is also frequently called the **mean**.
+
+The **variance** of a random variable $X$ is a measure of how much likely values of $X$ are spread or clustered around the expected value. If $X$ is discrete, the variance is:
+$$
+  \text{Var}(X) = \sum_x (\mathbb{E}_X - x)^2 \mult f_X(x) = \mathbb{E}_{X^2} -\mathbb{E}_X^2
+$$
+If $X$ is continuous, it is:
+$$
+  \text{Var}(X) = \int (\mathbb{E}_X - x)^2 \mult f_X(x) \ \text{d}x = \mathbb{E}_{X^2} -\mathbb{E}_X^2
+$$
+
+<div class="infobox">
+**Example.** If we flip a coin with bias $\theta = 0.25$ a total of $n=24$ times, we expect on average to see $n \mult \theta = 24 \mult 0.25 = 6$ outcomes showing heads.^[This is not immediately obvious from our definition, but it is intuitive and you can derive it.] The variance of a binomially distributed variable is  $n \mult \theta \mult (1-\theta) = 24 \mult 0.25 \mult 0.75 = \frac{24 \mult 3}{16} = \frac{18}{4} = 4.5$.
+
+The expected value of a normal distribution is just its mean $\mu$ and its variance is $\sigma^2$.
+</div>
+
+<div class = "exercises">
+**Exercise 7.5**
+
+1. Compute the expected value and variance of a fair die.
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+```{r}
+expected_value <- 1*(1/6) + 2*(1/6) + 3*(1/6) + 4*(1/6) + 5*(1/6) + 6*(1/6)
+variance <- 1^2*(1/6) + 2^2*(1/6) + 3^2*(1/6) + 4^2*(1/6) + 5^2*(1/6) + 6^2*(1/6) - expected_value^2
+
+print(expected_value)
+variance
+```
+</div>
+</div>
+
+2. Below, you see several normal distributions with differing means $\mu$ and standard deviations $\sigma$. The red, unnumbered distribution is the so-called standard normal distribution; it has a mean of 0 and a standard deviation of 1. Compare each distribution below (1-4) to the standard normal distribution and think about how the parameters of the standard normal were changed. Also, think about which distribution (1-4) has the smallest/largest mean and the smallest/largest standard deviation.
+
+```{r echo=FALSE, fig.align = "center", out.width = '80%'}
+ggplot(data.frame(x = c(-10, 11)), aes(x = x)) +
+  stat_function(fun = dnorm, color = "firebrick", size = 2) +
+  stat_function(fun = dnorm, args = list(mean = 5, sd = 1), color = "blue", size = 2) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 3), color = "darkgreen", size = 2) +
+  stat_function(fun = dnorm, args = list(mean = 6, sd = 2), color = "orange", size = 2) +
+  stat_function(fun = dnorm, args = list(mean = -6, sd = 0.5), color = "#993399", size = 2) +
+  annotate(geom = "text", x = c(5, -3, 7.5, -7), y = c(0.45, 0.13, 0.2, 0.75), label = c(1, 2, 3, 4),
+           hjust = c("center", "center", "left", "right")) +
+  ylab("density") +
+  theme_classic()
+
+```
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+
+Distribution 1 ($\mu$ = 5, $\sigma$ = 1): larger mean, same standard deviation <br />
+Distribution 2 ($\mu$ = 0, $\sigma$ = 3): same mean, larger standard deviation <br />
+Distribution 3 ($\mu$ = 6, $\sigma$ = 2): larger mean, larger standard deviation <br />
+Distribution 4 ($\mu$ = -6, $\sigma$ = 0.5): smaller mean, smaller standard deviation
+
+</div>
+</div>
+
+</div>
+
+### Composite random variables
+
+Composite random variables are random variables generated by mathematical operations conjoining other random variables. For example, if $X$ and $Y$ are random variables, then we can define a new derived random variable $Z$  using notation like:
+
+$$Z = X + Y$$
+
+This notation looks innocuous but is conceptually tricky yet ultimately very powerful. On the face of it, we are doing as if we are using `+` to add two functions. But a sampling-based perspective makes this quite intuitive. We can think of $X$ and $Y$ as large samples, representing the probability distributions in question. Then we build a sample by just adding elements in $X$ and $Y$. (If samples are of different size, just add a random element of $Y$ to each $X$.)
+
+Consider the following concrete example. $X$ is the probability distribution of rolling a fair dice with six sides. $Y$ is the probability distribution of flipping a biased coin that lands heads (represented as number 1) with probability 0.75. The derived probability distribution $Z = X + Y$ can be approximately represented by samples derived as follows:
+
+```{r}
+n_samples <- 1e6
+# `n_samples` rolls of a fair dice
+samples_x <- sample(
+  1:6,
+  size = n_samples,
+  replace = T
+)
+
+# `n_samples` flips of a biased coin
+samples_y <- sample(
+  c(0, 1),
+  prob = c(0.25, 0.75),
+  size = n_samples,
+  replace = T
+)
+
+samples_z <- samples_x + samples_y
+
+tibble(outcome = samples_z) %>%
+  dplyr::count(outcome) %>%
+  mutate(n = n / sum(n)) %>%
+  ggplot(aes(x = outcome, y = n)) +
+  geom_col() +
+  labs(y = "proportion")
+```
+
+
+## Probability distributions in R {#Chap-03-01-probability-R}
+
+Appendix \@ref(app-91-distributions) covers a number of common probability distributions that are relevant for the purposes of this course.
+Appendix \@ref(app-92-exponential-family) furthermore provides additional theoretical background on the *exponential family*, an important class of probability distributions widely used in statistics.
+
+R has built-in functions for most common probability distributions. Further distributions are covered in additional packages. If `mydist` is the name of a probability distribution, then R routinely offers four functions for `mydist`, distinguished by the first letter:
+
+1. `dmydist(x, ...)` the *density function* gives the probability (mass/density) $f(x)$ for `x`
+2. `pmydist(x, ...)` the *cumulative probability function* gives the cumulative distribution function $F(x)$ for `x`
+3. `qmydist(p, ...)` the *quantile function* gives the value `x` for which `p = pmydist(x, ...)`
+4. `rmydist(n, ...)` the *random sample function* returns `n` samples from the distribution
+
+For example, the family of functions for the normal distribution has the following functions:
+
+```{r}
+
+# density of standard normal at x = 1
+dnorm(x = 1, mean = 0, sd = 1)
+
+# cumulative density of standard normal at q = 0
+pnorm(q = 0, mean = 0, sd = 1)
+
+# point where the cumulative density of standard normal is p = 0.5
+qnorm(p = 0.5, mean = 0, sd = 1)
+
+# n = 3 random samples from a standard normal
+rnorm(n = 3, mean = 0, sd = 1)
+
+```
+
+<div class = "exercises">
+**Exercise 7.6**
+
+a. Use R to compute the median of the exponential distribution with rate $\lambda = 1$. Remember that the median is the 50% quantile. The quantile function of the exponential distribution can be accessed with `qexp` in R. 
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+```{r}
+qexp(0.5, rate = 1)
+```
+</div>
+</div>
+
+b. Use R's function for the cumulative normal distribution (see above) to compute this integral, i.e., the area under the density function of a standard normal distribution ranging from -1 to 2:
+
+$$
+\int_{-1}^{2} \mathcal{N}(x, \mu = 0, \sigma = 1) \text{d}x
+$$
+
+<div class="collapsibleSolution">
+<button class="trigger">Solution</button>
+<div class="content">
+```{r}
+pnorm(2, mean = 0, sd = 1) - pnorm(-1, mean = 0, sd = 1)
+```
+</div>
+</div>
+
+</div>
+
+
