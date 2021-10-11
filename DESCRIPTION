@@ -2,10 +2,12 @@ Package: placeholder
 Type: Book
 Title: Does not matter.
 Version: 0.1
-Imports: bookdown, 
+Imports: binom,
+  bookdown, 
   boot,
   bridgesampling,
   brms,
+  BSDA,
   cowplot,
   devtools,
   extraDistr,
