@@ -37,9 +37,9 @@ library(dirichlet)
 
 ## set defaults
 # source("theme_ida.R")
-# theme_set(
-#   aida::theme_aida()
-# )
-# 
-# # parallel execution of Stan code
-# options(mc.cores = parallel::detectCores())
+theme_set(
+  aida::theme_aida()
+)
+
+# parallel execution of Stan code
+options(mc.cores = parallel::detectCores())
